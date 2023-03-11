@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: GPL-2.0-only
+// Copyright (C) 2024 Alibek Omarov
+
+#ifndef VGUI_PROGRESSBAR_H
+#define VGUI_PROGRESSBAR_H
+
+#include "panel.h"
+
+namespace vgui
+{
+class CLASSEXPORT ProgressBar : public Panel
+{
+public:
+	ProgressBar( int );
+protected:
+	virtual void paintBackground() override;
+public:
+	virtual void setProgress( float );
+	virtual int getSegmentCount();
+private:
+	int   _segmentCount;
+	float _progress;
+};
+CHECK_STRUCT_SIZE( ProgressBar, 196 );
+
+}
+
+#endif // VGUI_PROGRESSBAR_H
