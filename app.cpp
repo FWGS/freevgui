@@ -221,18 +221,10 @@ void App::getCursorPos( int &x, int &y )
 
 void App::setMouseCapture( Panel *p )
 {
-	if( !p )
-	{
-		if( _mouseCapture )
-		{
-			_mouseCapture->_surfaceBase->enableMouseCapture( false );
-			_mouseCapture = nullptr;
-		}
-	}
-	else
-	{
+	if( p )
 		p->_surfaceBase->enableMouseCapture( true );
-	}
+	else if( _mouseCapture )
+		_mouseCapture->_surfaceBase->enableMouseCapture( false );
 
 	_mouseCapture = p;
 }

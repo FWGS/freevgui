@@ -20,7 +20,7 @@ Panel::Panel(int x, int y, int w, int h)
 
 Panel::Panel() : Panel( 0, 0, 64, 64 ) {}
 
-void Panel::setPos(int x, int y)
+void Panel::setPos( int x, int y )
 {
 	Vector2Set( _pos, x, y );
 }
@@ -31,26 +31,26 @@ void Panel::getPos(int &x, int &y)
 	y = _pos[1];
 }
 
-void Panel::setSize(int w, int h)
+void Panel::setSize( int w, int h )
 {
 	w = Q_max( w, _minimumSize[0] );
 	h = Q_max( h, _minimumSize[1] );
 	Vector2Set( _size, w, h );
 }
 
-void Panel::getSize(int &w, int &h)
+void Panel::getSize( int &w, int &h )
 {
 	w = _size[0];
 	h = _size[1];
 }
 
-void Panel::setBounds(int x, int y, int w, int h)
+void Panel::setBounds( int x, int y, int w, int h )
 {
 	setPos( x, y );
 	setSize( w, h );
 }
 
-void Panel::getBounds(int &x, int &y, int &w, int &h)
+void Panel::getBounds( int &x, int &y, int &w, int &h )
 {
 	x = _pos[0];
 	y = _pos[1];
@@ -397,7 +397,7 @@ void Panel::getInset(int &left, int &top, int &right, int &bottom)
 		left = top = right = bottom = 0;
 }
 
-void Panel::getPaintSize(int &w, int &h)
+void Panel::getPaintSize( int &w, int &h )
 {
 	if( _border )
 	{
@@ -527,22 +527,22 @@ void Panel::getBgColor(int &r, int &g, int &b, int &a)
 
 void Panel::setBgColor(Color c)
 {
-	_fgColor = c;
+	_bgColor = c;
 }
 
 void Panel::setFgColor(Color c)
 {
-	_bgColor = c;
+	_fgColor = c;
 }
 
 void Panel::getBgColor(Color &c)
 {
-	c = _fgColor;
+	c = _bgColor;
 }
 
 void Panel::getFgColor(Color &c)
 {
-	c = _bgColor;
+	c = _fgColor;
 }
 
 void Panel::setAsMouseCapture( bool set )
@@ -642,7 +642,7 @@ void Panel::drawFilledRect( int x0, int y0, int x1, int y1 )
 
 void Panel::drawOutlinedRect( int x0, int y0, int x1, int y1 )
 {
-	_surfaceBase->drawFilledRect( x0, y0, x1, y1 );
+	_surfaceBase->drawOutlinedRect( x0, y0, x1, y1 );
 }
 
 void Panel::drawSetTextFont( Scheme::SchemeFont sf )

@@ -7,7 +7,7 @@ bool Load32BitTGA( FileImageStream *fp, FileImage *image )
 	image->Term();
 
 	fp->Read( &hdr, sizeof( hdr ));
-	if( hdr.m_PixelDepth != 32 || hdr.m_ImageType != 10 )
+	if( fp->ErrorStatus() || hdr.m_PixelDepth != 32 || hdr.m_ImageType != 10 )
 		return false;
 
 	for( int i = 0; i < hdr.m_IDLength; i++ )
@@ -15,6 +15,9 @@ bool Load32BitTGA( FileImageStream *fp, FileImage *image )
 		unsigned char data;
 		fp->Read( &data, sizeof( data ));
 	}
+
+	if( fp->ErrorStatus())
+		return false;
 
 	image->m_Width = hdr.m_Width;
 	image->m_Height = hdr.m_Height;
@@ -31,16 +34,21 @@ bool Load32BitTGA( FileImageStream *fp, FileImage *image )
 			uint8_t packetHeader;
 			fp->Read( &packetHeader, sizeof( packetHeader ));
 
+			if( fp->ErrorStatus())
+				return false;
+
 			int runLength = (int)(packetHeader & 0x7f ) + 1;
 
 			if( curOut + runLength > image->m_Width )
-				runLength = image->m_Width - curOut;
-			// TODO: debug tga loader, it must return false here
+				return false;
 
-			if( FBitSet( packetHeader, 7 ))
+			if( FBitSet( packetHeader, BIT( 7 )))
 			{
 				uint32_t color;
 				fp->Read( &color, sizeof( color ));
+
+				if( fp->ErrorStatus())
+					return false;
 
 				for( int x = 0; x < runLength; x++ )
 				{
@@ -53,6 +61,10 @@ bool Load32BitTGA( FileImageStream *fp, FileImage *image )
 				for( int x = 0; x < runLength; x++ )
 				{
 					fp->Read( line, sizeof( uint32_t ));
+
+					if( fp->ErrorStatus())
+						return false;
+
 					line += 4;
 				}
 			}

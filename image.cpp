@@ -16,13 +16,13 @@ Color::Color()
 	init();
 }
 
-Color::Color(int r, int g, int b, int a)
+Color::Color( int r, int g, int b, int a )
 {
 	init();
 	setColor( r, g, b, a );
 }
 
-Color::Color(Scheme::SchemeColor sc)
+Color::Color( Scheme::SchemeColor sc )
 {
 	init();
 	setColor( sc );
@@ -37,9 +37,10 @@ void Color::init()
 void Color::setColor( int r, int g, int b, int a )
 {
 	Vector4Set( _color, r, g, b, a );
+	_schemeColor = Scheme::SC_USER;
 }
 
-void Color::setColor(Scheme::SchemeColor sc)
+void Color::setColor( Scheme::SchemeColor sc )
 {
 	_schemeColor = sc;
 }
@@ -59,12 +60,12 @@ void Color::getColor( int &r, int &g, int &b, int &a )
 	}
 }
 
-void Color::getColor(Scheme::SchemeColor &sc)
+void Color::getColor( Scheme::SchemeColor &sc )
 {
 	sc = _schemeColor;
 }
 
-int Color::operator[](int i)
+int Color::operator[]( int i )
 {
 	int co[4];
 	getColor( co[0], co[1], co[2], co[3] );
@@ -332,9 +333,6 @@ bool BitmapTGA::loadTGA( InputStream *is, bool invertAlpha )
 		return false;
 
 	int wide = hdr.m_Width, tall = hdr.m_Height;
-
-	if( wide * tall < 0x20000000 )
-		return false;
 
 	setSize( wide, tall );
 

@@ -47,7 +47,7 @@ Label::Label( const char *str ) :
 Label::Label( const char *str, int x, int y ) :
 	Panel( x, y, 10, 10 )
 {
-	init( strlen( str ) + 1, str, true );
+	init( Q_strlen( str ) + 1, str, true );
 }
 
 Label::Label( const char *str, int x, int y, int w, int h ) :
@@ -82,11 +82,23 @@ void Label::setText( const char *str, ... )
 	char buf[4096];
 	va_list va;
 
+	if( !str )
+	{
+		setText( 6, "NULL!" );
+		return;
+	}
+
 	va_start( va, str );
-	Q_vsnprintf( buf, sizeof( buf ), str, va );
+	int len = Q_vsnprintf( buf, sizeof( buf ), str, va );
 	va_end( va );
 
-	setText( strlen( buf ), buf );
+	if( len < 0 )
+	{
+		setText( 10, "OVERFLOW!" );
+		return;
+	}
+
+	setText( len + 1, buf );
 }
 
 void Label::setFont( Scheme::SchemeFont sf )
@@ -180,12 +192,14 @@ void Label::computeAlignment( int &tx0, int &ty0, int &tx1, int &ty1, int &ix0, 
 	int tw, th;
 	getTextSize( tw, th );
 
-	int iw = 0, ih = 0;
+	ix0 = iy0 = ix1 = iy1 = 0;
 	if( _image )
-		_image->getSize( iw, ih );
+		_image->getSize( ix1, iy1 );
 
-	ix0 = 0; iy0 = 0; ix1 = iw; iy1 = ih;
-	tx0 = 0; ty0 = 0; tx1 = tw; ty1 = th;
+	tx0 = 0;
+	ty0 = 0;
+	tx1 = tw;
+	ty1 = th;
 
 	switch( _textAlignment )
 	{
@@ -258,7 +272,7 @@ void Label::computeAlignment( int &tx0, int &ty0, int &tx1, int &ty1, int &ix0, 
 	case TOPRIGHT:
 	case RIGHT:
 	case BOTTOMRIGHT:
-		offx = minX + w - maxX;
+		offx = w - ( maxX - minX );
 		break;
 	}
 
@@ -310,7 +324,7 @@ void Label::paint()
 	if( hasFocus() )
 	{
 		drawSetColor( Scheme::SC_PRIMARY2 );
-		drawOutlinedRect( tx0, ty1, tx1, ty1 );
+		drawOutlinedRect( tx0, ty0, tx1, ty1 );
 	}
 }
 

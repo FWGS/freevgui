@@ -8,7 +8,7 @@
 #include "crtlib.h"
 
 #ifdef XASH_64BIT
-#define CHECK_STRUCT_SIZE( type, size )
+#define CHECK_STRUCT_SIZE( type, size ) // to be filled
 #else
 #define CHECK_STRUCT_SIZE( type, size ) \
 	static_assert( sizeof( type ) == size, "invalid size" )
@@ -30,9 +30,9 @@
 
 namespace vgui
 {
-int EXPORT vgui_printf( const char*, ... ) _format( 1 );
-int EXPORT vgui_dprintf( const char*, ... ) _format( 1 );
-int EXPORT vgui_dprintf2( const char*, ... ) _format( 1 );
+int EXPORT vgui_printf( const char*, ... ) FORMAT_CHECK( 1 );
+int EXPORT vgui_dprintf( const char*, ... ) FORMAT_CHECK( 1 );
+int EXPORT vgui_dprintf2( const char*, ... ) FORMAT_CHECK( 1 );
 void EXPORT vgui_strcpy( char*, int, const char* );
 char EXPORT *vgui_strdup( const char* );
 void EXPORT vgui_setMalloc( void* ( *theMalloc )( size_t ));
