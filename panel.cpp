@@ -235,19 +235,21 @@ bool Panel::isWithin(int x, int y)
 {
 	screenToLocal( x, y );
 
-	return x >= 0 && x < _size[0] && y > 0 && y < _size[1];
+	return x >= 0 && x < _size[0] && y >= 0 && y < _size[1];
 }
 
 Panel *Panel::isWithinTraverse(int x, int y)
 {
 	if( _visible && isWithin( x, y ))
 	{
-		for( int i = 0; i < _childDar.getCount(); i++ )
+		for( int i = _childDar.getCount() - 1; i >= 0; i-- )
 		{
 			Panel *p = _childDar[i]->isWithinTraverse( x, y );
 			if( p )
 				return p;
 		}
+
+		return this;
 	}
 
 	return nullptr;
