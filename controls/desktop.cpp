@@ -176,30 +176,91 @@ void DesktopIcon::paintBackground()
 
 Desktop::Desktop( int x, int y, int wide, int tall ) : Panel( x, y, wide, tall )
 {
+	setBgColor( 0, 128, 128, 0 );
+	setPaintBorderEnabled( false );
+	setPaintBackgroundEnabled( false );
+	setPaintEnabled( false );
+
+	_background = new Panel( 0, 0, wide, tall - 36 );
+	_background->setBgColor( 0, 128, 128, 0 );
+	addChild( _background );
+
+	_foreground = new Panel( 0, 0, wide, tall - 36 );
+	_foreground->setPaintBorderEnabled( false );
+	_foreground->setPaintBackgroundEnabled( false );
+	_foreground->setPaintEnabled( false );
+	addChild( _foreground );
+
+	_taskBar = new TaskBar( 0, tall - 36, wide, 36 );
+	addChild( _taskBar );
+
+	_cascade[0] = 50;
+	_cascade[1] = 50;
 }
 
 void Desktop::setSize( int wide, int tall )
 {
+	Panel::setSize( wide, tall );
+
+	getPaintSize( wide, tall );
+	_background->setBounds( 0, 0, wide, tall - 36 );
+	_foreground->setBounds( 0, 0, wide, tall - 36 );
+	_taskBar->setBounds( 0, tall - 36, wide, 36 );
 }
 
 void Desktop::iconActivated( DesktopIcon *icon )
 {
+	Frame *frame = icon->getMiniApp()->createInstance();
+
+	if( !frame )
+		return;
+
+	frame->setPos( _cascade[0], _cascade[1] );
+	_foreground->addChild( frame );
+	_taskBar->addFrame( frame );
+	frame->requestFocus();
+
+	_cascade[0] += 25;
+	_cascade[1] += 50;
+
+	if( _cascade[1] > 400 )
+	{
+		_cascade[0] = 50;
+		_cascade[1] = 50;
+	}
 }
 
 void Desktop::addIcon( DesktopIcon *icon )
 {
+	icon->setDesktop( this );
+	_foreground->addChild( icon );
+	icon->setPos( 10, 10 );
+	_desktopIconDar.addElement( icon );
 }
 
 void Desktop::arrangeIcons()
 {
+	int x = 15, y = 10;
+
+	for( DesktopIcon *icon : _desktopIconDar )
+	{
+		icon->setPos( x, y );
+		y += 60;
+
+		if( y > 340 )
+		{
+			x += 50;
+			y = 10;
+		}
+	}
 }
 
 Panel *Desktop::getBackground()
 {
-	return NULL;
+	return _background;
 }
 
 Panel *Desktop::getForeground()
 {
-	return NULL;
+	return _foreground;
 }
