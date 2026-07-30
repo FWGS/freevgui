@@ -6,39 +6,24 @@
 
 #include "controls/desktop.h"
 #include "app.h"
+#include "font.h"
 
 using namespace vgui;
 
-MiniApp::MiniApp()
-{
-	_name = (char *)"";
-}
-
-void MiniApp::getName( char *buf, int bufLen )
-{
-	vgui_strcpy( buf, bufLen, _name );
-}
-
-void MiniApp::setName( const char *name )
-{
-	_name = vgui_strdup( name );
-}
-
-namespace
+namespace // private to VGUI classes, signal helpers and panels
 {
 class TrayClock : public Panel, public TickSignal
 {
 public:
-	TrayClock( int x, int y, int wide, int tall ) : Panel( x, y, wide, tall )
+	TrayClock( int x, int y, int wide, int tall ) :
+		Panel( x, y, wide, tall ), lastSecond( -1 ), text{}
 	{
-		lastSecond = -1;
-		text[0] = '\0';
 		App::getInstance()->addTickSignal( this );
 	}
 
 	virtual void ticked() override
 	{
-		time_t now = time( NULL );
+		time_t now = time( nullptr );
 		struct tm *lt = localtime( &now );
 
 		if( lt->tm_sec == lastSecond )
@@ -85,7 +70,7 @@ public:
 	virtual void minimizing( Frame *, bool ) override
 	{
 		frame->setVisible( false );
-		App::getInstance()->requestFocus( NULL );
+		App::getInstance()->requestFocus( nullptr );
 	}
 
 	virtual void focusChanged( bool lost, Panel * ) override
@@ -98,13 +83,79 @@ private:
 	Frame  *frame;
 };
 
+class IconDragHandler : public InputSignal
+{
+public:
+	IconDragHandler( DesktopIcon *icon ) : icon( icon ), dragging( false )
+	{
+	}
+
+	virtual void mousePressed( MouseCode, Panel * ) override
+	{
+		icon->getPos( origin[0], origin[1] );
+		App::getInstance()->getCursorPos( start[0], start[1] );
+		icon->setAsMouseCapture( true );
+		icon->requestFocus();
+		dragging = true;
+	}
+
+	virtual void cursorMoved( int, int, Panel * ) override
+	{
+		if( !dragging )
+			return;
+
+		int cur[2];
+		App::getInstance()->getCursorPos( cur[0], cur[1] );
+		icon->setPos( origin[0] + cur[0] - start[0], origin[1] + cur[1] - start[1] );
+		icon->repaintParent();
+	}
+
+	virtual void mouseDoublePressed( MouseCode, Panel * ) override
+	{
+		icon->doActivate();
+	}
+
+	virtual void mouseReleased( MouseCode, Panel * ) override
+	{
+		dragging = false;
+		icon->setAsMouseCapture( false );
+	}
+
+	virtual void cursorEntered( Panel * ) override {}
+	virtual void cursorExited( Panel * ) override {}
+	virtual void mouseWheeled( int, Panel * ) override {}
+	virtual void keyPressed( KeyCode, Panel * ) override {}
+	virtual void keyTyped( KeyCode, Panel * ) override {}
+	virtual void keyReleased( KeyCode, Panel * ) override {}
+	virtual void keyFocusTicked( Panel * ) override {}
+
+private:
+	DesktopIcon *icon;
+	bool dragging;
+	int  origin[2];
+	int  start[2];
+};
 }
 
-TaskBar::TaskBar( int x, int y, int wide, int tall ) : Panel( x, y, wide, tall )
+MiniApp::MiniApp() : _name((char *)"" )
+{
+}
+
+void MiniApp::getName( char *buf, int bufLen )
+{
+	vgui_strcpy( buf, bufLen, _name );
+}
+
+void MiniApp::setName( const char *name )
+{
+	_name = vgui_strdup( name );
+}
+
+TaskBar::TaskBar( int x, int y, int wide, int tall ) :
+	Panel( x, y, wide, tall ), _tray( new Panel( 100, 0, 120, 26 ))
 {
 	setBorder( new RaisedBorder());
 
-	_tray = new Panel( 100, 0, 120, 26 );
 	_tray->setBorder( new LoweredBorder());
 	addChild( _tray );
 
@@ -149,53 +200,88 @@ void TaskBar::performLayout()
 	}
 }
 
-DesktopIcon::DesktopIcon( MiniApp *miniApp, Image *image ) : Panel()
+DesktopIcon::DesktopIcon( MiniApp *miniApp, Image *image ) :
+	Panel( 0, 0, 32, 50 ), _desktop( nullptr ), _miniApp( miniApp )
 {
+	setImage( image );
+	addInputSignal( new IconDragHandler( this ));
 }
 
 void DesktopIcon::doActivate()
 {
+	if( _desktop )
+		_desktop->iconActivated( this );
 }
 
 void DesktopIcon::setImage( Image *image )
 {
+	_image = image;
+
+	if( !image )
+		return;
+
+	int wide, tall;
+	image->getSize( wide, tall );
+	setSize( wide, tall );
 }
 
 void DesktopIcon::setDesktop( Desktop *desktop )
 {
+	_desktop = desktop;
 }
 
 MiniApp *DesktopIcon::getMiniApp()
 {
-	return NULL;
+	return _miniApp;
 }
 
 void DesktopIcon::paintBackground()
 {
+	Panel::paintBackground();
+
+	int wide, tall;
+	getPaintSize( wide, tall );
+
+	if( _image )
+		_image->doPaint( this );
+
+	drawSetTextFont( Scheme::SF_PRIMARY1 );
+
+	if( _miniApp )
+	{
+		char name[256];
+		_miniApp->getName( name, sizeof( name ));
+
+		int tWide, tTall;
+		App::getInstance()->getScheme()->getFont( Scheme::SF_PRIMARY2 )->getTextSize( name, tWide, tTall );
+
+		drawSetTextColor( 255, 255, 255, 0 );
+		drawSetTextPos( wide / 2 - tWide / 2, tall - 20 );
+		drawPrintText( name, strlen( name ));
+	}
 }
 
-Desktop::Desktop( int x, int y, int wide, int tall ) : Panel( x, y, wide, tall )
+Desktop::Desktop( int x, int y, int wide, int tall ) :
+	Panel( x, y, wide, tall ),
+	_background( new Panel( 0, 0, wide, tall - 36 )),
+	_foreground( new Panel( 0, 0, wide, tall - 36 )),
+	_taskBar( new TaskBar( 0, tall - 36, wide, 36 )),
+	_cascade{ 50, 50 }
 {
 	setBgColor( 0, 128, 128, 0 );
 	setPaintBorderEnabled( false );
 	setPaintBackgroundEnabled( false );
 	setPaintEnabled( false );
 
-	_background = new Panel( 0, 0, wide, tall - 36 );
 	_background->setBgColor( 0, 128, 128, 0 );
 	addChild( _background );
 
-	_foreground = new Panel( 0, 0, wide, tall - 36 );
 	_foreground->setPaintBorderEnabled( false );
 	_foreground->setPaintBackgroundEnabled( false );
 	_foreground->setPaintEnabled( false );
 	addChild( _foreground );
 
-	_taskBar = new TaskBar( 0, tall - 36, wide, 36 );
 	addChild( _taskBar );
-
-	_cascade[0] = 50;
-	_cascade[1] = 50;
 }
 
 void Desktop::setSize( int wide, int tall )
