@@ -7,14 +7,17 @@ using namespace vgui;
 
 MiniApp::MiniApp()
 {
+	_name = (char *)"";
 }
 
 void MiniApp::getName( char *buf, int bufLen )
 {
+	vgui_strcpy( buf, bufLen, _name );
 }
 
 void MiniApp::setName( const char *name )
 {
+	_name = vgui_strdup( name );
 }
 
 TaskBar::TaskBar( int x, int y, int wide, int tall ) : Panel( x, y, wide, tall )
