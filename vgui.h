@@ -148,6 +148,11 @@ public:
 	}
 
 	T operator[]( int i ) { return _data[i]; }
+
+	T *begin() { return _data; }
+	T *end() { return _data + _count; }
+	const T *begin() const { return _data; }
+	const T *end() const { return _data + _count; }
 };
 
 CHECK_STRUCT_SIZE( Dar<void*>, 12 );
