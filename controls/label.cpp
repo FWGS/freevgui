@@ -240,7 +240,7 @@ void Label::computeAlignment( int &tx0, int &ty0, int &tx1, int &ty1, int &ix0, 
 	}
 
 	tx1 = tx0 + tw;
-	ty1 = ty1 + th;
+	ty1 = ty0 + th;
 
 	minX = Q_min( tx0, ix0 );
 	minY = Q_min( ty0, iy0 );
