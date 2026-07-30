@@ -103,6 +103,11 @@ void vgui::vgui_setFree( void ( *theFree )( void* ))
 	else staticFree = theFree;
 }
 
+extern "C" const char *freevgui_version( void )
+{
+	return "FreeVGUI 0.1";
+}
+
 void* operator new( size_t size )
 {
 	return staticMalloc( size );

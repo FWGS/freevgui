@@ -190,4 +190,9 @@ class CLASSEXPORT Dar<TickSignal*>;
 #endif
 }
 
+// my extension
+extern "C" {
+const char EXPORT *freevgui_version( void );
+}
+
 #endif // VGUI_H
