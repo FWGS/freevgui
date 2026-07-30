@@ -1,3 +1,4 @@
+#include <time.h>
 #include "app.h"
 
 using namespace vgui;

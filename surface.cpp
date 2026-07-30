@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 // Copyright (C) 2024 Alibek Omarov
 
+#include <stdio.h>
 #include "surface.h"
 #include "input.h"
 #include "panel.h"
