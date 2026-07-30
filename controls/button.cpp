@@ -226,4 +226,42 @@ Panel *Button::createPropertyPanel()
 	return NULL;
 }
 
+ToggleButton::ToggleButton( const char *text, int x, int y ) :
+	Button( text, x, y )
+{
+}
+
+ToggleButton::ToggleButton( const char *text, int x, int y, int w, int h ) :
+	Button( text, x, y, w, h )
+{
+}
+
+CheckButton::CheckButton( const char *text, int x, int y ) :
+	ToggleButton( text, x, y )
+{
+}
+
+CheckButton::CheckButton( const char *text, int x, int y, int w, int h ) :
+	ToggleButton( text, x, y, w, h )
+{
+}
+
+void CheckButton::paintBackground()
+{
+}
+
+RadioButton::RadioButton( const char *text, int x, int y ) :
+	ToggleButton( text, x, y )
+{
+}
+
+RadioButton::RadioButton( const char *text, int x, int y, int w, int h ) :
+	ToggleButton( text, x, y, w, h )
+{
+}
+
+void RadioButton::paintBackground()
+{
+}
+
 }

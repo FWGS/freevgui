@@ -1,12 +1,42 @@
 // SPDX-License-Identifier: GPL-2.0-only
 // Copyright (C) 2024 Alibek Omarov
 
-#include "treefolder.h"
+#include "controls/treefolder.h"
 #include "label.h"
 #include "signals.h"
 #include "layout.h"
 
 using namespace vgui;
+
+TreeFolder::TreeFolder( const char *name ) : Panel()
+{
+}
+
+TreeFolder::TreeFolder( const char *name, int x, int y ) : Panel( x, y, 0, 0 )
+{
+}
+
+void TreeFolder::init( const char *name )
+{
+}
+
+void TreeFolder::paintBackground()
+{
+}
+
+void TreeFolder::setOpenedTraverse( bool open )
+{
+}
+
+void TreeFolder::setOpened( bool open )
+{
+}
+
+bool TreeFolder::isOpened()
+{
+	return false;
+}
+
 #if 0
 
 class FooTreeFolderDefaultHandler : public InputSignal

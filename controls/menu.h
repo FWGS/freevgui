@@ -37,6 +37,8 @@ protected:
 class CLASSEXPORT PopupMenu : public Menu
 {
 public:
+	PopupMenu( int, int, int, int );
+	PopupMenu( int, int );
 	virtual void showModal( Panel* );
 };
 }

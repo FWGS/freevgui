@@ -34,7 +34,7 @@ public:
 		virtual void fireSwitchingToNextPageSignals();
 		virtual void init();
 	public:
-		WizardPage( WizardPage* );
+		WizardPage();
 		WizardPage( int, int );
 
 		virtual void setBackWizardPage( WizardPage* );

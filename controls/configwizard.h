@@ -20,7 +20,7 @@ public:
 protected:
 	TreeFolder* _treeFolder;
 	Panel* _client;
-	Button* _okButton, _cancelButton, _applyButton, _helpButton;
+	Button *_okButton, *_cancelButton, *_applyButton, *_helpButton;
 };
 }
 

@@ -11,6 +11,8 @@ namespace vgui
 class CLASSEXPORT EditPanel : public Panel
 {
 public:
+	EditPanel( int, int, int, int );
+
 	virtual void doCursorUp();
 	virtual void doCursorDown();
 	virtual void doCursorLeft();
