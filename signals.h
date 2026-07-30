@@ -30,7 +30,7 @@ public:
 class CLASSEXPORT FrameSignal {
 public:
 	virtual void closing( Frame * ) = 0;
-	virtual void minimizing( Frame * ) = 0;
+	virtual void minimizing( Frame *, bool ) = 0;
 };
 
 class CLASSEXPORT InputSignal {
