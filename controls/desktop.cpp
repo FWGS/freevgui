@@ -30,7 +30,13 @@ public:
 			return;
 
 		lastSecond = lt->tm_sec;
-		strftime( text, sizeof( text ), "%I:%M:%S %p", lt );
+
+		// strip leading zero. Would've used strftime but standard stftime doesn't support removing leading zero.
+		int hour = lt->tm_hour % 12;
+		if( hour == 0 )
+			hour = 12;
+
+		Q_snprintf( text, sizeof( text ), "%d:%02d:%02d %s", hour, lt->tm_min, lt->tm_sec, lt->tm_hour < 12 ? "AM" : "PM" );
 		repaint();
 	}
 
