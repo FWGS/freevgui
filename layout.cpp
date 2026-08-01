@@ -141,7 +141,7 @@ void StackLayout::performLayout( Panel *p )
 			int pwide, ptall;
 
 			p->getPaintSize( pwide, ptall );
-			child->setSize( pwide, ptall );
+			child->setSize( pwide, h );
 		}
 
 		newy += _vgap + h;
