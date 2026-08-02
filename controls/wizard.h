@@ -16,6 +16,7 @@ public:
 
 	class WizardPage : public Panel
 	{
+		friend class WizardPanel;
 	private:
 		WizardPage* _backWizardPage;
 		WizardPage* _nextWizardPage;
