@@ -25,12 +25,12 @@ protected:
 	virtual void recomputeLayoutTop();
 	virtual void recomputeLayout();
 private:
-	TabPlacement _tabPlacement;
-	Panel* _tabArea;
-	Panel* _clientArea;
-	Panel* _selectedTab;
-	Panel* _selectedPanel;
-	ButtonGroup* _buttonGroup;
+	TabPlacement _tabPlacement; // doesn't work in vgui
+	Panel *_tabArea;
+	Panel *_clientArea;
+	Panel *_selectedTab;
+	Panel *_selectedPanel;
+	ButtonGroup *_buttonGroup;
 };
 CHECK_STRUCT_SIZE( TabPanel, 212 );
 }
