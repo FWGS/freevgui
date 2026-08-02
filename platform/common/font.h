@@ -84,19 +84,6 @@ protected:
 	int m_iBlur;
 	float *m_pGaussianDistribution;
 
-	struct font_name_entry
-	{
-		char *m_OSSpecificName;
-		uint8_t m_cbOSSpecificName;
-
-		char *m_pchFriendlyName;
-
-		bool operator<( const font_name_entry &a );
-	};
-
-	static CUtlRBTree<font_name_entry, int> m_FriendlyNameCache;
-	static bool ms_bSetFriendlyNameCacheLessFunc;
-
 public:
 	FontPlat( const char *, int, int, float, int, bool, bool, bool, bool );
 	virtual ~FontPlat();
@@ -110,7 +97,6 @@ public:
 protected:
 	void CreateFontList();
 	static bool ExtendedABCWidthsCacheLessFunc( const abc_cache_t&, const abc_cache_t& );
-	bool FontLessFunc( font_name_entry&, font_name_entry& );
 };
 
 class FontPlat_Bitmap : public BaseFontPlat

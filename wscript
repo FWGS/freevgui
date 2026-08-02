@@ -19,7 +19,7 @@ def build(bld):
 	bld.shlib(
 		source   = bld.path.ant_glob([
 			'*.cpp',
-			'miniutl/*.cpp',
+			'miniutl/utlmemory.cpp',
 			'controls/*.cpp',
 			'platform/common/*.cpp',
 			'platform/%s/*.cpp' % platform,
