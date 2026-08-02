@@ -75,7 +75,7 @@ bool Slider::isVertical()
 
 void Slider::addIntChangeSignal(IntChangeSignal *s)
 {
-	_intChangeSignalDar.addElement( s );
+	_intChangeSignalDar.putElement( s );
 }
 
 void Slider::setRange(int imin, int imax)
@@ -157,13 +157,13 @@ void Slider::recomputeNobPosFromValue()
 		float size = _vertical ? h : w;
 		float nobSize = size / rangewindow * size;
 
-		_nobPos[0] = ( size - nobSize ) * ( value / size);
+		_nobPos[0] = ( size - nobSize ) * ( value / range );
 		_nobPos[1] = _nobPos[0] + nobSize;
 
 		if( _nobPos[1] > size )
 		{
-			_nobPos[0] = h - nobSize;
-			_nobPos[1] = h;
+			_nobPos[0] = size - nobSize;
+			_nobPos[1] = size;
 		}
 	}
 }
@@ -209,8 +209,8 @@ void Slider::privateCursorMoved( int x, int y, Panel *p )
 
 	if( _vertical == false )
 	{
-		_nobPos[0] = _nobDragStartPos[0] + ( x - _dragStartPos[1] );
-		_nobPos[1] = _nobDragStartPos[1] + ( x - _dragStartPos[1] );
+		_nobPos[0] = _nobDragStartPos[0] + ( x - _dragStartPos[0] );
+		_nobPos[1] = _nobDragStartPos[1] + ( x - _dragStartPos[0] );
 
 		if( _nobPos[1] > w )
 		{
@@ -220,8 +220,8 @@ void Slider::privateCursorMoved( int x, int y, Panel *p )
 	}
 	else
 	{
-		_nobPos[0] = _nobDragStartPos[0] + ( y - _dragStartPos[0] );
-		_nobPos[1] = _nobDragStartPos[1] + ( y - _dragStartPos[0] );
+		_nobPos[0] = _nobDragStartPos[0] + ( y - _dragStartPos[1] );
+		_nobPos[1] = _nobDragStartPos[1] + ( y - _dragStartPos[1] );
 
 		if( _nobPos[1] > h )
 		{
