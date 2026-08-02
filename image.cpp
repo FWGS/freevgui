@@ -544,7 +544,7 @@ void TextImage::paint( Panel *p )
 		{
 			int ch2 = _text[i + word];
 
-			if( ch2 == '\0' || ch2 == '\n' || ch2 == '\r' || ch == ' ' )
+			if( ch2 == '\0' || ch2 == '\n' || ch2 == '\r' || ch2 == ' ' )
 				break;
 
 			f->getCharABCwide( ch2, a, b, c );
@@ -667,7 +667,7 @@ void TextImage::getTextSizeWrapped( int &_w, int &_h )
 		{
 			int ch2 = _text[i + word];
 
-			if( ch2 == '\0' || ch2 == '\n' || ch2 == '\r' || ch == ' ' )
+			if( ch2 == '\0' || ch2 == '\n' || ch2 == '\r' || ch2 == ' ' )
 				break;
 
 			f->getCharABCwide( ch2, a, b, c );
