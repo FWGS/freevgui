@@ -7,34 +7,24 @@
 
 namespace vgui
 {
-
-class HeaderPanelSignal : public InputSignal
+class HeaderPanelSignal : public InputSignalAdapter
 {
+	HeaderPanel *hp;
 public:
-	HeaderPanelSignal( HeaderPanel *headerPanel ) : _headerPanel( headerPanel ) {}
+	HeaderPanelSignal( HeaderPanel *hp ) : hp( hp ) {}
 
 	virtual void cursorMoved( int x, int y, Panel *p ) override
 	{
-		_headerPanel->privateCursorMoved( x, y, p );
+		hp->privateCursorMoved( x, y, p );
 	}
-	virtual void cursorEntered( Panel * ) override {}
-	virtual void cursorExited( Panel * ) override {}
 	virtual void mousePressed( MouseCode code, Panel *p ) override
 	{
-		_headerPanel->privateMousePressed( code, p );
+		hp->privateMousePressed( code, p );
 	}
-	virtual void mouseDoublePressed( MouseCode, Panel * ) override {}
 	virtual void mouseReleased( MouseCode code, Panel *p ) override
 	{
-		_headerPanel->privateMouseReleased( code, p );
+		hp->privateMouseReleased( code, p );
 	}
-	virtual void mouseWheeled( int, Panel * ) override {}
-	virtual void keyPressed( KeyCode, Panel * ) override {}
-	virtual void keyTyped( KeyCode, Panel * ) override {}
-	virtual void keyReleased( KeyCode, Panel * ) override {}
-	virtual void keyFocusTicked( Panel * ) override {}
-private:
-	HeaderPanel *_headerPanel;
 };
 
 void HeaderPanel::performLayout()
@@ -60,8 +50,7 @@ void HeaderPanel::performLayout()
 	}
 }
 
-HeaderPanel::HeaderPanel( int x, int y, int w, int h ) :
-	Panel( x, y, w, h ),
+HeaderPanel::HeaderPanel( int x, int y, int w, int h ) : Panel( x, y, w, h ),
 	_sectionLayer( new Panel( 0, 0, w, h )),
 	_sliderWide( 11 ),
 	_dragging( false )
@@ -78,9 +67,10 @@ void HeaderPanel::addSectionPanel( Panel *p )
 
 	int x = 0, y = 0, w = 0, h = 0;
 
-	for( int i = 0; i < _sectionPanelDar.getCount(); i++ )
+	for( auto section : _sectionPanelDar )
 	{
-		_sectionPanelDar[i]->getBounds( x, y, w, h );
+		section->getBounds( x, y, w, h );
+
 		x += w + _sliderWide;
 	}
 	_sectionPanelDar.addElement( p );
@@ -128,26 +118,26 @@ void HeaderPanel::getSectionExtents( int i, int &x_left, int &x_right )
 
 void HeaderPanel::addChangeSignal( ChangeSignal *s )
 {
-	_changeSignalDar.addElement( s );
+	_changeSignalDar.putElement( s );
 }
 
 void HeaderPanel::fireChangeSignal()
 {
 	invalidateLayout( true );
-	for( int i = 0; i < _changeSignalDar.getCount(); i++ )
-		_changeSignalDar[i]->valueChanged( this );
+	for( auto signal : _changeSignalDar )
+		signal->valueChanged( this );
 }
 
 void HeaderPanel::privateCursorMoved( int x, int y, Panel *p )
 {
-	if( _dragging )
-	{
-		getApp()->getCursorPos( x, y );
-		screenToLocal( x, y );
-		setSliderPos( _dragSliderIndex, x + _dragSliderStartPos - _dragSliderStartX );
-		invalidateLayout( false );
-		repaint();
-	}
+	if( !_dragging )
+		return;
+
+	getApp()->getCursorPos( x, y );
+	screenToLocal( x, y );
+	setSliderPos( _dragSliderIndex, x + _dragSliderStartPos - _dragSliderStartX );
+	invalidateLayout( false );
+	repaint();
 }
 
 void HeaderPanel::privateMousePressed( MouseCode code, Panel *p )
@@ -160,25 +150,25 @@ void HeaderPanel::privateMousePressed( MouseCode code, Panel *p )
 	for( int i = 0; i < _sliderPanelDar.getCount(); i++ )
 	{
 		Panel *slider = _sliderPanelDar[i];
-		if( slider == p )
-		{
-			int x, y;
 
-			p->getPos( x, y );
-			_dragging = true;
-			_dragSliderIndex = i;
-			_dragSliderStartPos = _sliderWide / 2 + x;
-			_dragSliderStartX = mx;
-			setAsMouseCapture( true );
-			break;
-		}
+		if( slider != p )
+			continue;
+
+		int x, y;
+
+		p->getPos( x, y );
+		_dragging = true;
+		_dragSliderIndex = i;
+		_dragSliderStartPos = _sliderWide / 2 + x;
+		_dragSliderStartX = mx;
+		slider->setAsMouseCapture( true );
+		break;
 	}
 }
 
 void HeaderPanel::privateMouseReleased( MouseCode code, Panel *p )
 {
 	_dragging = false;
-	setAsMouseCapture( false );
+	p->setAsMouseCapture( false );
 }
-
 }
