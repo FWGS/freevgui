@@ -41,7 +41,7 @@ protected:
 	virtual void shiftLineLeft( Dar<char>*, int, int );
 	virtual void shiftLineRight( Dar<char>*, int, int );
 
-	Dar<Dar<char>> _lineDarDar;
+	Dar<Dar<char>*> _lineDarDar;
 	int   _cursor[2];
 	bool  _cursorBlink;
 	int   _cursorNextBlinkTime;
