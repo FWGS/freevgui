@@ -6,11 +6,11 @@
 
 namespace vgui
 {
-class FooDefaultButtonController : public ButtonController, InputSignal
+class MomentaryButtonController : public ButtonController, InputSignalAdapter
 {
 	Button *_button;
 public:
-	FooDefaultButtonController( Button *b ) : _button( b ) {}
+	MomentaryButtonController( Button *b ) : _button( b ) {}
 
 	void addSignals( Button *b ) override
 	{
@@ -22,9 +22,6 @@ public:
 		b->removeInputSignal( this );
 	}
 
-	virtual void cursorMoved( int, int, Panel * ) override {}
-	virtual void cursorEntered( Panel * ) override {}
-	virtual void cursorExited( Panel * ) override {}
 	virtual void mousePressed( MouseCode code, Panel * ) override
 	{
 		if( _button->isEnabled() && _button->isMouseClickEnabled( code ))
@@ -33,8 +30,6 @@ public:
 			_button->repaint();
 		}
 	}
-
-	virtual void mouseDoublePressed( MouseCode, Panel * ) override {}
 
 	virtual void mouseReleased( MouseCode code, Panel * ) override
 	{
@@ -45,25 +40,114 @@ public:
 			_button->repaint();
 		}
 	}
+};
 
-	virtual void mouseWheeled( int, Panel * ) override {}
-	virtual void keyPressed( KeyCode, Panel * ) override {}
-	virtual void keyTyped( KeyCode, Panel * ) override {}
-	virtual void keyReleased( KeyCode, Panel * ) override {}
-	virtual void keyFocusTicked( Panel * ) override {}
+// toggle controller: acts on press, not release
+class LatchingButtonController : public ButtonController, InputSignalAdapter
+{
+	Button *_button;
+public:
+	LatchingButtonController( Button *b ) : _button( b ) {}
+
+	void addSignals( Button *b ) override
+	{
+		b->addInputSignal( this );
+	}
+
+	void removeSignals( Button *b ) override
+	{
+		b->removeInputSignal( this );
+	}
+
+	virtual void mousePressed( MouseCode, Panel * ) override
+	{
+		_button->setSelected( !_button->isSelected( ));
+		_button->fireActionSignal();
+		_button->repaint();
+	}
+};
+
+// checkbox icon: Marlett glyphs for the box, plus the check glyph 'a' when selected
+class CheckBoxImage : public Image
+{
+	CheckButton *cb;
+public:
+	CheckBoxImage( CheckButton *cb ) : cb( cb )
+	{
+		setSize( 20, 20 );
+	}
+
+	virtual void paint( Panel * ) override
+	{
+		drawSetTextFont( Scheme::SF_SECONDARY );
+
+		// sunken Win95 box
+		// back-to-front at (0,0): white plate, gray shadow, white highlight, black outline, gray face
+		drawSetTextColor( Scheme::SC_WHITE );
+		drawPrintChar( 0, 0, 'g' );
+		drawSetTextColor( Scheme::SC_SECONDARY2 );
+		drawPrintChar( 0, 0, 'c' );
+		drawSetTextColor( Scheme::SC_WHITE );
+		drawPrintChar( 0, 0, 'd' );
+		drawSetTextColor( Scheme::SC_BLACK );
+		drawPrintChar( 0, 0, 'e' );
+		drawSetTextColor( Scheme::SC_SECONDARY3 );
+		drawPrintChar( 0, 0, 'f' );
+
+		if( cb->isSelected( ))
+		{
+			drawSetTextColor( Scheme::SC_BLACK );
+			drawPrintChar( 0, 0, 'a' );
+		}
+	}
+};
+
+// radio icon: Marlett glyphs for the ring, plus the filled glyph 'h' when selected
+class RadioButtonImage : public Image
+{
+	RadioButton *rb;
+public:
+	RadioButtonImage( RadioButton *rb ) : rb( rb )
+	{
+		setSize( 20, 20 );
+	}
+
+	virtual void paint( Panel * ) override
+	{
+		drawSetTextFont( Scheme::SF_SECONDARY );
+
+		// sunken Win95 ring, back-to-front at (0,0): white plate, gray shadow arc, white
+		// highlight arc, black outline, gray face
+		drawSetTextColor( Scheme::SC_WHITE );
+		drawPrintChar( 0, 0, 'n' );
+		drawSetTextColor( Scheme::SC_SECONDARY2 );
+		drawPrintChar( 0, 0, 'j' );
+		drawSetTextColor( Scheme::SC_WHITE );
+		drawPrintChar( 0, 0, 'k' );
+		drawSetTextColor( Scheme::SC_BLACK );
+		drawPrintChar( 0, 0, 'l' );
+		drawSetTextColor( Scheme::SC_SECONDARY3 );
+		drawPrintChar( 0, 0, 'm' );
+
+		if( rb->isSelected( ))
+		{
+			drawSetTextColor( Scheme::SC_BLACK );
+			drawPrintChar( 0, 0, 'h' );
+		}
+	}
 };
 
 void ButtonGroup::addButton( Button *b )
 {
-	_buttonDar.addElement( b );
+	_buttonDar.putElement( b );
 }
 
 void ButtonGroup::setSelected( Button *b )
 {
-	for( int i = 0; i < _buttonDar.getCount(); i++ )
+	for( auto button : _buttonDar )
 	{
-		if( _buttonDar[i] != b )
-			_buttonDar[i]->setSelectedDirect( false );
+		if( button != b )
+			button->setSelectedDirect( false );
 	}
 
 	b->setSelectedDirect( true );
@@ -78,7 +162,7 @@ void Button::init()
 	_buttonBorderEnabled = true;
 	_mouseClickMask = 0;
 	setMouseClickEnabled( MOUSE_LEFT, true );
-	setButtonController( new FooDefaultButtonController( this ));
+	setButtonController( new MomentaryButtonController( this ));
 }
 
 void Button::setButtonController( ButtonController *bc )
@@ -135,14 +219,12 @@ void Button::paintBackground()
 	}
 }
 
-Button::Button( const char *text, int x, int y, int w, int h ) :
-	Label( text, x, y, w, h )
+Button::Button( const char *text, int x, int y, int w, int h ) : Label( text, x, y, w, h )
 {
 	init();
 }
 
-Button::Button( const char *text, int x, int y ) :
-	Label( text, x, y )
+Button::Button( const char *text, int x, int y ) : Label( text, x, y )
 {
 	init();
 }
@@ -180,7 +262,10 @@ void Button::doClick()
 
 void Button::addActionSignal( ActionSignal *s )
 {
-	_actionSignalDar.addElement( s );
+	if( s == nullptr )
+		return;
+
+	_actionSignalDar.putElement( s );
 }
 
 void Button::setButtonGroup( ButtonGroup *bg )
@@ -217,8 +302,8 @@ bool Button::isMouseClickEnabled( MouseCode code )
 
 void Button::fireActionSignal()
 {
-	for( int i = 0; i < _actionSignalDar.getCount(); i++ )
-		_actionSignalDar[i]->actionPerformed( this );
+	for( auto signal : _actionSignalDar )
+		signal->actionPerformed( this );
 }
 
 Panel *Button::createPropertyPanel()
@@ -230,39 +315,67 @@ Panel *Button::createPropertyPanel()
 ToggleButton::ToggleButton( const char *text, int x, int y ) :
 	Button( text, x, y )
 {
+	setButtonController( new LatchingButtonController( this ));
 }
 
 ToggleButton::ToggleButton( const char *text, int x, int y, int w, int h ) :
 	Button( text, x, y, w, h )
 {
+	setButtonController( new LatchingButtonController( this ));
 }
 
 CheckButton::CheckButton( const char *text, int x, int y ) :
 	ToggleButton( text, x, y )
 {
+	setTextAlignment( Label::RIGHT ); // a_east: text to the right of the box
+	setImage( new CheckBoxImage( this ));
+
+	int w, h;
+	getContentSize( w, h );
+	setSize( w, h );
 }
 
 CheckButton::CheckButton( const char *text, int x, int y, int w, int h ) :
 	ToggleButton( text, x, y, w, h )
 {
+	setTextAlignment( Label::RIGHT );
+	setImage( new CheckBoxImage( this ));
 }
 
 void CheckButton::paintBackground()
 {
+	int w, h;
+
+	getPaintSize( w, h );
+	drawSetColor( Scheme::SC_SECONDARY3 );
+	drawFilledRect( 0, 0, w, h );
 }
 
 RadioButton::RadioButton( const char *text, int x, int y ) :
 	ToggleButton( text, x, y )
 {
+	setTextAlignment( Label::RIGHT );
+	setImage( new RadioButtonImage( this ));
+
+	int w, h;
+	getContentSize( w, h );
+	setSize( w, h );
 }
 
 RadioButton::RadioButton( const char *text, int x, int y, int w, int h ) :
 	ToggleButton( text, x, y, w, h )
 {
+	setTextAlignment( Label::RIGHT );
+	setImage( new RadioButtonImage( this ));
 }
 
 void RadioButton::paintBackground()
 {
+	int w, h;
+
+	getPaintSize( w, h );
+	drawSetColor( Scheme::SC_SECONDARY3 );
+	drawFilledRect( 0, 0, w, h );
 }
 
 }
