@@ -348,15 +348,15 @@ ScrollBar::ScrollBar( int x, int y, int w, int h, bool vertical ) : Panel( x, y,
 
 	if( vertical )
 	{
-		setSlider( new Slider( 0, w - 1, w, h - w * 2, true ));
+		setSlider( new Slider( 0, w, w, h - w * 2, true ));
 		setButton( new Button( "", 0, 0, w, w ), 0 );
 		setButton( new Button( "", 0, h - w, w, w ), 1 );
 	}
 	else
 	{
 		setSlider( new Slider( h, 0, w - h * 2, h, false ));
-		setButton( new Button( "", 0, 0, h + 1, h + 1 ), 0 );
-		setButton( new Button( "", w - h, 0, h + 1, h + 1 ), 1 );
+		setButton( new Button( "", 0, 0, h, h ), 0 );
+		setButton( new Button( "", w - h, 0, h, h ), 1 );
 	}
 
 	setPaintBorderEnabled( true );
@@ -409,15 +409,15 @@ void ScrollBar::setSize( int w, int h )
 
 	if( _slider->isVertical( ))
 	{
-		_slider->setBounds( 0, w - 1, w, h - w * 2 );
+		_slider->setBounds( 0, w, w, h - w * 2 );
 		_button[0]->setBounds( 0, 0, w, w );
 		_button[1]->setBounds( 0, h - w, w, w );
 	}
 	else
 	{
 		_slider->setBounds( h, 0, w - h * 2, h );
-		_button[0]->setBounds( 0, 0, h + 1, h + 1 );
-		_button[1]->setBounds( w - h, 0, h + 1, h + 1 );
+		_button[0]->setBounds( 0, 0, h, h );
+		_button[1]->setBounds( w - h, 0, h, h );
 	}
 }
 

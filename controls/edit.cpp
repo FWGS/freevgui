@@ -338,7 +338,7 @@ void EditPanel::paint()
 		if( line == _cursor[1] && _cursorBlink )
 		{
 			drawSetColor( 255, 0, 0, 0 );
-			drawFilledRect( caretX, y, caretX + 2, y + lineHeight );
+			drawFilledRect( caretX - 1, y, caretX + 1, y + lineHeight );
 		}
 
 		y += lineHeight;
