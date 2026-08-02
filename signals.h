@@ -17,6 +17,27 @@ public:
 	virtual void actionPerformed( Panel * ) = 0;
 };
 
+template <typename F>
+class LambdaActionSignal : public ActionSignal
+{
+	F func;
+public:
+	LambdaActionSignal( F f ) : func( f )
+	{
+	}
+
+	void actionPerformed( Panel *panel ) override
+	{
+		func( panel );
+	}
+};
+
+template <typename F>
+LambdaActionSignal<F> *makeActionHandler( F func )
+{
+	return new LambdaActionSignal<F>( func );
+}
+
 class CLASSEXPORT ChangeSignal {
 public:
 	virtual void valueChanged( Panel * ) = 0;
