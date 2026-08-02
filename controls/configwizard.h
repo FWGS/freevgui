@@ -18,10 +18,11 @@ public:
 	virtual Panel* getClient();
 	virtual TreeFolder* getFolder();
 protected:
-	TreeFolder* _treeFolder;
-	Panel* _client;
+	TreeFolder *_treeFolder;
+	Panel *_client;
 	Button *_okButton, *_cancelButton, *_applyButton, *_helpButton;
 };
+CHECK_STRUCT_SIZE( ConfigWizard, 212 );
 }
 
 #endif // VGUI_CONFIGWIZARD_H
