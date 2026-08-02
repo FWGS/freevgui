@@ -53,15 +53,15 @@ void MenuSeparator::paintBackground()
 	int half = tw ? tw / 2 + 2 : 0;
 	int x0 = wide / 2 - half;
 	int x1 = wide / 2 + half;
-	int y = tall / 2;
+	int y = tall / 2 - 4;
 
 	drawSetColor( Scheme::SC_SECONDARY1 );
-	drawFilledRect( 0, y - 1, x0, y );
-	drawFilledRect( x1, y - 1, wide, y );
+	drawFilledRect( 2, y - 1, x0, y );
+	drawFilledRect( x1, y - 1, wide - 2, y );
 
 	drawSetColor( Scheme::SC_WHITE );
-	drawFilledRect( 0, y, x0, y + 1 );
-	drawFilledRect( x1, y, wide, y + 1 );
+	drawFilledRect( 2, y, x0, y + 1 );
+	drawFilledRect( x1, y, wide - 2, y + 1 );
 }
 
 PopupMenu::PopupMenu( int x, int y, int wide, int tall ) : Menu( x, y, wide, tall )
