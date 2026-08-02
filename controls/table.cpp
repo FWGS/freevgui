@@ -2,6 +2,7 @@
 // Copyright (C) 2024 Alibek Omarov
 
 #include "table.h"
+#include "vgui_internal.h"
 #include "signals.h"
 
 #define MAKE_COLUMN_EXTENTS( a, b ) (( b ) + (( a ) << 12))

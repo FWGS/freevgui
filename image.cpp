@@ -2,6 +2,7 @@
 // Copyright (C) 2024 Alibek Omarov
 
 #include "image.h"
+#include "vgui_internal.h"
 #include "app.h"
 #include "panel.h"
 #include "surface.h"

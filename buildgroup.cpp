@@ -2,6 +2,7 @@
 // Copyright (C) 2024 Alibek Omarov
 
 #include "buildgroup.h"
+#include "vgui_internal.h"
 #include "panel.h"
 #include "app.h"
 #include "controls/label.h"

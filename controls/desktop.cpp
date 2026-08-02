@@ -2,6 +2,7 @@
 // Copyright (C) 2024 Alibek Omarov
 
 #include <time.h>
+#include "vgui_internal.h"
 #include <string.h>
 
 #include "controls/desktop.h"

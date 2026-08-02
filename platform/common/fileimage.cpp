@@ -1,4 +1,5 @@
 #include "platform/common/fileimage.h"
+#include "vgui_internal.h"
 
 bool Load32BitTGA( FileImageStream *fp, FileImage *image )
 {

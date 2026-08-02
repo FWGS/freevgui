@@ -2,6 +2,7 @@
 // Copyright (C) 2024 Alibek Omarov
 
 #include <stdio.h>
+#include "vgui_internal.h"
 #include "surface.h"
 #include "input.h"
 #include "panel.h"

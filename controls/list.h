@@ -2,7 +2,7 @@
 // Copyright (C) 2024 Alibek Omarov
 
 #ifndef VGUI_LISTPANEL_H
-#define VUGI_LISTPANEL_H
+#define VGUI_LISTPANEL_H
 
 #include "panel.h"
 #include "scroll.h"

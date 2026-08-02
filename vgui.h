@@ -4,8 +4,28 @@
 #ifndef VGUI_H
 #define VGUI_H
 
-#include "xash3d_mathlib.h"
-#include "crtlib.h"
+#include <string.h>
+#include <stdint.h>
+#include <stdarg.h>
+
+#if defined( __GNUC__ )
+	#if defined( __i386__ )
+		#define EXPORT __attribute__(( visibility( "default" ), force_align_arg_pointer ))
+	#else
+		#define EXPORT __attribute__(( visibility ( "default" )))
+	#endif
+	#define FORMAT_CHECK( x ) __attribute__(( format( printf, x, x + 1 )))
+#elif defined( _MSC_VER )
+	#define EXPORT __declspec( dllexport )
+#endif
+
+#if !defined( EXPORT )
+	#define EXPORT
+#endif
+
+#if !defined( FORMAT_CHECK )
+	#define FORMAT_CHECK( x )
+#endif
 
 #ifdef XASH_64BIT
 #define CHECK_STRUCT_SIZE( type, size ) // to be filled
@@ -51,7 +71,7 @@ public:
 
 	void setCount( int count )
 	{
-		_count = bound( 0, count, _capacity );
+		_count = count >= 0 ? count < _capacity ? count : _capacity : 0;
 	}
 
 	int getCount() // can't make const due to ABI

@@ -88,9 +88,9 @@ char DataInputStream::readChar( bool &success )
 	return false;
 }
 
-ushort DataInputStream::readUShort( bool &success )
+unsigned short DataInputStream::readUShort( bool &success )
 {
-	ushort ret = 0;
+	unsigned short ret = 0;
 
 	if( _is )
 		_is->readUChar( (unsigned char *)( &ret ), sizeof( ret ), success );
@@ -121,9 +121,9 @@ int DataInputStream::readInt( bool &success )
 	return ret;
 }
 
-uint DataInputStream::readUInt( bool &success )
+unsigned int DataInputStream::readUInt( bool &success )
 {
-	uint ret = 0;
+	unsigned int ret = 0;
 
 	if( _is )
 		_is->readUChar( (unsigned char *)( &ret ), sizeof( ret ), success );
@@ -143,9 +143,9 @@ long int DataInputStream::readLong( bool &success )
 	return ret;
 }
 
-ulong DataInputStream::readULong( bool &success )
+unsigned long DataInputStream::readULong( bool &success )
 {
-	ulong ret = 0;
+	unsigned long ret = 0;
 
 	if( _is )
 		_is->readUChar( (unsigned char *)( &ret ), sizeof( ret ), success );

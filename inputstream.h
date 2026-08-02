@@ -39,11 +39,11 @@ public:
 	virtual char readChar( bool &success );
 	virtual unsigned char readUChar( bool &success ) override;
 	virtual short int readShort( bool &success );
-	virtual ushort readUShort( bool &success );
+	virtual unsigned short readUShort( bool &success );
 	virtual int readInt( bool &success );
-	virtual uint readUInt( bool &success );
+	virtual unsigned int readUInt( bool &success );
 	virtual long int readLong( bool &success );
-	virtual ulong readULong( bool &success );
+	virtual unsigned long readULong( bool &success );
 	virtual float readFloat( bool &success );
 	virtual double readDouble( bool &success );
 	virtual void readLine( char *str, int count, bool &success );

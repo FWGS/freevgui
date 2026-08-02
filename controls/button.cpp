@@ -2,6 +2,7 @@
 // Copyright (C) 2024 Alibek Omarov
 
 #include "button.h"
+#include "vgui_internal.h"
 
 namespace vgui
 {

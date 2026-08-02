@@ -2,6 +2,7 @@
 // Copyright (C) 2024 Alibek Omarov
 
 #include "vgui.h"
+#include "vgui_internal.h"
 #include "app.h"
 #include "buildgroup.h"
 #include "font.h"

@@ -2,6 +2,7 @@
 // Copyright (C) 2024 Alibek Omarov
 
 #include <stdarg.h>
+#include "vgui_internal.h"
 #include <stdio.h>
 #include "app.h"
 #include "text.h"

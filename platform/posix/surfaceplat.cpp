@@ -1,4 +1,5 @@
 #include "surface.h"
+#include "vgui_internal.h"
 #include "input.h"
 #include "panel.h"
 #include "app.h"

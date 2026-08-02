@@ -1,4 +1,5 @@
 #include "font.h"
+#include "vgui_internal.h"
 #include "platform/common/font.h"
 #include "platform/common/fileimage.h"
 

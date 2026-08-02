@@ -2,6 +2,7 @@
 // Copyright (C) 2024 Alibek Omarov
 
 #include "label.h"
+#include "vgui_internal.h"
 #include "treefolder.h"
 #include "text.h"
 #include "image.h"

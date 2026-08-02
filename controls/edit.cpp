@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-only
 // Copyright (C) 2024 Alibek Omarov
 
+#include <stdarg.h>
+#include "vgui_internal.h"
+#include <stdio.h>
+
 #include "controls/edit.h"
 
 using namespace vgui;

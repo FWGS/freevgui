@@ -1,4 +1,5 @@
 #include "platform/common/font.h"
+#include "vgui_internal.h"
 
 using namespace vgui;
 

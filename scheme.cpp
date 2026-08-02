@@ -2,6 +2,7 @@
 // Copyright (C) 2024 Alibek Omarov
 
 #include "scheme.h"
+#include "vgui_internal.h"
 #include "font.h"
 
 using namespace vgui;
