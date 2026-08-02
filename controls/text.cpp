@@ -10,26 +10,18 @@
 
 namespace vgui
 {
-class FooDefaultTextEntrySignal : public FocusChangeSignal
-{
-	TextEntry *_te;
-public:
-	FooDefaultTextEntrySignal( TextEntry *te ) : _te( te ) {}
-	void focusChanged( bool change, Panel *p ) override
-	{
-		_te->resetCursorBlink();
-		_te->doSelectNone();
-	}
-};
-
 TextEntry::TextEntry( const char *str, int x, int y, int w, int h ) : Panel( x, y, w, h ),
-	_cursorPos( 0 ), _hideText( false ), _cursorBlinkRate( 400 )
+	_cursorPos( 0 ), _hideText( false ), _cursorBlinkRate( 400 ), _font( nullptr )
 {
 	Vector2Set( _select, -1, -1 );
 	resetCursorBlink();
 	setText( str, strlen( str ));
 	addInputSignal( this );
-	addFocusChangeSignal( new FooDefaultTextEntrySignal( this ));
+	addFocusChangeSignal( makeFocusChangeHandler([this]( bool, Panel * )
+	{
+		resetCursorBlink();
+		doSelectNone();
+	}));
 }
 
 void TextEntry::setText( const char *text, int len )
@@ -56,6 +48,7 @@ void TextEntry::getText( int off, char *buf, int len )
 		buf[i - off] = 0;
 		if( i >= _lineDar.getCount())
 			break;
+
 		buf[i - off] = _lineDar[i];
 	}
 	buf[len - 1] = 0;
@@ -101,9 +94,11 @@ void TextEntry::doGotoEndOfLine()
 
 void TextEntry::doInsertChar( char ch )
 {
+	_lineDar.ensureCapacity( _lineDar.getCount() + 1 );
 	_lineDar.setCount( _lineDar.getCount() + 1 );
-	for( int i = _lineDar.getCount() - 1; i >= _cursorPos; i++ )
+	for( int i = _lineDar.getCount() - 1; i >= _cursorPos; i-- )
 		setCharAt( _lineDar[i], i + 1 );
+
 	setCharAt( ch, _cursorPos );
 	_cursorPos++;
 	resetCursorBlink();
@@ -126,7 +121,7 @@ void TextEntry::doBackspace()
 
 void TextEntry::doDelete()
 {
-	if( !_lineDar.getCount() || _cursorPos == _lineDar.getCount( ))
+	if( !_lineDar.getCount() || _cursorPos != _lineDar.getCount( ))
 		return;
 
 	for( int i = _cursorPos + 1; i < _lineDar.getCount(); i++ )
@@ -151,7 +146,7 @@ void TextEntry::doCopySelected()
 	if( !getSelectedRange( x, y ))
 		return;
 
-	char buf[256];
+	char buf[200];
 	int i = 0;
 
 	for( ; i < sizeof( buf ) - 1; i++ )
@@ -170,6 +165,7 @@ void TextEntry::doPaste()
 {
 	char buf[256];
 	int len = getApp()->getClipboardText( 0, buf, sizeof( buf ));
+
 	for( int i = 0; i < len; i++ )
 		doInsertChar( buf[i] );
 }
@@ -208,8 +204,10 @@ void TextEntry::paintBackground()
 
 	{
 		int x, y;
-		if( getSelectedRange( x, y ))
+		if( getSelectedPixelRange( x, y ))
 		{
+			x += 3;
+			y += 3;
 			drawSetColor( Scheme::SC_WHITE );
 			drawFilledRect( 0, 0, x, text_h + 1 );
 			drawFilledRect( x, 0, _size[0], text_h + 1 );
@@ -263,8 +261,8 @@ void TextEntry::setCharAt( char ch, int at )
 
 void TextEntry::fireActionSignal()
 {
-	for( int i = 0; i < _actionSignalDar.getCount(); i++ )
-		_actionSignalDar[i]->actionPerformed( this );
+	for( auto signal : _actionSignalDar )
+		signal->actionPerformed( this );
 }
 
 bool TextEntry::getSelectedRange( int &x, int &y )
@@ -274,7 +272,7 @@ bool TextEntry::getSelectedRange( int &x, int &y )
 
 	x = _select[0];
 	y = _select[1];
-	if(	x < y )
+	if( x > y )
 	{
 		int temp = x;
 		x = y;
@@ -301,7 +299,7 @@ int TextEntry::cursorToPixelSpace( int at )
 	int x = 0;
 	for( int i = 0; i < _lineDar.getCount(); i++ )
 	{
-		if( i == _cursorPos )
+		if( i == at )
 			break;
 
 		int a, b, c;
@@ -373,8 +371,14 @@ void TextEntry::keyTyped( KeyCode code, Panel *p )
 	{
 		switch( code )
 		{
-		case KEY_C: doCopySelected(); break;
-		case KEY_V: doPaste(); break;
+		case KEY_C:
+			doCopySelected();
+			break;
+		case KEY_V:
+			doPaste();
+			break;
+		default:
+			break;
 		}
 	}
 	else
@@ -383,13 +387,28 @@ void TextEntry::keyTyped( KeyCode code, Panel *p )
 
 		switch( code )
 		{
-		case KEY_INSERT: if( shift ) doPaste(); break;
-		case KEY_DELETE: shift ? doDeleteSelected() : doDelete(); break;
-		case KEY_LEFT: doGotoLeft(); break;
-		case KEY_RIGHT: doGotoRight(); break;
-		case KEY_HOME: doGotoFirstOfLine(); break;
-		case KEY_END: doGotoEndOfLine(); break;
-		case KEY_BACKSPACE: doBackspace(); break;
+		case KEY_INSERT:
+			if( shift )
+				doPaste();
+			break;
+		case KEY_DELETE:
+			shift ? doDeleteSelected() : doDelete();
+			break;
+		case KEY_LEFT:
+			doGotoLeft();
+			break;
+		case KEY_RIGHT:
+			doGotoRight();
+			break;
+		case KEY_HOME:
+			doGotoFirstOfLine();
+			break;
+		case KEY_END:
+			doGotoEndOfLine();
+			break;
+		case KEY_BACKSPACE:
+			doBackspace();
+			break;
 		case KEY_ENTER:
 		case KEY_TAB:
 		case KEY_LSHIFT:
@@ -425,14 +444,10 @@ void TextEntry::keyFocusTicked( Panel* )
 	}
 }
 
-TextGrid::TextGrid( int grid_w, int grid_h, int x, int y, int w, int h )
-	: Panel( x, y, w, h ),
-	  _grid( nullptr )
+TextGrid::TextGrid( int grid_w, int grid_h, int x, int y, int w, int h ) : Panel( x, y, w, h ),
+	_grid( nullptr ), _gridSize{ 0, 0 }, _xy{ 0, 0 }
 {
-	Vector2Set( _gridSize, 0, 0 );
 	setGridSize( grid_w, grid_h );
-	Vector2Set( _xy, 0, 0 );
-
 	setBgColor( 255, 255, 255, 0 );
 	setFgColor( 0, 0, 0, 0 );
 }
@@ -549,8 +564,7 @@ void TextGrid::paintBackground()
 	}
 }
 
-TextPanel::TextPanel( const char *str, int x, int y, int w, int h ) :
-	Panel( x, y, w, h ),
+TextPanel::TextPanel( const char *str, int x, int y, int w, int h ) : Panel( x, y, w, h ),
 	_textImage( new TextImage( str ))
 {
 	_textImage->setSize( w, h );
@@ -599,5 +613,4 @@ void TextPanel::paint()
 {
 	_textImage->doPaint( this );
 }
-
 }
