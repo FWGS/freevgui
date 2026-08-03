@@ -34,7 +34,10 @@ Scheme::Scheme()
 
 void Scheme::setColor(SchemeColor sc, int r, int g, int b, int a)
 {
-	Vector4Set( _color[sc], r, g, b, a );
+	_color[sc][0] = r;
+	_color[sc][1] = g;
+	_color[sc][2] = b;
+	_color[sc][3] = a;
 }
 
 void Scheme::getColor(SchemeColor sc, int &r, int &g, int &b, int &a)

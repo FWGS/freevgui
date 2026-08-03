@@ -37,7 +37,7 @@ public:
 		if( hour == 0 )
 			hour = 12;
 
-		Q_snprintf( text, sizeof( text ), "%d:%02d:%02d %s", hour, lt->tm_min, lt->tm_sec, lt->tm_hour < 12 ? "AM" : "PM" );
+		snprintf( text, sizeof( text ), "%d:%02d:%02d %s", hour, lt->tm_min, lt->tm_sec, lt->tm_hour < 12 ? "AM" : "PM" );
 		repaint();
 	}
 

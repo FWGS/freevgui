@@ -24,7 +24,6 @@ def build(bld):
 			'platform/common/*.cpp',
 			'platform/%s/*.cpp' % platform,
 		]),
-		use = 'public',
 		target   = 'vgui',
 		features = 'cxx',
 		includes = ['.', 'miniutl'],

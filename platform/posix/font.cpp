@@ -10,7 +10,7 @@ FontPlat::FontPlat( const char *name, int tall, int wide, float rotation, int we
 {
 	m_bBitmapFont = false;
 
-	Q_strncpy( m_szName, name, sizeof( m_szName ));
+	vgui_strcpy( m_szName, sizeof( m_szName ), name );
 	m_bAntiAliased = false;
 	m_bRotary = false;
 	m_bAdditive = false;
@@ -36,7 +36,7 @@ bool FontPlat::ExtendedABCWidthsCacheLessFunc( const abc_cache_t &lhs, const abc
 
 bool FontPlat::equals( const char *name, int tall, int wide, float rotation, int weight, bool italic, bool underline, bool strikeout, bool symbol )
 {
-	return !Q_stricmp( name, m_szName ) && m_iTall == tall && m_iWeight == weight && m_bUnderlined == underline;
+	return !strcmp( name, m_szName ) && m_iTall == tall && m_iWeight == weight && m_bUnderlined == underline;
 }
 
 void FontPlat::getCharRGBA( int ch, int rgbaX, int rgbaY, int rgbaWide, int rgbaTall, unsigned char *rgba )

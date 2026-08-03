@@ -288,7 +288,7 @@ char App::getKeyCodeChar( KeyCode code, bool shift )
 
 void App::getKeyCodeText( KeyCode code, char *dst, int size )
 {
-	Q_strncpy( dst, staticKeyTrans[code] + 2, size );
+	vgui_strcpy( dst, size, staticKeyTrans[code] + 2 );
 }
 
 int App::getClipboardTextCount()

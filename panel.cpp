@@ -23,7 +23,8 @@ Panel::Panel() : Panel( 0, 0, 64, 64 ) {}
 
 void Panel::setPos( int x, int y )
 {
-	Vector2Set( _pos, x, y );
+	_pos[0] = x;
+	_pos[1] = y;
 }
 
 void Panel::getPos(int &x, int &y)
@@ -36,7 +37,8 @@ void Panel::setSize( int w, int h )
 {
 	w = Q_max( w, _minimumSize[0] );
 	h = Q_max( h, _minimumSize[1] );
-	Vector2Set( _size, w, h );
+	_size[0] = w;
+	_size[1] = h;
 }
 
 void Panel::getSize( int &w, int &h )
@@ -293,7 +295,8 @@ Cursor *Panel::getCursor()
 
 void Panel::setMinimumSize(int w, int h)
 {
-	Vector2Set( _minimumSize, w, h );
+	_minimumSize[0] = w;
+	_minimumSize[1] = h;
 }
 
 void Panel::getMinimumSize(int &w, int &h)
@@ -419,7 +422,8 @@ void Panel::getPaintSize( int &w, int &h )
 
 void Panel::setPreferredSize(int w, int h)
 {
-	Vector2Set( _preferredSize, w, h );
+	_preferredSize[0] = w;
+	_preferredSize[1] = h;
 }
 
 void Panel::getPreferredSize(int &w, int &h)
@@ -485,7 +489,7 @@ void Panel::getPersistanceText(char *buf, int len)
 {
 	int x, y, w, h;
 	getBounds( x, y, w, h );
-	Q_snprintf( buf, len, "->setBounds(%d, %d, %d, %d);\n", x, y, w, h );
+	snprintf( buf, len, "->setBounds(%d, %d, %d, %d);\n", x, y, w, h );
 }
 
 void Panel::applyPersistanceText(const char *)
@@ -710,19 +714,24 @@ void Panel::drawTexturedRect( int x0, int y0, int x1, int y1 )
 
 void Panel::solve()
 {
-	Vector2Copy( _pos, _loc );
+	_loc[0] = _pos[0];
+	_loc[1] = _pos[1];
 
 	if( _parent )
 	{
 		int inset[4];
 		_parent->getInset( inset[0], inset[1], inset[2], inset[3] );
 
-		Vector2Add( _loc, _parent->_loc, _loc );
-		Vector2Add( _loc, inset, _loc );
+		_loc[0] = _loc[0] + _parent->_loc[0];
+		_loc[1] = _loc[1] + _parent->_loc[1];
+		_loc[0] = _loc[0] + inset[0];
+		_loc[1] = _loc[1] + inset[1];
 	}
 
-	Vector2Copy( _loc, _clipRect );
-	Vector2Add( _loc, _size, &_clipRect[2] );
+	_clipRect[0] = _loc[0];
+	_clipRect[1] = _loc[1];
+	_clipRect[2] = _loc[0] + _size[0];
+	_clipRect[3] = _loc[1] + _size[1];
 
 	if( _parent )
 	{
@@ -964,14 +973,18 @@ void Panel::internalSetCursor()
 
 void Panel::init( int x, int y, int w, int h )
 {
-	Vector2Set( _loc, 0, 0 );
-	Vector2Set( _pos, x, y );
-	Vector2Set( _size, w, h );
+	_loc[0] = 0;
+	_loc[1] = 0;
+	_pos[0] = x;
+	_pos[1] = y;
+	_size[0] = w;
+	_size[1] = h;
 	_needsRepaint = false;
 	_parent = nullptr;
 	_surfaceBase = nullptr;
 	_visible = true;
-	Vector2Set( _minimumSize, 0, 0 );
+	_minimumSize[0] = 0;
+	_minimumSize[1] = 0;
 	_cursor = nullptr;
 	_schemeCursor = static_cast<Scheme::SchemeCursor>( Cursor::DC_ARROW );
 	_border = nullptr;

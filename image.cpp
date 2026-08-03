@@ -37,7 +37,10 @@ void Color::init()
 
 void Color::setColor( int r, int g, int b, int a )
 {
-	Vector4Set( _color, r, g, b, a );
+	_color[0] = r;
+	_color[1] = g;
+	_color[2] = b;
+	_color[3] = a;
 	_schemeColor = Scheme::SC_USER;
 }
 
@@ -386,7 +389,7 @@ bool BitmapTGA::loadTGA( InputStream *is, bool invertAlpha )
 				DIS_READ( pkthdr, readUChar );
 				pktsize = ( pkthdr & 0x7f ) + 1;
 
-				if( FBitSet( pkthdr, BIT( 7 )))
+				if( pkthdr & 0x80 )
 				{
 					unsigned char color[4];
 

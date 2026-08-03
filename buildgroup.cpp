@@ -63,8 +63,8 @@ void BuildGroup::copyPropertiesToClipboard()
 		char buf[512];
 		_panelDar[i]->getPersistanceText( buf, sizeof( buf ));
 
-		Q_strncat( text, _panelNameDar[i], sizeof( text ));
-		Q_strncat( text, buf, sizeof( text ));
+		strncat( text, _panelNameDar[i], sizeof( text ));
+		strncat( text, buf, sizeof( text ));
 	}
 
 	App::getInstance()->setClipboardText( text, strlen( text ));
@@ -141,10 +141,12 @@ void BuildGroup::mousePressed( MouseCode code, Panel *p )
 	p->requestFocus();
 
 	p->getApp()->getCursorPos( x, y );
-	Vector2Set( _dragStartCursorPos, x, y );
+	_dragStartCursorPos[0] = x;
+	_dragStartCursorPos[1] = y;
 
 	p->getPos( x, y );
-	Vector2Set( _dragStartPanelPos, x, y );
+	_dragStartPanelPos[0] = x;
+	_dragStartPanelPos[1] = y;
 
 	p->getApp()->setMouseCapture( p );
 	if( _currentPanel != p )

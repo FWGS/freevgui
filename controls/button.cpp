@@ -291,14 +291,14 @@ void Button::setButtonBorderEnabled( bool enable )
 void Button::setMouseClickEnabled( MouseCode code, bool enable )
 {
 	if( enable )
-		SetBits( _mouseClickMask, (int)( code + 1 ));
+		_mouseClickMask |= (int)( code + 1 );
 	else
-		ClearBits( _mouseClickMask, (int)( code + 1 ));
+		_mouseClickMask &= ~(int)( code + 1 );
 }
 
 bool Button::isMouseClickEnabled( MouseCode code )
 {
-	return FBitSet( _mouseClickMask, (int)( code + 1 ));
+	return ( _mouseClickMask & (int)( code + 1 )) != 0;
 }
 
 void Button::fireActionSignal()

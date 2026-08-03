@@ -13,7 +13,8 @@ namespace vgui
 TextEntry::TextEntry( const char *str, int x, int y, int w, int h ) : Panel( x, y, w, h ),
 	_cursorPos( 0 ), _hideText( false ), _cursorBlinkRate( 400 ), _font( nullptr )
 {
-	Vector2Set( _select, -1, -1 );
+	_select[0] = -1;
+	_select[1] = -1;
 	resetCursorBlink();
 	setText( str, strlen( str ));
 	addInputSignal( this );
@@ -460,7 +461,8 @@ void TextGrid::setGridSize( int w, int h )
 	delete[] _grid;
 	_grid = new char[w * h * 7];
 	memset( _grid, 0, w * h * 7 );
-	Vector2Set( _gridSize, w, h );
+	_gridSize[0] = w;
+	_gridSize[1] = h;
 }
 
 void TextGrid::newLine()
@@ -490,7 +492,8 @@ void TextGrid::newLine()
 
 void TextGrid::setXY( int x, int y )
 {
-	Vector2Set( _xy, x, y );
+	_xy[0] = x;
+	_xy[1] = y;
 }
 
 int TextGrid::vprintf( const char *fmt, va_list va )

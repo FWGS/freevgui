@@ -68,9 +68,11 @@ bool Surface::setFullscreenMode( int w, int h, int bpp )
 		return true;
 
 	int info[3];
-	VectorSet( info, w, h, bpp );
+	info[0] = w;
+	info[1] = h;
+	info[2] = bpp;
 
-	if( VectorCompare( _plat->fullscreenInfo, info ))
+	if( _plat->fullscreenInfo[0] == info[0] && _plat->fullscreenInfo[1] == info[1] && _plat->fullscreenInfo[2] == info[2] )
 		return true;
 
 	if( _modeInfoDar.getCount() == 0 )
@@ -213,7 +215,12 @@ void Surface::pushMakeCurrent( Panel *panel, bool useInsets )
 	panel->getInset( inset[0], inset[1], inset[2], inset[3] );
 
 	if( !useInsets )
-		Vector4Set( inset, 0, 0, 0, 0 );
+	{
+		inset[0] = 0;
+		inset[1] = 0;
+		inset[2] = 0;
+		inset[3] = 0;
+	}
 
 	getPanel()->getAbsExtents( absThis[0], absThis[1], absThis[2], absThis[3] );
 	panel->getAbsExtents( absPanel[0], absPanel[1], absPanel[2], absPanel[3] );

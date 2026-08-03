@@ -61,7 +61,7 @@ SurfaceBase::~SurfaceBase()
 void SurfaceBase::addModeInfo(int w, int h, int bpp)
 {
 	char buf[256];
-	Q_snprintf( buf, sizeof( buf ), "%dx%dx%d", w, h, bpp );
+	snprintf( buf, sizeof( buf ), "%dx%dx%d", w, h, bpp );
 
 	_modeInfoDar.putElement( vgui_strdup( buf ));
 }

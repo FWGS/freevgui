@@ -48,11 +48,11 @@ Label::Label( const char *str ) :
 Label::Label( const char *str, int x, int y ) :
 	Panel( x, y, 10, 10 )
 {
-	init( Q_strlen( str ) + 1, str, true );
+	init( strlen( str ) + 1, str, true );
 }
 
 Label::Label( const char *str, int x, int y, int w, int h ) :
-	Label( Q_strlen( str ) + 1, str, x, y, w, h )
+	Label( strlen( str ) + 1, str, x, y, w, h )
 {
 
 }
@@ -90,7 +90,7 @@ void Label::setText( const char *str, ... )
 	}
 
 	va_start( va, str );
-	int len = Q_vsnprintf( buf, sizeof( buf ), str, va );
+	int len = vsnprintf( buf, sizeof( buf ), str, va );
 	va_end( va );
 
 	if( len < 0 )
@@ -359,7 +359,7 @@ void IntLabel::paintBackground()
 {
 	char buf[50];
 
-	Q_snprintf( buf, sizeof( buf ), "%d", _value );
+	snprintf( buf, sizeof( buf ), "%d", _value );
 	Panel::paintBackground();
 	drawSetTextFont( Scheme::SF_PRIMARY1 );
 	drawSetTextColor( Scheme::SC_BLACK );

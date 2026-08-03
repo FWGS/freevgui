@@ -45,7 +45,8 @@ Slider::Slider( int x, int y, int w, int h, bool vertical ) :
 	_rangeWindowEnabled( false ),
 	_buttonOffset( 0 )
 {
-	Vector2Set( _range, 0, 299 );
+	_range[0] = 0;
+	_range[1] = 299;
 	recomputeNobPosFromValue();
 	addInputSignal( new FooDefaultSliderSignal( this ));
 }
@@ -83,7 +84,8 @@ void Slider::setRange(int imin, int imax)
 	if( imax < imin )
 		imax = imin;
 
-	Vector2Set( _range, imin, imax );
+	_range[0] = imin;
+	_range[1] = imax;
 }
 
 void Slider::getRange(int &imin, int &imax)
@@ -260,8 +262,10 @@ void Slider::privateMousePressed( MouseCode code, Panel *p )
 
 	_dragging = true;
 	getApp()->setMouseCapture( this );
-	Vector2Copy( _nobPos, _nobDragStartPos );
-	Vector2Set( _dragStartPos, mx, my );
+	_nobDragStartPos[0] = _nobPos[0];
+	_nobDragStartPos[1] = _nobPos[1];
+	_dragStartPos[0] = mx;
+	_dragStartPos[1] = my;
 }
 
 void Slider::privateMouseReleased( MouseCode code, Panel *p )
@@ -591,7 +595,8 @@ void ScrollPanel::setScrollBarVisible( bool h, bool v )
 
 void ScrollPanel::setScrollBarAutoVisible( bool h, bool v )
 {
-	Vector2Set( _autoVisible, h, v );
+	_autoVisible[0] = h;
+	_autoVisible[1] = v;
 	validate();
 }
 

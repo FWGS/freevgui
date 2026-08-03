@@ -27,7 +27,7 @@
 	#define FORMAT_CHECK( x )
 #endif
 
-#ifdef XASH_64BIT
+#if XASH_64BIT || __LP64__
 #define CHECK_STRUCT_SIZE( type, size ) // to be filled
 #else
 #define CHECK_STRUCT_SIZE( type, size ) \

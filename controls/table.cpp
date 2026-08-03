@@ -80,7 +80,8 @@ void TablePanel::setColumnCount( int count )
 void TablePanel::setGridVisible( bool h, bool v )
 {
 	// shipped bug: horizontal is stored into both bytes, vertical is ignored
-	Vector2Set( _gridVisible, h, h );
+	_gridVisible[0] = h;
+	_gridVisible[1] = h;
 }
 
 void TablePanel::setGridSize( int w, int h )
@@ -107,7 +108,8 @@ void TablePanel::setSelectedCell( int column, int row )
 		repaint();
 		stopCellEditing();
 	}
-	Vector2Set( _selectedCell, column, row );
+	_selectedCell[0] = column;
+	_selectedCell[1] = row;
 }
 
 void TablePanel::getSelectedCell( int &column, int &row )
@@ -150,7 +152,8 @@ void TablePanel::setEditableCell( int column, int row )
 		if( _editableCellPanel )
 			_editableCellPanel->setParent( this );
 	}
-	Vector2Set( _editableCell, column, row );
+	_editableCell[0] = column;
+	_editableCell[1] = row;
 }
 
 void TablePanel::stopCellEditing()
@@ -158,7 +161,8 @@ void TablePanel::stopCellEditing()
 	if( _editableCellPanel )
 		_editableCellPanel->setParent( nullptr );
 
-	Vector2Set( _editableCell, -1, -1 );
+	_editableCell[0] = -1;
+	_editableCell[1] = -1;
 	_editableCellPanel = nullptr;
 }
 
@@ -200,7 +204,8 @@ Panel *TablePanel::isWithinTraverse( int x, int y )
 
 			if( withinPanel == _fakeInputPanel )
 			{
-				Vector2Set( _mouseOverCell, i, j );
+				_mouseOverCell[0] = i;
+				_mouseOverCell[1] = j;
 				return p;
 			}
 
@@ -305,7 +310,8 @@ void TablePanel::paint()
 		}
 	}
 
-	Vector2Set( _virtualSize, 0, 0 );
+	_virtualSize[0] = 0;
+	_virtualSize[1] = 0;
 
 	for( int i = 0; i < _columnDar.getCount(); i++ )
 	{

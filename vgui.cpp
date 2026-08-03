@@ -75,9 +75,19 @@ int vgui::vgui_dprintf2( const char* fmt, ... )
 	return ret;
 }
 
-void vgui::vgui_strcpy( char *dst, int len, const char *src )
+void vgui::vgui_strcpy( char *dst, int size, const char *src )
 {
-	Q_strncpy( dst, src, len );
+	if( !dst || !src || !size )
+		return;
+
+	size_t len = strlen( src );
+
+	if( len >= size ) // check if truncate
+	{
+		memcpy( dst, src, size );
+		dst[size - 1] = 0;
+	}
+	else memcpy( dst, src, len + 1 );
 }
 
 char *vgui::vgui_strdup( const char *src )
@@ -85,7 +95,7 @@ char *vgui::vgui_strdup( const char *src )
 	size_t len = strlen( src ) + 1;
 	char *dst = new char[len];
 
-	Q_strncpy( dst, src, len );
+	vgui_strcpy( dst, len, src );
 
 	return dst;
 }

@@ -43,7 +43,7 @@ bool Load32BitTGA( FileImageStream *fp, FileImage *image )
 			if( curOut + runLength > image->m_Width )
 				return false;
 
-			if( FBitSet( packetHeader, BIT( 7 )))
+			if( packetHeader & 0x80 )
 			{
 				uint32_t color;
 				fp->Read( &color, sizeof( color ));
@@ -79,7 +79,7 @@ bool Load32BitTGA( FileImageStream *fp, FileImage *image )
 
 static void WriteRun( unsigned char *pColor, FILE *fp, int runLength )
 {
-	uint8_t runCount = ( runLength - 1 ) | BIT( 7 );
+	uint8_t runCount = ( runLength - 1 ) | 0x80;
 
 	fwrite( &runCount, 1, 1, fp );
 	fwrite( pColor, 1, 4, fp );
