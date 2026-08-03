@@ -469,7 +469,6 @@ void Panel::repaintParent()
 
 Panel *Panel::createPropertyPanel()
 {
-#if 0
 	TreeFolder *root = new TreeFolder( "Properties" );
 	TreeFolder *folder = new TreeFolder( "Panel" );
 
@@ -480,10 +479,6 @@ Panel *Panel::createPropertyPanel()
 	root->addChild( folder );
 
 	return root;
-#else
-	vgui_printf( "%s: UNDONE\n", PRETTY_FUNCTION );
-	return NULL;
-#endif
 }
 
 void Panel::getPersistanceText(char *buf, int len)

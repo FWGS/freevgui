@@ -3,6 +3,7 @@
 
 #include "button.h"
 #include "vgui_internal.h"
+#include "treefolder.h"
 
 namespace vgui
 {
@@ -308,8 +309,14 @@ void Button::fireActionSignal()
 
 Panel *Button::createPropertyPanel()
 {
-	vgui_printf( "%s: UNDONE\n", PRETTY_FUNCTION );
-	return NULL;
+	Panel *p = Label::createPropertyPanel();
+
+	TreeFolder *tf = new TreeFolder( "Button" );
+	p->addChild( tf );
+	tf->addChild( new Label( "setSelected" ));
+	tf->addChild( new Label( "setArmed" ));
+
+	return p;
 }
 
 ToggleButton::ToggleButton( const char *text, int x, int y ) :

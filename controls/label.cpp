@@ -149,7 +149,6 @@ void Label::setContentAlignment( Alignment alignment )
 
 Panel *Label::createPropertyPanel()
 {
-#if 0
 	Panel *p = Panel::createPropertyPanel();
 
 	TreeFolder *tf = new TreeFolder( "Label" );
@@ -158,10 +157,6 @@ Panel *Label::createPropertyPanel()
 	tf->addChild( new Label( "setContentAlignment" ));
 
 	return p;
-#else
-	vgui_printf( "%s: UNDONE\n", PRETTY_FUNCTION );
-	return 0;
-#endif
 }
 
 void Label::setFgColor( int r, int g, int b, int a )
