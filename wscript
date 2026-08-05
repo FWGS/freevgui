@@ -21,6 +21,7 @@ def fix_freevgui_link(self):
 	self.env.LIB = [':vgui.so' if lib == 'vgui' else lib for lib in self.env.LIB]
 
 def build(bld):
+	install_path = None if bld.env.FREEVGUI_NO_INSTALL else bld.env.LIBDIR
 	platform = 'win32' if bld.env.DEST_OS == 'win32' else 'posix'
 
 	bld.shlib(
@@ -31,11 +32,12 @@ def build(bld):
 			'platform/common/*.cpp',
 			'platform/%s/*.cpp' % platform,
 		]),
-		target = 'vgui yy_thunks',
+		target = 'vgui',
 		features = 'cxx',
 		includes = ['.', 'miniutl'],
 		export_includes = '.',
 		rpath = '$ORIGIN',
-		install_path = bld.env.LIBDIR,
+		use = 'yy_thunks',
+		install_path = install_path,
 		subsystem = bld.env.MSVC_SUBSYSTEM
 	)
