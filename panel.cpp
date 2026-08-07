@@ -818,7 +818,7 @@ void Panel::paintBuildOverlay()
 	drawFilledRect( 0,     0,     w, 2     );
 	drawFilledRect( 0,     h - 2, w, h     );
 	drawFilledRect( 0,     2,     2, h - 2 );
-	drawFilledRect( h - 2, 2,     w, h - 2 );
+	drawFilledRect( w - 2, 2,     w, h - 2 );
 }
 
 void Panel::internalCursorMoved( int x, int y )
@@ -927,6 +927,27 @@ void Panel::internalKeyPressed( KeyCode code )
 
 void Panel::internalKeyTyped( KeyCode code )
 {
+	if( _autoFocusNavEnabled && _focusNavGroup )
+	{
+		switch( code )
+		{
+		case KEY_TAB:
+			if( isKeyDown( KEY_LSHIFT ) || isKeyDown( KEY_RSHIFT ))
+				_focusNavGroup->requestFocusPrev();
+			else
+				_focusNavGroup->requestFocusNext();
+			break;
+		case KEY_UP:
+			_focusNavGroup->requestFocusPrev();
+			break;
+		case KEY_DOWN:
+			_focusNavGroup->requestFocusNext();
+			break;
+		default:
+			break;
+		}
+	}
+
 	if( !isBuildGroupEnabled( ))
 	{
 		for( int i = 0; i < _inputSignalDar.getCount(); i++ )
