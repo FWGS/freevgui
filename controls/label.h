@@ -45,14 +45,7 @@ protected:
 
 	virtual void paint() override;
 
-	virtual void recomputeMinimumSize()
-	{
-		int w, h;
-		getContentSize( w, h );
-		setPreferredSize( w, h );
-		if( _contentFitted )
-			setSize( w, h );
-	}
+	virtual void recomputeMinimumSize();
 
 	bool _textEnabled, _imageEnabled, _contentFitted;
 	Alignment _textAlignment, _contentAlignment;

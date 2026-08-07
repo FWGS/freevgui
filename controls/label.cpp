@@ -180,6 +180,15 @@ void Label::setContentFitted( bool fit )
 	repaint();
 }
 
+void Label::recomputeMinimumSize()
+{
+	int w, h;
+	getContentSize( w, h );
+	setPreferredSize( w, h );
+	if( _contentFitted )
+		setSize( w, h );
+}
+
 void Label::computeAlignment( int &tx0, int &ty0, int &tx1, int &ty1, int &ix0, int &iy0, int &ix1, int &iy1, int &minX, int &minY, int &maxX, int &maxY )
 {
 	int w, h;
