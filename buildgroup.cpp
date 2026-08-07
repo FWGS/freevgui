@@ -110,8 +110,8 @@ void BuildGroup::cursorMoved( int x, int y, Panel *p )
 	}
 	else
 	{
-		p->setPos( _dragStartPanelPos[0] + ( x - _dragStartPanelPos[0] ),
-				_dragStartPanelPos[1] + ( y - _dragStartPanelPos[1] ));
+		p->setPos( _dragStartPanelPos[0] + ( x - _dragStartCursorPos[0] ),
+				_dragStartPanelPos[1] + ( y - _dragStartCursorPos[1] ));
 	}
 	applySnap( p );
 
@@ -204,7 +204,7 @@ void BuildGroup::keyTyped( KeyCode code, Panel *p )
 		if( shiftDown )
 			p->setSize( w + snapX, h + snapY );
 		else
-			p->setPos( x + snapX, h + snapY );
+			p->setPos( x + snapX, y + snapY );
 
 		applySnap( p );
 		p->repaint();
