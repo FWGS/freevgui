@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright (C) 2024-2026 Alibek Omarov
+
 #ifndef PLATFORM_COMMON_FONT_H
 #define PLATFORM_COMMON_FONT_H
 #include "font.h"

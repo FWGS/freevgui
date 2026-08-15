@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2024 Alibek Omarov
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright (C) 2024-2026 Alibek Omarov
 
 #include "table.h"
 #include "vgui_internal.h"

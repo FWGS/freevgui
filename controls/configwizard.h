@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2024 Alibek Omarov
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright (C) 2024-2026 Alibek Omarov
 
 #ifndef VGUI_CONFIGWIZARD_H
 #define VGUI_CONFIGWIZARD_H
