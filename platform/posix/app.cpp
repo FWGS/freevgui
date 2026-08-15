@@ -6,15 +6,6 @@
 
 using namespace vgui;
 
-class SurfacePlat
-{
-public:
-	int bitmapSize[2];
-	int restoreInfo[4];
-	bool isFullscreen;
-	int fullscreenInfo[3];
-};
-
 void App::internalSetMouseArena(int, int, int, int, bool)
 {
 	// stub

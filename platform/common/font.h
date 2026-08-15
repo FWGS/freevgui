@@ -4,13 +4,12 @@
 #ifndef PLATFORM_COMMON_FONT_H
 #define PLATFORM_COMMON_FONT_H
 #include "font.h"
-#include "utlrbtree.h"
-#include "platform/common/fileimage.h"
-
-class SurfacePlat;
+#include "fileimage.h"
 
 namespace vgui
 {
+class SurfacePlat;
+
 class BaseFontPlat
 {
 public:
@@ -43,63 +42,6 @@ public:
 	int m_BitmapCharHeight;
 	unsigned char *m_pBitmap;
 	int GetLineWidth();
-};
-
-class FontPlat : public BaseFontPlat
-{
-public:
-	int bufSize[2];
-	unsigned char *buf;
-
-	VFontData m_BitmapFont;
-	bool m_bBitmapFont;
-
-protected:
-	char m_szName[32];
-	int m_iTall;
-	int m_iWeight;
-	int m_iFlags;
-	bool m_bAntiAliased;
-	bool m_bRotary;
-	bool m_bAdditive;
-	int m_iDropShadowOffset;
-	bool m_bUnderlined;
-	int m_iOutlineSize;
-	int m_iHeight;
-	int m_iMaxCharWidth;
-	int m_iAscent;
-
-	struct abc_t
-	{
-		short int b;
-		char a;
-		char c;
-	};
-
-	struct abc_cache_t
-	{
-		wchar_t wch;
-		abc_t abc;
-	};
-
-	CUtlRBTree<abc_cache_t, short unsigned int> m_ExtendedABCWidthsCache;
-	int m_iScanLines;
-	int m_iBlur;
-	float *m_pGaussianDistribution;
-
-public:
-	FontPlat( const char *, int, int, float, int, bool, bool, bool, bool );
-	virtual ~FontPlat();
-	virtual bool equals( const char *, int, int, float, int, bool, bool, bool, bool );
-	virtual void getCharRGBA( int, int, int, int, int, unsigned char * );
-	virtual void getCharABCwide( int ch , int &a, int &b, int &c );
-	virtual int getTall();
-	virtual int getWide();
-	virtual void drawSetTextFont( SurfacePlat* );
-
-protected:
-	void CreateFontList();
-	static bool ExtendedABCWidthsCacheLessFunc( const abc_cache_t&, const abc_cache_t& );
 };
 
 class FontPlat_Bitmap : public BaseFontPlat

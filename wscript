@@ -24,12 +24,11 @@ def build(bld):
 	platform = 'win32' if bld.env.DEST_OS == 'win32' else 'posix'
 	source = bld.path.ant_glob([
 		'*.cpp',
-		'miniutl/utlmemory.cpp',
 		'controls/*.cpp',
 		'platform/common/*.cpp',
 		'platform/%s/*.cpp' % platform,
 	])
-	includes = ['.', 'miniutl']
+	includes = ['.']
 
 	install_path = None if bld.env.FREEVGUI_NO_INSTALL else bld.env.LIBDIR
 	fn = bld.stlib if bld.env.USE_STATIC_FREEVGUI else bld.shlib

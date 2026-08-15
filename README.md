@@ -41,10 +41,3 @@ FreeVGUI would not exist without that research, so the copyright notice is
 carried here and in `LICENSE`.
 
 Copyright (c) 2016-2020 Nagist.
-
-This code does incorporate GameNetworkingSockets code (see MiniUTL library),
-licensed under 3-clause BSD.
-
-Copyright (c) 2018, Valve Software.
-
-

@@ -3,12 +3,52 @@
 
 #include "font.h"
 #include "platform/common/font.h"
-#include "platform/common/fileimage.h"
+#include "fileimage.h"
 
 using namespace vgui;
 
 static int staticFontId = 100;
 static Dar<vgui::BaseFontPlat*> staticFontPlatDar;
+
+class StubFontPlat : public BaseFontPlat
+{
+public:
+	StubFontPlat( const char *name, int tall, int wide, float rotation, int weight, bool italic, bool underline, bool strikeout, bool symbol ) :
+		tall( tall ), wide( wide )
+	{
+	}
+
+	virtual bool equals( const char *name, int tall, int wide, float rotation, int weight, bool italic, bool underline, bool strikeout, bool symbol )
+	{
+		return this->tall == tall && this->wide == wide;
+	}
+
+	virtual void getCharRGBA( int, int, int, int, int, unsigned char * )
+	{
+	}
+
+	virtual void getCharABCwide( int ch , int &a, int &b, int &c )
+	{
+		a = b = c = 0;
+	}
+
+	virtual int getTall()
+	{
+		return tall;
+	}
+
+	virtual int getWide()
+	{
+		return wide;
+	}
+
+	virtual void drawSetTextFont( SurfacePlat* )
+	{
+	}
+
+private:
+	int tall, wide;
+};
 
 void vgui::Font_Reset( void )
 {
@@ -56,7 +96,7 @@ void Font::init( const char *name, void *pFileData, int fileDataLen, int tall, i
 
 		if( !_plat )
 		{
-			_plat = new FontPlat( name, tall, wide, rotation, weight, italic, underline, strikeout, symbol );
+			_plat = new StubFontPlat( name, tall, wide, rotation, weight, italic, underline, strikeout, symbol );
 			staticFontPlatDar.addElement( _plat );
 			_id = staticFontId++;
 		}

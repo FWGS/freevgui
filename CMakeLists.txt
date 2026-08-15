@@ -35,15 +35,13 @@ file(GLOB FREEVGUI_SOURCES
 	platform/common/*.cpp
 	platform/${FREEVGUI_PLATFORM}/*.cpp)
 
-list(APPEND FREEVGUI_SOURCES miniutl/utlmemory.cpp)
-
 if(USE_STATIC_FREEVGUI)
 	add_library(vgui STATIC ${FREEVGUI_SOURCES})
 else()
 	add_library(vgui SHARED ${FREEVGUI_SOURCES})
 endif()
 
-target_include_directories(vgui PRIVATE . miniutl)
+target_include_directories(vgui PRIVATE .)
 
 set_target_properties(vgui PROPERTIES
 	POSITION_INDEPENDENT_CODE 1

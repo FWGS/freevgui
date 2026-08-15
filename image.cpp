@@ -7,7 +7,7 @@
 #include "panel.h"
 #include "surface.h"
 #include "inputstream.h"
-#include "platform/common/fileimage.h"
+#include "fileimage.h"
 #include "font.h"
 
 using namespace vgui;
