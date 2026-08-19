@@ -37,7 +37,11 @@ file(GLOB FREEVGUI_SOURCES
 
 list(APPEND FREEVGUI_SOURCES miniutl/utlmemory.cpp)
 
-add_library(vgui SHARED ${FREEVGUI_SOURCES})
+if(USE_STATIC_FREEVGUI)
+	add_library(vgui STATIC ${FREEVGUI_SOURCES})
+else()
+	add_library(vgui SHARED ${FREEVGUI_SOURCES})
+endif()
 
 target_include_directories(vgui PRIVATE . miniutl)
 
@@ -47,6 +51,6 @@ set_target_properties(vgui PROPERTIES
 	INSTALL_RPATH "$ORIGIN")
 
 # freevgui must match original vgui library name: vgui.so (no lib prefix).
-if(NOT WIN32)
+if(NOT WIN32 AND NOT USE_STATIC_FREEVGUI)
 	set_target_properties(vgui PROPERTIES PREFIX "")
 endif()

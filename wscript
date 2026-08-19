@@ -15,26 +15,30 @@ def configure(conf):
 @feature('fix_freevgui_link')
 @after_method('process_use')
 def fix_freevgui_link(self):
-	if self.env.DEST_OS in ('win32', 'darwin', 'android'):
+	if self.env.USE_STATIC_FREEVGUI or self.env.DEST_OS in ('win32', 'darwin', 'android'):
 		return
 
 	self.env.LIB = [':vgui.so' if lib == 'vgui' else lib for lib in self.env.LIB]
 
 def build(bld):
-	install_path = None if bld.env.FREEVGUI_NO_INSTALL else bld.env.LIBDIR
 	platform = 'win32' if bld.env.DEST_OS == 'win32' else 'posix'
+	source = bld.path.ant_glob([
+		'*.cpp',
+		'miniutl/utlmemory.cpp',
+		'controls/*.cpp',
+		'platform/common/*.cpp',
+		'platform/%s/*.cpp' % platform,
+	])
+	includes = ['.', 'miniutl']
 
-	bld.shlib(
-		source = bld.path.ant_glob([
-			'*.cpp',
-			'miniutl/utlmemory.cpp',
-			'controls/*.cpp',
-			'platform/common/*.cpp',
-			'platform/%s/*.cpp' % platform,
-		]),
+	install_path = None if bld.env.FREEVGUI_NO_INSTALL else bld.env.LIBDIR
+	fn = bld.stlib if bld.env.USE_STATIC_FREEVGUI else bld.shlib
+
+	fn(
+		source = source,
 		target = 'vgui',
 		features = 'cxx',
-		includes = ['.', 'miniutl'],
+		includes = includes,
 		export_includes = '.',
 		rpath = '$ORIGIN',
 		use = 'yy_thunks',
