@@ -36,12 +36,27 @@ file(GLOB FREEVGUI_SOURCES
 	platform/${FREEVGUI_PLATFORM}/*.cpp)
 
 if(USE_STATIC_FREEVGUI)
+	file(GLOB FREEVGUI_XASH_SOURCES platform/xash3d-fwgs/*.cpp)
+	list(APPEND FREEVGUI_SOURCES ${FREEVGUI_XASH_SOURCES})
+	set(FREEVGUI_XASH_SUPPORT ON)
+endif()
+
+if(USE_STATIC_FREEVGUI)
 	add_library(vgui STATIC ${FREEVGUI_SOURCES})
 else()
 	add_library(vgui SHARED ${FREEVGUI_SOURCES})
 endif()
 
 target_include_directories(vgui PRIVATE .)
+
+if(FREEVGUI_XASH_SUPPORT)
+	target_include_directories(vgui PRIVATE ../engine)
+
+	# rename the entry point to what the engine looks for in the client library
+	if(USE_STATIC_FREEVGUI)
+		target_compile_definitions(vgui PRIVATE INTERNAL_VGUI_SUPPORT)
+	endif()
+endif()
 
 set_target_properties(vgui PROPERTIES
 	POSITION_INDEPENDENT_CODE 1

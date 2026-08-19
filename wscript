@@ -10,6 +10,9 @@ def configure(conf):
 		if conf.env.cxxshlib_PATTERN.startswith('lib'):
 			conf.env.cxxshlib_PATTERN = conf.env.cxxshlib_PATTERN[3:]
 
+	if conf.env.USE_STATIC_FREEVGUI:
+		conf.env.FREEVGUI_XASH_SUPPORT = True
+
 # freevgui must match original vgui library name: vgui.so.
 # however, Waf hardcodes -lvgui, failing vgui_support and client link to freevgui
 @feature('fix_freevgui_link')
@@ -29,6 +32,14 @@ def build(bld):
 		'platform/%s/*.cpp' % platform,
 	])
 	includes = ['.']
+	defines = []
+
+	if bld.env.FREEVGUI_XASH_SUPPORT:
+		source += bld.path.ant_glob('platform/xash3d-fwgs/*.cpp')
+		includes += ['../engine']
+		# rename the entry point to what the engine looks for in the client library
+		if bld.env.USE_STATIC_FREEVGUI:
+			defines += ['INTERNAL_VGUI_SUPPORT']
 
 	install_path = None if bld.env.FREEVGUI_NO_INSTALL else bld.env.LIBDIR
 	fn = bld.stlib if bld.env.USE_STATIC_FREEVGUI else bld.shlib
@@ -38,6 +49,7 @@ def build(bld):
 		target = 'vgui',
 		features = 'cxx',
 		includes = includes,
+		defines = defines,
 		export_includes = '.',
 		rpath = '$ORIGIN',
 		use = 'yy_thunks',
