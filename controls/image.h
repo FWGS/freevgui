@@ -19,7 +19,7 @@ protected:
 	Image* _image;
 };
 
-CHECK_STRUCT_SIZE( ImagePanel, 192 );
+CHECK_STRUCT_SIZE( ImagePanel, 192, 272, 272 );
 
 }
 

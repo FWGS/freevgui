@@ -36,7 +36,7 @@ private:
 	int  _dragSliderStartPos;
 	int  _dragSliderStartX;
 };
-CHECK_STRUCT_SIZE( HeaderPanel, 248 );
+CHECK_STRUCT_SIZE( HeaderPanel, 248, 344, 344 );
 
 };
 

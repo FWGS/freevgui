@@ -46,7 +46,7 @@ protected:
 	virtual void paintBackground() override;
 
 };
-CHECK_STRUCT_SIZE( Slider, 252 );
+CHECK_STRUCT_SIZE( Slider, 252, 328, 328 );
 
 class CLASSEXPORT ScrollBar : public Panel
 {
@@ -77,7 +77,7 @@ protected:
 	Dar<IntChangeSignal*> _intChangeSignalDar;
 	int _buttonPressedScrollValue;
 };
-CHECK_STRUCT_SIZE( ScrollBar, 216 );
+CHECK_STRUCT_SIZE( ScrollBar, 216, 312, 312 );
 
 class CLASSEXPORT ScrollPanel : public Panel
 {
@@ -104,7 +104,7 @@ private:
 	ScrollBar* _verticalScrollBar;
 	bool _autoVisible[2];
 };
-CHECK_STRUCT_SIZE( ScrollPanel, 208 );
+CHECK_STRUCT_SIZE( ScrollPanel, 208, 304, 304 );
 }
 
 #endif // VGUI_SCROLLBAR_H

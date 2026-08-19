@@ -16,7 +16,7 @@ public:
 	Menu( int, int );
 	virtual void addMenuItem( Panel* );
 };
-CHECK_STRUCT_SIZE( Menu, 188 );
+CHECK_STRUCT_SIZE( Menu, 188, 264, 264 );
 
 class CLASSEXPORT MenuItem : public Button
 {
@@ -26,7 +26,7 @@ public:
 protected:
 	Menu* _subMenu;
 };
-CHECK_STRUCT_SIZE( MenuItem, 244 );
+CHECK_STRUCT_SIZE( MenuItem, 244, 352, 352 );
 
 class CLASSEXPORT MenuSeparator : public Label
 {
@@ -35,7 +35,7 @@ public:
 protected:
 	virtual void paintBackground() override;
 };
-CHECK_STRUCT_SIZE( MenuSeparator, 208 );
+CHECK_STRUCT_SIZE( MenuSeparator, 208, 288, 288 );
 
 class CLASSEXPORT PopupMenu : public Menu
 {
@@ -44,7 +44,7 @@ public:
 	PopupMenu( int, int );
 	virtual void showModal( Panel* );
 };
-CHECK_STRUCT_SIZE( PopupMenu, 188 );
+CHECK_STRUCT_SIZE( PopupMenu, 188, 264, 264 );
 }
 
 #endif // VGUI_MENU_H

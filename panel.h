@@ -202,7 +202,7 @@ private:
 	bool _paintBackgroundEnabled;
 	bool _paintEnabled;
 };
-CHECK_STRUCT_SIZE( Panel, 188 );
+CHECK_STRUCT_SIZE( Panel, 188, 264, 264 );
 
 class CLASSEXPORT FocusNavGroup
 {
@@ -219,7 +219,7 @@ protected:
 	Dar<Panel*> _panelDar;
 	int _currentIndex;
 };
-CHECK_STRUCT_SIZE( FocusNavGroup, 20 );
+CHECK_STRUCT_SIZE( FocusNavGroup, 20, 32, 32 );
 
 }
 

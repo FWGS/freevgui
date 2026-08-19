@@ -25,7 +25,7 @@ protected:
 	Panel* _vpanel;
 	ScrollBar* _scroll;
 };
-CHECK_STRUCT_SIZE( ListPanel, 196 );
+CHECK_STRUCT_SIZE( ListPanel, 196, 280, 280 );
 }
 
 #endif // VGUI_LISTPANEL_H

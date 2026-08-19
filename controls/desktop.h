@@ -20,7 +20,7 @@ protected:
 	virtual void setName( const char* );
 	char* _name;
 };
-CHECK_STRUCT_SIZE( MiniApp, 8 );
+CHECK_STRUCT_SIZE( MiniApp, 8, 16, 16 );
 
 class CLASSEXPORT TaskBar : public Panel
 {
@@ -34,7 +34,7 @@ protected:
 	class Dar<Button*> _taskButtonDar;
 	class Panel* _tray;
 };
-CHECK_STRUCT_SIZE( TaskBar, 216 );
+CHECK_STRUCT_SIZE( TaskBar, 216, 304, 304 );
 
 class Desktop;
 class CLASSEXPORT DesktopIcon : public Panel
@@ -52,7 +52,7 @@ protected:
 	MiniApp* _miniApp;
 	Image*   _image;
 };
-CHECK_STRUCT_SIZE( DesktopIcon, 200 );
+CHECK_STRUCT_SIZE( DesktopIcon, 200, 288, 288 );
 
 class CLASSEXPORT Desktop : public Panel
 {
@@ -73,7 +73,7 @@ protected:
 	Dar<DesktopIcon*> _desktopIconDar;
 	int _cascade[2];
 };
-CHECK_STRUCT_SIZE( Desktop, 220 );
+CHECK_STRUCT_SIZE( Desktop, 220, 312, 312 );
 
 }
 

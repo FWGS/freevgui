@@ -55,7 +55,7 @@ protected:
 private:
 	void init( int len, const char *str, bool textFitted );
 };
-CHECK_STRUCT_SIZE( Label, 208 );
+CHECK_STRUCT_SIZE( Label, 208, 288, 288 );
 
 class CLASSEXPORT IntLabel : public Label, public IntChangeSignal
 {
@@ -68,7 +68,7 @@ protected:
 
 	int _value;
 };
-CHECK_STRUCT_SIZE( IntLabel, 216 );
+CHECK_STRUCT_SIZE( IntLabel, 216, 304, 304 );
 }
 
 #endif // VGUI_LABEL_H

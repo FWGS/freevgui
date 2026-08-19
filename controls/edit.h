@@ -49,7 +49,7 @@ protected:
 private:
 	virtual int spatialCharOffsetBetweenTwoLines( Dar<char>*, Dar<char>*, int );
 };
-CHECK_STRUCT_SIZE( EditPanel, 220 );
+CHECK_STRUCT_SIZE( EditPanel, 220, 304, 304 );
 }
 
 #endif // VGUI_EDITPANEL_H

@@ -50,7 +50,7 @@ public:
 	int _virtualSize[2];
 	bool _cellEditingEnabled;
 };
-CHECK_STRUCT_SIZE( TablePanel, 260 );
+CHECK_STRUCT_SIZE( TablePanel, 260, 360, 360 );
 }
 
 #endif // VGUI_TABLEPANEL_H

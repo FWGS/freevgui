@@ -21,7 +21,7 @@ private:
 	int   _segmentCount;
 	float _progress;
 };
-CHECK_STRUCT_SIZE( ProgressBar, 196 );
+CHECK_STRUCT_SIZE( ProgressBar, 196, 272, 272 );
 
 }
 

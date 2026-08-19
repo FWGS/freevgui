@@ -23,7 +23,7 @@ public:
 	virtual void addActionSignal( ActionSignal* );
 	virtual void fireActionSignal();
 };
-CHECK_STRUCT_SIZE( MessageBox, 292 );
+CHECK_STRUCT_SIZE( MessageBox, 292, 456, 456 );
 }
 
 #endif // VGUI_MESSAGEBOX_H

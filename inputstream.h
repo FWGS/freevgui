@@ -48,7 +48,7 @@ public:
 	virtual double readDouble( bool &success );
 	virtual void readLine( char *str, int count, bool &success );
 };
-CHECK_STRUCT_SIZE( DataInputStream, 8 );
+CHECK_STRUCT_SIZE( DataInputStream, 8, 16, 16 );
 
 class CLASSEXPORT FileInputStream : public InputStream
 {
@@ -65,7 +65,7 @@ public:
 	virtual void close( bool &success ) override;
 	virtual void close();
 };
-CHECK_STRUCT_SIZE( FileInputStream, 8 );
+CHECK_STRUCT_SIZE( FileInputStream, 8, 16, 16 );
 
 }
 

@@ -22,7 +22,7 @@ protected:
 	Panel *_client;
 	Button *_okButton, *_cancelButton, *_applyButton, *_helpButton;
 };
-CHECK_STRUCT_SIZE( ConfigWizard, 212 );
+CHECK_STRUCT_SIZE( ConfigWizard, 212, 312, 312 );
 }
 
 #endif // VGUI_CONFIGWIZARD_H

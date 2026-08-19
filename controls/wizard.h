@@ -96,7 +96,7 @@ public:
 	virtual void getCurrentWizardPageTitle( char *, int );
 	virtual WizardPage* getCurrentWizardPage();
 };
-CHECK_STRUCT_SIZE( WizardPanel::WizardPage, 252 );
-CHECK_STRUCT_SIZE( WizardPanel, 220 );
+CHECK_STRUCT_SIZE( WizardPanel::WizardPage, 252, 368, 368 );
+CHECK_STRUCT_SIZE( WizardPanel, 220, 320, 320 );
 }
 #endif // VGUI_WIZARD_H

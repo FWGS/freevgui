@@ -16,7 +16,7 @@ public:
 	virtual void addSignals( Button* ) = 0;
 	virtual void removeSignals( Button* ) = 0;
 };
-CHECK_STRUCT_SIZE( ButtonController, 4 );
+CHECK_STRUCT_SIZE( ButtonController, 4, 8, 8 );
 
 class CLASSEXPORT ButtonGroup
 {
@@ -27,7 +27,7 @@ public:
 protected:
 	Dar<Button*> _buttonDar;
 };
-CHECK_STRUCT_SIZE( ButtonGroup, 16 );
+CHECK_STRUCT_SIZE( ButtonGroup, 16, 24, 24 );
 
 class CLASSEXPORT Button : public Label
 {
@@ -59,7 +59,7 @@ protected:
 	ButtonGroup*       _buttonGroup;
 	ButtonController*  _buttonController;
 };
-CHECK_STRUCT_SIZE( Button, 240 );
+CHECK_STRUCT_SIZE( Button, 240, 344, 344 );
 
 class CLASSEXPORT ToggleButton : public Button
 {
@@ -67,7 +67,7 @@ public:
 	ToggleButton( const char*, int, int, int, int );
 	ToggleButton( const char*, int, int );
 };
-CHECK_STRUCT_SIZE( ToggleButton, sizeof( Button ));
+CHECK_STRUCT_SIZE_EQ( ToggleButton, Button );
 
 class CLASSEXPORT CheckButton : public ToggleButton
 {
@@ -77,7 +77,7 @@ public:
 protected:
 	virtual void paintBackground() override;
 };
-CHECK_STRUCT_SIZE( CheckButton, sizeof( ToggleButton ));
+CHECK_STRUCT_SIZE_EQ( CheckButton, ToggleButton );
 
 class CLASSEXPORT RadioButton : public ToggleButton
 {
@@ -87,7 +87,7 @@ public:
 protected:
 	virtual void paintBackground() override;
 };
-CHECK_STRUCT_SIZE( RadioButton, sizeof( ToggleButton ));
+CHECK_STRUCT_SIZE_EQ( RadioButton, ToggleButton );
 
 }
 

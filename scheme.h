@@ -58,7 +58,7 @@ private:
 	Cursor *_cursor[SCU_COUNT];
 };
 
-CHECK_STRUCT_SIZE( Scheme, 224 );
+CHECK_STRUCT_SIZE( Scheme, 224, 304, 304 );
 
 }
 

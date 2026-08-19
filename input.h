@@ -152,7 +152,7 @@ public:
 	virtual DefaultCursor getDefaultCursor();
 };
 
-CHECK_STRUCT_SIZE( Cursor, 20 );
+CHECK_STRUCT_SIZE( Cursor, 20, 32, 32 );
 
 }
 

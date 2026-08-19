@@ -108,7 +108,7 @@ private:
 	long int _nextTickMillis;
 	long int _minimumTickMillisInterval;
 };
-CHECK_STRUCT_SIZE( App, 556 );
+CHECK_STRUCT_SIZE( App, 556, 672, 664 );
 }
 
 #endif // VGUI_APP_H

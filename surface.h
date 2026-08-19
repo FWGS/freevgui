@@ -67,7 +67,7 @@ protected:
 	virtual void popMakeCurrent( Panel * ) = 0;
 	virtual void applyChanges() = 0;
 };
-CHECK_STRUCT_SIZE( SurfaceBase, 36 );
+CHECK_STRUCT_SIZE( SurfaceBase, 36, 64, 64 );
 
 class CLASSEXPORT Surface : public SurfaceBase
 {
@@ -111,7 +111,7 @@ protected:
 	Panel *_embeddedPanel;
 	Dar<char *> _modeInfoDar;
 };
-CHECK_STRUCT_SIZE( Surface, 60 );
+CHECK_STRUCT_SIZE( Surface, 60, 104, 104 );
 }
 
 #endif // VGUI_SURFACE_H

@@ -27,12 +27,16 @@
 	#define FORMAT_CHECK( x )
 #endif
 
-#if XASH_64BIT || __LP64__
-#define CHECK_STRUCT_SIZE( type, size ) // to be filled
+#if defined( __LP64__ ) || defined( _LP64 )
+	#define CHECK_STRUCT_SIZE( type, sizeIlp32, sizeLp64, sizeLlp64 ) static_assert( sizeof( type ) == sizeLp64, "invalid size" )
+#elif XASH_64BIT || defined( _WIN64 )
+	#define CHECK_STRUCT_SIZE( type, sizeIlp32, sizeLp64, sizeLlp64 ) static_assert( sizeof( type ) == sizeLlp64, "invalid size" )
 #else
-#define CHECK_STRUCT_SIZE( type, size ) \
-	static_assert( sizeof( type ) == size, "invalid size" )
+	#define CHECK_STRUCT_SIZE( type, sizeIlp32, sizeLp64, sizeLlp64 ) static_assert( sizeof( type ) == sizeIlp32, "invalid size" )
 #endif
+
+// for a class that only overrides virtuals and must stay exactly as big as its base
+#define CHECK_STRUCT_SIZE_EQ( type, other ) static_assert( sizeof( type ) == sizeof( other ), "invalid size" )
 
 #if defined(__GNUC__)
 	#define CLASSEXPORT __attribute__(( visibility( "default" )))
@@ -175,7 +179,7 @@ public:
 	const T *end() const { return _data + _count; }
 };
 
-CHECK_STRUCT_SIZE( Dar<void*>, 12 );
+CHECK_STRUCT_SIZE( Dar<void*>, 12, 16, 16 );
 
 // kinda useless, as calls are inlined anyway but it exists as export in Windows build
 #if _MSC_VER

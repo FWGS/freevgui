@@ -60,7 +60,7 @@ protected:
 	Dar<ActionSignal*> _actionSignalDar;
 	Font*    _font;
 };
-CHECK_STRUCT_SIZE( TextEntry, 244 );
+CHECK_STRUCT_SIZE( TextEntry, 244, 344, 336 );
 
 class CLASSEXPORT TextGrid : public Panel
 {
@@ -78,7 +78,7 @@ protected:
 	char* _grid;
 	int _gridSize[2];
 };
-CHECK_STRUCT_SIZE( TextGrid, 232 );
+CHECK_STRUCT_SIZE( TextGrid, 232, 312, 312 );
 
 class CLASSEXPORT TextPanel : public Panel
 {
@@ -96,7 +96,7 @@ protected:
 private:
 	TextImage* _textImage;
 };
-CHECK_STRUCT_SIZE( TextPanel, 192 );
+CHECK_STRUCT_SIZE( TextPanel, 192, 272, 272 );
 }
 
 #endif // VGUI_TEXT_H

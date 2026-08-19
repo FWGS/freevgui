@@ -56,7 +56,7 @@ protected:
 	virtual Cursor *getCursor( Panel * );
 };
 
-CHECK_STRUCT_SIZE( BuildGroup, 100 );
+CHECK_STRUCT_SIZE( BuildGroup, 100, 144, 144 );
 }
 
 #endif // VGUI_BUILDGROUP_H

@@ -34,7 +34,7 @@ public:
 	virtual int getId();
 };
 
-CHECK_STRUCT_SIZE( Font, 16 );
+CHECK_STRUCT_SIZE( Font, 16, 32, 32 );
 
 }
 

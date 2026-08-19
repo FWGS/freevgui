@@ -55,7 +55,7 @@ protected:
 	Dar<FrameSignal*> _frameSignalDar;
 	Frame* _resizeable;
 };
-CHECK_STRUCT_SIZE( Frame, 272 );
+CHECK_STRUCT_SIZE( Frame, 272, 424, 424 );
 }
 
 #endif // VGUI_FRAME_H

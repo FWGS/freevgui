@@ -33,7 +33,7 @@ private:
 	unsigned char _color[4];
 	Scheme::SchemeColor _schemeColor;
 };
-CHECK_STRUCT_SIZE( Color, 12 );
+CHECK_STRUCT_SIZE( Color, 12, 16, 16 );
 
 class CLASSEXPORT Image
 {
@@ -70,7 +70,7 @@ private:
 	Panel* _panel;
 	Color  _color;
 };
-CHECK_STRUCT_SIZE( Image, 36 );
+CHECK_STRUCT_SIZE( Image, 36, 48, 48 );
 
 class CLASSEXPORT Bitmap : public Image
 {
@@ -89,7 +89,7 @@ protected:
 
 	unsigned char* _rgba;
 };
-CHECK_STRUCT_SIZE( Bitmap, 48 );
+CHECK_STRUCT_SIZE( Bitmap, 48, 64, 64 );
 
 class CLASSEXPORT BitmapTGA : public Bitmap
 {
@@ -98,7 +98,7 @@ public:
 private:
 	virtual bool loadTGA( InputStream *is, bool invertAlpha );
 };
-CHECK_STRUCT_SIZE( BitmapTGA, 48 );
+CHECK_STRUCT_SIZE( BitmapTGA, 48, 64, 64 );
 
 class CLASSEXPORT TextImage : public Image
 {
@@ -129,7 +129,7 @@ public:
 	int _textColor[4];
 	Scheme::SchemeColor _textSchemeColor;
 };
-CHECK_STRUCT_SIZE( TextImage, 72 );
+CHECK_STRUCT_SIZE( TextImage, 72, 96, 96 );
 
 class CLASSEXPORT Border : public Image
 {
@@ -151,7 +151,7 @@ protected:
 private:
 	Panel *_panel;
 };
-CHECK_STRUCT_SIZE( Border, 56 );
+CHECK_STRUCT_SIZE( Border, 56, 72, 72 );
 
 class CLASSEXPORT BorderPair : public Border
 {
@@ -164,7 +164,7 @@ protected:
 
 	Border *_border[2];
 };
-CHECK_STRUCT_SIZE( BorderPair, 64 );
+CHECK_STRUCT_SIZE( BorderPair, 64, 88, 88 );
 
 class CLASSEXPORT EtchedBorder : public Border
 {
@@ -173,7 +173,7 @@ public:
 protected:
 	virtual void paint( Panel *p ) override;
 };
-CHECK_STRUCT_SIZE( EtchedBorder, 56 );
+CHECK_STRUCT_SIZE( EtchedBorder, 56, 72, 72 );
 
 class CLASSEXPORT LineBorder : public Border
 {
@@ -191,7 +191,7 @@ private:
 
 	Color _color;
 };
-CHECK_STRUCT_SIZE( LineBorder, 68 );
+CHECK_STRUCT_SIZE( LineBorder, 68, 88, 88 );
 
 class CLASSEXPORT LoweredBorder : public Border
 {
@@ -200,7 +200,7 @@ public:
 protected:
 	virtual void paint( Panel *p ) override;
 };
-CHECK_STRUCT_SIZE( LoweredBorder, 56 );
+CHECK_STRUCT_SIZE( LoweredBorder, 56, 72, 72 );
 
 class CLASSEXPORT RaisedBorder : public Border
 {
@@ -209,7 +209,7 @@ public:
 protected:
 	virtual void paint( Panel *p ) override;
 };
-CHECK_STRUCT_SIZE( RaisedBorder, 56 );
+CHECK_STRUCT_SIZE( RaisedBorder, 56, 72, 72 );
 }
 
 #endif // VGUI_DRAW_H

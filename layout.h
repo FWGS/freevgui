@@ -15,14 +15,14 @@ class CLASSEXPORT Layout
 public:
 	virtual void performLayout( Panel * );
 };
-CHECK_STRUCT_SIZE( Layout, 4 );
+CHECK_STRUCT_SIZE( Layout, 4, 8, 8 );
 
 class CLASSEXPORT LayoutInfo
 {
 public:
 	virtual LayoutInfo *getThis() = 0;
 };
-CHECK_STRUCT_SIZE( LayoutInfo, 4 );
+CHECK_STRUCT_SIZE( LayoutInfo, 4, 8, 8 );
 
 class CLASSEXPORT BorderLayout : public Layout
 {
@@ -35,7 +35,7 @@ public:
 private:
 	int _inset;
 };
-CHECK_STRUCT_SIZE( BorderLayout, 8 );
+CHECK_STRUCT_SIZE( BorderLayout, 8, 16, 16 );
 
 class CLASSEXPORT FlowLayout : public Layout
 {
@@ -46,7 +46,7 @@ public:
 private:
 	int _hgap;
 };
-CHECK_STRUCT_SIZE( FlowLayout, 8 );
+CHECK_STRUCT_SIZE( FlowLayout, 8, 16, 16 );
 
 class CLASSEXPORT StackLayout : public Layout
 {
@@ -58,7 +58,7 @@ private:
 	int _vgap;
 	bool _fitWide;
 };
-CHECK_STRUCT_SIZE( StackLayout, 12 );
+CHECK_STRUCT_SIZE( StackLayout, 12, 16, 16 );
 }
 
 #endif // VGUI_LAYOUT_H
