@@ -90,7 +90,7 @@ private:
 	Frame  *frame;
 };
 
-class IconDragHandler : public InputSignal
+class IconDragHandler : public InputSignalAdapter
 {
 public:
 	IconDragHandler( DesktopIcon *icon ) : icon( icon ), dragging( false )
@@ -127,14 +127,6 @@ public:
 		dragging = false;
 		icon->setAsMouseCapture( false );
 	}
-
-	virtual void cursorEntered( Panel * ) override {}
-	virtual void cursorExited( Panel * ) override {}
-	virtual void mouseWheeled( int, Panel * ) override {}
-	virtual void keyPressed( KeyCode, Panel * ) override {}
-	virtual void keyTyped( KeyCode, Panel * ) override {}
-	virtual void keyReleased( KeyCode, Panel * ) override {}
-	virtual void keyFocusTicked( Panel * ) override {}
 
 private:
 	DesktopIcon *icon;

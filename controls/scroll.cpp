@@ -315,29 +315,6 @@ void Slider::paintBackground()
 	}
 }
 
-class DefaultScrollBarIntChangeSignal : public IntChangeSignal
-{
-	ScrollBar *scrollBar;
-public:
-	DefaultScrollBarIntChangeSignal( ScrollBar *sb ) : scrollBar( sb ) {}
-	virtual void intChanged( int val, Panel *p ) override
-	{
-		scrollBar->fireIntChangeSignal();
-	}
-};
-
-class DefaultButtonSignal : public ActionSignal
-{
-	ScrollBar *scrollBar;
-	int buttonIndex;
-public:
-	DefaultButtonSignal( ScrollBar *sb, int index ) : scrollBar( sb ), buttonIndex( index ) {}
-	virtual void actionPerformed( Panel *p ) override
-	{
-		scrollBar->doButtonPressed( buttonIndex );
-	}
-};
-
 ScrollBar::ScrollBar( int x, int y, int w, int h, bool vertical ) : Panel( x, y, w, h )
 {
 	slider = nullptr;
@@ -377,7 +354,10 @@ int ScrollBar::getValue()
 void ScrollBar::addIntChangeSignal( IntChangeSignal *ics )
 {
 	intChangeSignals.putElement( ics );
-	slider->addIntChangeSignal( new DefaultScrollBarIntChangeSignal( this ));
+	slider->addIntChangeSignal( makeIntChangeHandler([this]( int, Panel * )
+	{
+		fireIntChangeSignal();
+	}));
 }
 
 void ScrollBar::setRange( int imin, int imax )
@@ -435,7 +415,10 @@ void ScrollBar::setButton( Button *b, int i )
 
 	buttons[i] = b;
 	addChild( b );
-	b->addActionSignal( new DefaultButtonSignal( this, i ));
+	b->addActionSignal( makeActionHandler([this, i]( Panel * )
+	{
+		doButtonPressed( i );
+	}));
 	validate();
 }
 
@@ -451,7 +434,10 @@ void ScrollBar::setSlider( Slider *s )
 
 	slider = s;
 	addChild( s );
-	s->addIntChangeSignal( new DefaultScrollBarIntChangeSignal( this ));
+	s->addIntChangeSignal( makeIntChangeHandler([this]( int, Panel * )
+	{
+		fireIntChangeSignal();
+	}));
 	validate();
 }
 
@@ -507,19 +493,6 @@ void ScrollBar::performLayout()
 
 }
 
-class ChangeHandler : public IntChangeSignal
-{
-	ScrollPanel *scrollPanel;
-
-public:
-	ChangeHandler( ScrollPanel *sp ) : scrollPanel( sp ) {}
-
-	void intChanged( int value, Panel *p ) override
-	{
-		scrollPanel->recomputeScroll();
-	}
-};
-
 ScrollPanel::ScrollPanel( int x, int y, int w, int h ) : Panel( x, y, w, h )
 {
 	setPaintBorderEnabled( true );
@@ -541,12 +514,18 @@ ScrollPanel::ScrollPanel( int x, int y, int w, int h ) : Panel( x, y, w, h )
 
 	horizontalScrollBar = new ScrollBar( 0, h - 16, w - 16, 16, false );
 	horizontalScrollBar->setParent( this );
-	horizontalScrollBar->addIntChangeSignal( new ChangeHandler( this ));
+	horizontalScrollBar->addIntChangeSignal( makeIntChangeHandler([this]( int, Panel * )
+	{
+		recomputeScroll();
+	}));
 	horizontalScrollBar->setVisible( false );
 
 	verticalScrollBar = new ScrollBar( w - 16, 0, 16, h - 16, true );
 	verticalScrollBar->setParent( this );
-	verticalScrollBar->addIntChangeSignal( new ChangeHandler( this ));
+	verticalScrollBar->addIntChangeSignal( makeIntChangeHandler([this]( int, Panel * )
+	{
+		recomputeScroll();
+	}));
 	verticalScrollBar->setVisible( false );
 
 	autoVisible[0] = autoVisible[1] = true;

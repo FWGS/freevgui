@@ -120,34 +120,6 @@ private:
 	int startX, startY, startW, startH;
 };
 
-class CloseButtonHandler : public ActionSignal
-{
-public:
-	CloseButtonHandler( Frame *frame ) : frame( frame ) {}
-
-	virtual void actionPerformed( Panel * ) override
-	{
-		frame->fireClosingSignal();
-	}
-
-private:
-	Frame *frame;
-};
-
-class MinimizeButtonHandler : public ActionSignal
-{
-public:
-	MinimizeButtonHandler( Frame *frame ) : frame( frame ) {}
-
-	virtual void actionPerformed( Panel * ) override
-	{
-		frame->fireMinimizingSignal();
-	}
-
-private:
-	Frame *frame;
-};
-
 static Panel *makeGrip( Frame *frame, int x, int y, int w, int h, Cursor::DefaultCursor dc, int mx, int my, int mw, int mh )
 {
 	Panel *grip = new Panel( x, y, w, h );
@@ -191,7 +163,10 @@ Frame::Frame( int x, int y, int wide, int tall ) :
 
 	minimizeButton = new Button( "2", wide - 65, 8, 18, 18 );
 	minimizeButton->setFont( Scheme::SF_SECONDARY );
-	minimizeButton->addActionSignal( new MinimizeButtonHandler( this ));
+	minimizeButton->addActionSignal( makeActionHandler([this]( Panel * )
+	{
+		fireMinimizingSignal();
+	}));
 	minimizeButton->setParent( this );
 
 	maximizeButton = new Button( "1", wide - 45, 8, 18, 18 );
@@ -200,7 +175,10 @@ Frame::Frame( int x, int y, int wide, int tall ) :
 
 	closeButton = new Button( "r", wide - 25, 8, 18, 18 );
 	closeButton->setFont( Scheme::SF_SECONDARY );
-	closeButton->addActionSignal( new CloseButtonHandler( this ));
+	closeButton->addActionSignal( makeActionHandler([this]( Panel * )
+	{
+		fireClosingSignal();
+	}));
 	closeButton->setParent( this );
 
 	menuButton = new Button( "s", 7, 8, 18, 18 );
