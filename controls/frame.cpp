@@ -11,7 +11,7 @@ using namespace vgui;
 
 namespace // private drag/resize signals and button handlers, not part of the ABI
 {
-class DraggerSignal : public InputSignal
+class DraggerSignal : public InputSignalAdapter
 {
 public:
 	DraggerSignal( Panel *panel, int mx, int my, int mw, int mh ) :
@@ -97,15 +97,6 @@ public:
 		App::getInstance()->setMouseCapture( nullptr );
 	}
 
-	virtual void cursorEntered( Panel * ) override {}
-	virtual void cursorExited( Panel * ) override {}
-	virtual void mouseDoublePressed( MouseCode, Panel * ) override {}
-	virtual void mouseWheeled( int, Panel * ) override {}
-	virtual void keyPressed( KeyCode, Panel * ) override {}
-	virtual void keyTyped( KeyCode, Panel * ) override {}
-	virtual void keyReleased( KeyCode, Panel * ) override {}
-	virtual void keyFocusTicked( Panel * ) override {}
-
 private:
 	Frame *getFrame()
 	{
@@ -173,48 +164,48 @@ static Panel *makeGrip( Frame *frame, int x, int y, int w, int h, Cursor::Defaul
 }
 
 Frame::Frame( int x, int y, int wide, int tall ) :
-	Panel( x, y, wide, tall ), _title( nullptr ), _internal( true ), _moveable( true ), _sizeable( true )
+	Panel( x, y, wide, tall ), title( nullptr ), internal( true ), moveable( true ), sizeable( true )
 {
 	setTitle( "Untitled" );
 	setMinimumSize( 64, 33 );
 
 	// grips + caption (z-order = creation order)
 	// per-grip (mx,my,mw,mh) selects edges
-	_topGrip         = makeGrip( this, 15,        0,         wide - 30, 5,         Cursor::DC_SIZENS,   0, 1,  0, -1 );
-	_bottomGrip      = makeGrip( this, 15,        tall - 5,  wide - 30, 5,         Cursor::DC_SIZENS,   0, 0,  0,  1 );
-	_leftGrip        = makeGrip( this, 0,         15,        5,         tall - 30, Cursor::DC_SIZEWE,   1, 0, -1,  0 );
-	_rightGrip       = makeGrip( this, wide - 5,  15,        5,         tall - 30, Cursor::DC_SIZEWE,   0, 0,  1,  0 );
-	_topLeftGrip     = makeGrip( this, 0,         0,         15,        15,        Cursor::DC_SIZENWSE, 1, 1, -1, -1 );
-	_topRightGrip    = makeGrip( this, wide - 15, 0,         15,        15,        Cursor::DC_SIZENESW, 0, 1,  1, -1 );
-	_bottomLeftGrip  = makeGrip( this, 0,         tall - 15, 15,        15,        Cursor::DC_SIZENESW, 1, 0, -1,  1 );
-	_bottomRightGrip = makeGrip( this, wide - 15, tall - 15, 15,        15,        Cursor::DC_SIZENWSE, 0, 0,  1,  1 );
-	_captionGrip     = makeGrip( this, 5,         5,         wide - 10, 23,        Cursor::DC_SIZEALL,  1, 1,  0,  0 );
+	topGrip         = makeGrip( this, 15,        0,         wide - 30, 5,         Cursor::DC_SIZENS,   0, 1,  0, -1 );
+	bottomGrip      = makeGrip( this, 15,        tall - 5,  wide - 30, 5,         Cursor::DC_SIZENS,   0, 0,  0,  1 );
+	leftGrip        = makeGrip( this, 0,         15,        5,         tall - 30, Cursor::DC_SIZEWE,   1, 0, -1,  0 );
+	rightGrip       = makeGrip( this, wide - 5,  15,        5,         tall - 30, Cursor::DC_SIZEWE,   0, 0,  1,  0 );
+	topLeftGrip     = makeGrip( this, 0,         0,         15,        15,        Cursor::DC_SIZENWSE, 1, 1, -1, -1 );
+	topRightGrip    = makeGrip( this, wide - 15, 0,         15,        15,        Cursor::DC_SIZENESW, 0, 1,  1, -1 );
+	bottomLeftGrip  = makeGrip( this, 0,         tall - 15, 15,        15,        Cursor::DC_SIZENESW, 1, 0, -1,  1 );
+	bottomRightGrip = makeGrip( this, wide - 15, tall - 15, 15,        15,        Cursor::DC_SIZENWSE, 0, 0,  1,  1 );
+	captionGrip     = makeGrip( this, 5,         5,         wide - 10, 23,        Cursor::DC_SIZEALL,  1, 1,  0,  0 );
 
-	_client = new Panel( 5, 29, wide - 10, tall - 34 );
-	_client->addInputSignal( new DraggerSignal( _client, 0, 0, 0, 0 ));
-	_client->setParent( this );
+	client = new Panel( 5, 29, wide - 10, tall - 34 );
+	client->addInputSignal( new DraggerSignal( client, 0, 0, 0, 0 ));
+	client->setParent( this );
 
 	// these use Marlett font, that's why they make no sense
-	_trayButton = new Button( ".", wide - 85, 8, 18, 18 );
-	_trayButton->setParent( this );
+	trayButton = new Button( ".", wide - 85, 8, 18, 18 );
+	trayButton->setParent( this );
 
-	_minimizeButton = new Button( "2", wide - 65, 8, 18, 18 );
-	_minimizeButton->setFont( Scheme::SF_SECONDARY );
-	_minimizeButton->addActionSignal( new MinimizeButtonHandler( this ));
-	_minimizeButton->setParent( this );
+	minimizeButton = new Button( "2", wide - 65, 8, 18, 18 );
+	minimizeButton->setFont( Scheme::SF_SECONDARY );
+	minimizeButton->addActionSignal( new MinimizeButtonHandler( this ));
+	minimizeButton->setParent( this );
 
-	_maximizeButton = new Button( "1", wide - 45, 8, 18, 18 );
-	_maximizeButton->setFont( Scheme::SF_SECONDARY );
-	_maximizeButton->setParent( this );
+	maximizeButton = new Button( "1", wide - 45, 8, 18, 18 );
+	maximizeButton->setFont( Scheme::SF_SECONDARY );
+	maximizeButton->setParent( this );
 
-	_closeButton = new Button( "r", wide - 25, 8, 18, 18 );
-	_closeButton->setFont( Scheme::SF_SECONDARY );
-	_closeButton->addActionSignal( new CloseButtonHandler( this ));
-	_closeButton->setParent( this );
+	closeButton = new Button( "r", wide - 25, 8, 18, 18 );
+	closeButton->setFont( Scheme::SF_SECONDARY );
+	closeButton->addActionSignal( new CloseButtonHandler( this ));
+	closeButton->setParent( this );
 
-	_menuButton = new Button( "s", 7, 8, 18, 18 );
-	_menuButton->setFont( Scheme::SF_SECONDARY );
-	_menuButton->setParent( this );
+	menuButton = new Button( "s", 7, 8, 18, 18 );
+	menuButton->setFont( Scheme::SF_SECONDARY );
+	menuButton->setParent( this );
 }
 
 void Frame::setSize( int wide, int tall )
@@ -224,79 +215,79 @@ void Frame::setSize( int wide, int tall )
 
 	Panel::setSize( wide, tall );
 
-	int w = _size[0], h = _size[1];
+	int w = size[0], h = size[1];
 
 	// FIXME: I hate this kind of code, could be made common with makeGrip above
-	_topGrip->setBounds(         15,     0,      w - 30, 5 );
-	_bottomGrip->setBounds(      15,     h - 5,  w - 30, 5 );
-	_leftGrip->setBounds(        0,      15,     5,      h - 30 );
-	_rightGrip->setBounds(       w - 5,  15,     5,      h - 30 );
-	// _topLeftGrip->setBounds(     0,      0,      15,     15 ); // could be skipped?
-	_topRightGrip->setBounds(    w - 15, 0,      15,     15 );
-	_bottomLeftGrip->setBounds(  0,      h - 15, 15,     15 );
-	_bottomRightGrip->setBounds( w - 15, h - 15, 15,     15 );
-	_captionGrip->setBounds(     5,      5,      w - 10, 23 );
-	_client->setBounds(          5,      29,     w - 10, h - 34 );
+	topGrip->setBounds(         15,     0,      w - 30, 5 );
+	bottomGrip->setBounds(      15,     h - 5,  w - 30, 5 );
+	leftGrip->setBounds(        0,      15,     5,      h - 30 );
+	rightGrip->setBounds(       w - 5,  15,     5,      h - 30 );
+	// topLeftGrip->setBounds(     0,      0,      15,     15 ); // could be skipped?
+	topRightGrip->setBounds(    w - 15, 0,      15,     15 );
+	bottomLeftGrip->setBounds(  0,      h - 15, 15,     15 );
+	bottomRightGrip->setBounds( w - 15, h - 15, 15,     15 );
+	captionGrip->setBounds(     5,      5,      w - 10, 23 );
+	client->setBounds(          5,      29,     w - 10, h - 34 );
 
-	_trayButton->setBounds( w - 85, 8, 18, 18 );
-	_minimizeButton->setBounds( w - 65, 8, 18, 18 );
-	_maximizeButton->setBounds( w - 45, 8, 18, 18 );
-	_closeButton->setBounds( w - 25, 8, 18, 18 );
+	trayButton->setBounds( w - 85, 8, 18, 18 );
+	minimizeButton->setBounds( w - 65, 8, 18, 18 );
+	maximizeButton->setBounds( w - 45, 8, 18, 18 );
+	closeButton->setBounds( w - 25, 8, 18, 18 );
 	// menu button position is const
 
-	_client->invalidateLayout( false );
+	client->invalidateLayout( false );
 }
 
 void Frame::setInternal( bool state )
 {
-	_internal = state;
+	internal = state;
 }
 
 bool Frame::isInternal()
 {
-	return _internal;
+	return internal;
 }
 
 Panel *Frame::getClient()
 {
-	return _client;
+	return client;
 }
 
-void Frame::setTitle( const char *title )
+void Frame::setTitle( const char *newTitle )
 {
-	delete[] _title;
-	_title = vgui_strdup( title );
+	delete[] title;
+	title = vgui_strdup( newTitle );
 	repaint();
 }
 
 void Frame::getTitle( char *buf, int bufLen )
 {
-	vgui_strcpy( buf, bufLen, _title );
+	vgui_strcpy( buf, bufLen, title );
 }
 
 void Frame::setMoveable( bool state )
 {
-	_moveable = state;
+	moveable = state;
 }
 
 void Frame::setSizeable( bool state )
 {
-	_sizeable = state;
+	sizeable = state;
 }
 
 bool Frame::isMoveable()
 {
-	return _moveable;
+	return moveable;
 }
 
 bool Frame::isSizeable()
 {
-	return _sizeable;
+	return sizeable;
 }
 
 void Frame::addFrameSignal( FrameSignal *s )
 {
-	_frameSignalDar.putElement( s );
+	frameSignals.putElement( s );
 }
 
 void Frame::setVisible( bool state )
@@ -309,32 +300,32 @@ void Frame::setVisible( bool state )
 
 void Frame::setMenuButtonVisible( bool state )
 {
-	_menuButton->setVisible( state );
+	menuButton->setVisible( state );
 }
 
 void Frame::setTrayButtonVisible( bool state )
 {
-	_trayButton->setVisible( state );
+	trayButton->setVisible( state );
 }
 
 void Frame::setMinimizeButtonVisible( bool state )
 {
-	_minimizeButton->setVisible( state );
+	minimizeButton->setVisible( state );
 }
 
 void Frame::setMaximizeButtonVisible( bool state )
 {
-	_maximizeButton->setVisible( state );
+	maximizeButton->setVisible( state );
 }
 
 void Frame::setCloseButtonVisible( bool state )
 {
-	_closeButton->setVisible( state );
+	closeButton->setVisible( state );
 }
 
 void Frame::paintBackground()
 {
-	int wide = _size[0], tall = _size[1];
+	int wide = size[0], tall = size[1];
 
 	// focused = surface has focus && a panel is focused && this frame is ancestor-or-self of it
 	bool focused = false;
@@ -395,22 +386,22 @@ void Frame::paintBackground()
 	drawFilledRect( wide - 2, 14,       wide - 1,  tall - 12 );
 
 	// 7. title
-	if( _title )
+	if( title )
 	{
 		drawSetTextFont( Scheme::SF_PRIMARY1 );
 		drawSetTextColor( Scheme::SC_BLACK );
-		drawPrintText( 28, 7, _title, strlen( _title ));
+		drawPrintText( 28, 7, title, strlen( title ));
 	}
 }
 
 void Frame::fireClosingSignal()
 {
-	for( FrameSignal *s : _frameSignalDar )
+	for( FrameSignal *s : frameSignals )
 		s->closing( this );
 }
 
 void Frame::fireMinimizingSignal()
 {
-	for( FrameSignal *s : _frameSignalDar )
+	for( FrameSignal *s : frameSignals )
 		s->minimizing( this, false );
 }

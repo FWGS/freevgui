@@ -6,7 +6,7 @@
 using namespace vgui;
 
 ProgressBar::ProgressBar( int segmentCount ) : Panel( 0, 0, 10, 110 ),
-	_segmentCount( segmentCount ), _progress( 0.0f )
+	segmentCount( segmentCount ), segmentsLit( 0.0f )
 {
 }
 
@@ -20,8 +20,8 @@ void ProgressBar::paintBackground()
 	drawFilledRect( 0, 0, wide, tall );
 
 	int segmentGap = 2;
-	int segmentWide = wide / _segmentCount - segmentGap;
-	int litSeg = (int)_progress;
+	int segmentWide = wide / segmentCount - segmentGap;
+	int litSeg = (int)segmentsLit;
 	int x = 0;
 
 	for( int i = 0; i < litSeg; i++ )
@@ -31,9 +31,9 @@ void ProgressBar::paintBackground()
 		x += segmentWide + segmentGap;
 	}
 
-	if( _segmentCount > _progress )
+	if( segmentCount > segmentsLit )
 	{
-		float frac = _progress - (int)_progress;
+		float frac = segmentsLit - (int)segmentsLit;
 
 		drawSetColor( 0, 0, 255 - frac * 155, 0 );
 		drawFilledRect( x, 0, x + segmentWide, tall );
@@ -42,14 +42,14 @@ void ProgressBar::paintBackground()
 
 void ProgressBar::setProgress( float progress )
 {
-	if( progress != _progress )
+	if( progress != segmentsLit )
 	{
-		_progress = progress;
+		segmentsLit = progress;
 		repaint();
 	}
 }
 
 int ProgressBar::getSegmentCount()
 {
-	return _segmentCount;
+	return segmentCount;
 }

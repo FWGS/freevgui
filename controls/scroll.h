@@ -14,13 +14,13 @@ class CLASSEXPORT Slider : public Panel
 {
 public:
 	Slider( int, int, int, int, bool );
-	virtual void setValue( int value );
+	virtual void setValue( int newValue );
 	virtual int getValue();
 	virtual bool isVertical();
 	virtual void addIntChangeSignal( IntChangeSignal *s );
 	virtual void setRange( int imin, int imax );
 	virtual void getRange( int &imin, int &imax );
-	virtual void setRangeWindow( int rangeWindow );
+	virtual void setRangeWindow( int newRangeWindow );
 	virtual void setRangeWindowEnabled( bool enable );
 	virtual void setSize( int w, int h ) override;
 	virtual void getNobPos( int &imin, int &imax );
@@ -31,12 +31,12 @@ private:
 	virtual void recomputeNobPosFromValue();
 	virtual void recomputeValueFromNobPos();
 
-	bool _vertical, _dragging;
-	int _nobPos[2], _nobDragStartPos[2], _dragStartPos[2];
-	Dar<IntChangeSignal*> _intChangeSignalDar;
-	int _range[2], _value, _rangeWindow;
-	bool _rangeWindowEnabled;
-	int _buttonOffset;
+	bool vertical, dragging;
+	int knobPos[2], knobDragStartPos[2], dragStartPos[2];
+	Dar<IntChangeSignal*> intChangeSignals;
+	int range[2], value, rangeWindow;
+	bool rangeWindowEnabled;
+	int buttonOffset;
 public:
 	virtual void privateCursorMoved( int, int, Panel* );
 	virtual void privateMousePressed( MouseCode, Panel* );
@@ -72,10 +72,10 @@ public:
 protected:
 	virtual void performLayout() override;
 
-	Button* _button[2];
-	Slider* _slider;
-	Dar<IntChangeSignal*> _intChangeSignalDar;
-	int _buttonPressedScrollValue;
+	Button* buttons[2];
+	Slider* slider;
+	Dar<IntChangeSignal*> intChangeSignals;
+	int buttonPressedScrollValue;
 };
 CHECK_STRUCT_SIZE( ScrollBar, 216, 312, 312 );
 
@@ -98,11 +98,11 @@ public:
 	virtual void validate();
 	virtual void recomputeScroll();
 private:
-	Panel* _clientClip;
-	Panel* _client;
-	ScrollBar* _horizontalScrollBar;
-	ScrollBar* _verticalScrollBar;
-	bool _autoVisible[2];
+	Panel* clientClip;
+	Panel* client;
+	ScrollBar* horizontalScrollBar;
+	ScrollBar* verticalScrollBar;
+	bool autoVisible[2];
 };
 CHECK_STRUCT_SIZE( ScrollPanel, 208, 304, 304 );
 }

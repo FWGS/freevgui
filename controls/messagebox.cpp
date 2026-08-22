@@ -16,18 +16,18 @@ MessageBox::MessageBox( const char *title, const char *text, int x, int y ) : Fr
 	setCloseButtonVisible( false );
 	setSizeable( false );
 
-	_messageLabel = new Label( text );
-	_messageLabel->setParent( getClient());
+	messageLabel = new Label( text );
+	messageLabel->setParent( getClient());
 
-	_okButton = new Button( "Ok", 10, 10 );
-	_okButton->setParent( getClient());
-	_okButton->addActionSignal( makeActionHandler([this]( Panel * )
+	okButton = new Button( "Ok", 10, 10 );
+	okButton->setParent( getClient());
+	okButton->addActionSignal( makeActionHandler([this]( Panel * )
 	{
 		fireActionSignal();
 	}));
 
 	int wide, tall;
-	_messageLabel->getContentSize( wide, tall );
+	messageLabel->getContentSize( wide, tall );
 	setSize( wide + 100, tall + 100 );
 }
 
@@ -38,20 +38,20 @@ void MessageBox::performLayout()
 
 	int wide, tall;
 
-	_messageLabel->getSize( wide, tall );
-	_messageLabel->setPos( clientWide / 2 - wide / 2, clientTall / 2 - tall / 2 - 20 );
+	messageLabel->getSize( wide, tall );
+	messageLabel->setPos( clientWide / 2 - wide / 2, clientTall / 2 - tall / 2 - 20 );
 
-	_okButton->getSize( wide, tall );
-	_okButton->setPos( clientWide / 2 - wide / 2, clientTall - tall - 10 );
+	okButton->getSize( wide, tall );
+	okButton->setPos( clientWide / 2 - wide / 2, clientTall - tall - 10 );
 }
 
 void MessageBox::addActionSignal( ActionSignal *s )
 {
-	_actionSignalDar.putElement( s );
+	actionSignals.putElement( s );
 }
 
 void MessageBox::fireActionSignal()
 {
-	for( auto signal: _actionSignalDar )
+	for( auto signal: actionSignals )
 		signal->actionPerformed( this );
 }

@@ -34,38 +34,38 @@ Scheme::Scheme()
 
 void Scheme::setColor(SchemeColor sc, int r, int g, int b, int a)
 {
-	_color[sc][0] = r;
-	_color[sc][1] = g;
-	_color[sc][2] = b;
-	_color[sc][3] = a;
+	colors[sc][0] = r;
+	colors[sc][1] = g;
+	colors[sc][2] = b;
+	colors[sc][3] = a;
 }
 
 void Scheme::getColor(SchemeColor sc, int &r, int &g, int &b, int &a)
 {
-	r = _color[sc][0];
-	g = _color[sc][1];
-	b = _color[sc][2];
-	a = _color[sc][3];
+	r = colors[sc][0];
+	g = colors[sc][1];
+	b = colors[sc][2];
+	a = colors[sc][3];
 }
 
 void Scheme::setFont(SchemeFont sf, Font *font)
 {
 	if( font )
-		_font[sf] = font;
+		fonts[sf] = font;
 }
 
 Font *Scheme::getFont(SchemeFont sf)
 {
-	return _font[sf];
+	return fonts[sf];
 }
 
 void Scheme::setCursor(SchemeCursor scu, Cursor *cursor)
 {
 	if( cursor )
-		_cursor[scu] = cursor;
+		cursors[scu] = cursor;
 }
 
 Cursor *Scheme::getCursor(SchemeCursor scu)
 {
-	return _cursor[scu];
+	return cursors[scu];
 }

@@ -31,42 +31,42 @@ Color::Color( Scheme::SchemeColor sc )
 
 void Color::init()
 {
-	memset( _color, 0, sizeof( _color ));
-	_schemeColor = Scheme::SC_USER;
+	memset( rgba, 0, sizeof( rgba ));
+	schemeColor = Scheme::SC_USER;
 }
 
 void Color::setColor( int r, int g, int b, int a )
 {
-	_color[0] = r;
-	_color[1] = g;
-	_color[2] = b;
-	_color[3] = a;
-	_schemeColor = Scheme::SC_USER;
+	rgba[0] = r;
+	rgba[1] = g;
+	rgba[2] = b;
+	rgba[3] = a;
+	schemeColor = Scheme::SC_USER;
 }
 
 void Color::setColor( Scheme::SchemeColor sc )
 {
-	_schemeColor = sc;
+	schemeColor = sc;
 }
 
 void Color::getColor( int &r, int &g, int &b, int &a )
 {
-	if( _schemeColor == Scheme::SC_USER )
+	if( schemeColor == Scheme::SC_USER )
 	{
-		r = _color[0];
-		g = _color[1];
-		b = _color[2];
-		a = _color[3];
+		r = rgba[0];
+		g = rgba[1];
+		b = rgba[2];
+		a = rgba[3];
 	}
 	else
 	{
-		App::getInstance()->getScheme()->getColor( _schemeColor, r, g, b, a );
+		App::getInstance()->getScheme()->getColor( schemeColor, r, g, b, a );
 	}
 }
 
 void Color::getColor( Scheme::SchemeColor &sc )
 {
-	sc = _schemeColor;
+	sc = schemeColor;
 }
 
 int Color::operator[]( int i )
@@ -77,7 +77,7 @@ int Color::operator[]( int i )
 	return co[i];
 }
 
-Image::Image() : _panel( nullptr )
+Image::Image() : panel( nullptr )
 {
 	setPos( 0, 0 );
 	setSize( 0, 0 );
@@ -86,134 +86,134 @@ Image::Image() : _panel( nullptr )
 
 void Image::setPos(int x, int y)
 {
-	_pos[0] = x;
-	_pos[1] = y;
+	origin[0] = x;
+	origin[1] = y;
 }
 
 void Image::getPos(int &x, int &y)
 {
-	x = _pos[0];
-	y = _pos[1];
+	x = origin[0];
+	y = origin[1];
 }
 
 void Image::getSize(int &w, int &h)
 {
-	w = _size[0];
-	h = _size[1];
+	w = size[0];
+	h = size[1];
 }
 
 void Image::setColor(Color c)
 {
-	_color = c;
+	color = c;
 }
 
 void Image::getColor(Color &c)
 {
-	c = _color;
+	c = color;
 }
 
 void Image::setSize(int w, int h)
 {
-	_size[0] = w;
-	_size[1] = h;
+	size[0] = w;
+	size[1] = h;
 }
 
 void Image::drawSetColor( Scheme::SchemeColor sc )
 {
-	_panel->drawSetColor( sc );
+	panel->drawSetColor( sc );
 }
 
 void Image::drawSetColor( int r, int g, int b, int a )
 {
-	_panel->drawSetColor( r, g, b, a );
+	panel->drawSetColor( r, g, b, a );
 }
 
 void Image::drawFilledRect( int x0, int y0, int x1, int y1 )
 {
-	x0 += _pos[0];
-	y0 += _pos[1];
-	x1 += _pos[0];
-	y1 += _pos[1];
+	x0 += origin[0];
+	y0 += origin[1];
+	x1 += origin[0];
+	y1 += origin[1];
 
-	_panel->drawFilledRect( x0, y0, x1, y1 );
+	panel->drawFilledRect( x0, y0, x1, y1 );
 }
 
 void Image::drawOutlinedRect( int x0, int y0, int x1, int y1 )
 {
-	x0 += _pos[0];
-	y0 += _pos[1];
-	x1 += _pos[0];
-	y1 += _pos[1];
+	x0 += origin[0];
+	y0 += origin[1];
+	x1 += origin[0];
+	y1 += origin[1];
 
-	_panel->drawOutlinedRect( x0, y0, x1, y1 );
+	panel->drawOutlinedRect( x0, y0, x1, y1 );
 }
 
 void Image::drawSetTextFont( Scheme::SchemeFont sf )
 {
-	_panel->drawSetTextFont( sf );
+	panel->drawSetTextFont( sf );
 }
 
 void Image::drawSetTextFont( Font *font )
 {
-	_panel->drawSetTextFont( font );
+	panel->drawSetTextFont( font );
 }
 
 void Image::drawSetTextColor( Scheme::SchemeColor sc )
 {
-	_panel->drawSetTextColor( sc );
+	panel->drawSetTextColor( sc );
 }
 
 void Image::drawSetTextColor( int r, int g, int b, int a )
 {
-	_panel->drawSetTextColor( r, g, b, a );
+	panel->drawSetTextColor( r, g, b, a );
 }
 
 void Image::drawSetTextPos( int x, int y )
 {
-	x += _pos[0];
-	y += _pos[1];
-	_panel->drawSetTextPos( x, y );
+	x += origin[0];
+	y += origin[1];
+	panel->drawSetTextPos( x, y );
 }
 
 void Image::drawPrintText( const char *str, int len )
 {
-	_panel->drawPrintText( str, len );
+	panel->drawPrintText( str, len );
 }
 
 void Image::drawPrintText( int x, int y, const char *str, int len )
 {
-	x += _pos[0];
-	y += _pos[1];
-	_panel->drawPrintText( x, y, str, len );
+	x += origin[0];
+	y += origin[1];
+	panel->drawPrintText( x, y, str, len );
 }
 
 void Image::drawPrintChar( char ch )
 {
-	_panel->drawPrintChar( ch );
+	panel->drawPrintChar( ch );
 }
 
 void Image::drawPrintChar( int x, int y, char ch )
 {
-	x += _pos[0];
-	y += _pos[1];
-	_panel->drawPrintChar( x, y, ch );
+	x += origin[0];
+	y += origin[1];
+	panel->drawPrintChar( x, y, ch );
 }
 
 void Image::drawSetTextureRGBA( int id, const char *rgba, int w, int h )
 {
-	_panel->drawSetTextureRGBA( id, rgba, w, h );
+	panel->drawSetTextureRGBA( id, rgba, w, h );
 }
 
 void Image::drawSetTexture( int id )
 {
-	_panel->drawSetTexture( id );
+	panel->drawSetTexture( id );
 }
 
 void Image::drawTexturedRect( int x0, int y0, int x1, int y1 )
 {
 	// a1ba: missing coordinates adjust?
 
-	_panel->drawTexturedRect( x0, y0, x1, y1 );
+	panel->drawTexturedRect( x0, y0, x1, y1 );
 }
 
 void Image::paint(Panel *p)
@@ -223,34 +223,34 @@ void Image::paint(Panel *p)
 
 void Image::doPaint(Panel *p)
 {
-	_panel = p;
+	panel = p;
 	paint( p );
-	_panel = nullptr;
+	panel = nullptr;
 }
 
 Bitmap::Bitmap() :
-	_rgba( nullptr ),
-	_id( 0 ),
-	_uploaded( false ) {	}
+	rgbaData( nullptr ),
+	id( 0 ),
+	uploaded( false ) {	}
 
 void Bitmap::paint( Panel *p )
 {
-	if( !_rgba )
+	if( !rgbaData )
 		return;
 
 	int wide, tall;
 	getSize( wide, tall );
 
-	if( !_id )
+	if( !id )
 	{
 		if( p->getSurfaceBase() )
-			_id = p->getSurfaceBase()->createNewTextureID();
+			id = p->getSurfaceBase()->createNewTextureID();
 	}
 
-	if( !_uploaded )
+	if( !uploaded )
 	{
-		drawSetTextureRGBA( _id, (const char *)_rgba, wide, tall );
-		_uploaded = true;
+		drawSetTextureRGBA( id, (const char *)rgbaData, wide, tall );
+		uploaded = true;
 	}
 
 	Color c;
@@ -259,7 +259,7 @@ void Bitmap::paint( Panel *p )
 	int r, g, b, a;
 	c.getColor( r, g, b, a );
 
-	drawSetTexture( _id );
+	drawSetTexture( id );
 	drawSetColor( r, g, b, a );
 
 	int x, y;
@@ -271,14 +271,14 @@ void Bitmap::paint( Panel *p )
 void Bitmap::setSize(int wide, int tall)
 {
 	Image::setSize( wide, tall );
-	if( _rgba )
-		delete[] _rgba;
-	_rgba = new unsigned char[wide * tall * 4];
+	if( rgbaData )
+		delete[] rgbaData;
+	rgbaData = new unsigned char[wide * tall * 4];
 }
 
 void Bitmap::setRGBA(int x, int y, unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
-	if( !_rgba )
+	if( !rgbaData )
 		return;
 
 	int wide, tall;
@@ -286,10 +286,10 @@ void Bitmap::setRGBA(int x, int y, unsigned char r, unsigned char g, unsigned ch
 
 	if( x >= 0 && x < wide && y >= 0 && y < tall )
 	{
-		_rgba[( y * wide + x ) * 4 + 0] = r;
-		_rgba[( y * wide + x ) * 4 + 1] = g;
-		_rgba[( y * wide + x ) * 4 + 2] = b;
-		_rgba[( y * wide + x ) * 4 + 3] = a;
+		rgbaData[( y * wide + x ) * 4 + 0] = r;
+		rgbaData[( y * wide + x ) * 4 + 1] = g;
+		rgbaData[( y * wide + x ) * 4 + 2] = b;
+		rgbaData[( y * wide + x ) * 4 + 3] = a;
 	}
 }
 
@@ -340,7 +340,7 @@ bool BitmapTGA::loadTGA( InputStream *is, bool invertAlpha )
 
 	setSize( wide, tall );
 
-	if( !_rgba )
+	if( !rgbaData )
 		return false;
 
 	if( hdr.m_IDLength != 0 )
@@ -350,7 +350,7 @@ bool BitmapTGA::loadTGA( InputStream *is, bool invertAlpha )
 	{
 		for( int y = tall - 1; y >= 0; y-- )
 		{
-			unsigned char *ptr = &_rgba[y * wide * 4];
+			unsigned char *ptr = &rgbaData[y * wide * 4];
 
 			for( int x = 0; x < wide; x++ )
 			{
@@ -380,7 +380,7 @@ bool BitmapTGA::loadTGA( InputStream *is, bool invertAlpha )
 	{
 		for( int y = tall - 1; y >= 0; y-- )
 		{
-			unsigned char *ptr = &_rgba[y * wide * 4];
+			unsigned char *ptr = &rgbaData[y * wide * 4];
 
 			for( int x = 0; x < wide; x++ )
 			{
@@ -391,21 +391,21 @@ bool BitmapTGA::loadTGA( InputStream *is, bool invertAlpha )
 
 				if( pkthdr & 0x80 )
 				{
-					unsigned char color[4];
+					unsigned char pixel[4];
 
 					switch( hdr.m_PixelDepth )
 					{
 					case 24:
-						DIS_READ( color[2], readUChar );
-						DIS_READ( color[1], readUChar );
-						DIS_READ( color[0], readUChar );
-						color[3] = invertAlpha ? 0 : 255;
+						DIS_READ( pixel[2], readUChar );
+						DIS_READ( pixel[1], readUChar );
+						DIS_READ( pixel[0], readUChar );
+						pixel[3] = invertAlpha ? 0 : 255;
 						break;
 					case 32:
-						DIS_READ( color[2], readUChar );
-						DIS_READ( color[1], readUChar );
-						DIS_READ( color[0], readUChar );
-						DIS_READ( color[3], readUChar );
+						DIS_READ( pixel[2], readUChar );
+						DIS_READ( pixel[1], readUChar );
+						DIS_READ( pixel[0], readUChar );
+						DIS_READ( pixel[3], readUChar );
 						if( !invertAlpha )
 							ptr[3] = 255 - ptr[3];
 						break;
@@ -414,7 +414,7 @@ bool BitmapTGA::loadTGA( InputStream *is, bool invertAlpha )
 					for( int j = 0; j < pktsize; j++ )
 					{
 						y++;
-						memcpy( ptr, color, sizeof( color ));
+						memcpy( ptr, pixel, sizeof( pixel ));
 						ptr += 4;
 						if( y == wide )
 						{
@@ -422,7 +422,7 @@ bool BitmapTGA::loadTGA( InputStream *is, bool invertAlpha )
 								goto quickexit;
 
 							x--;
-							ptr = &_rgba[y * x * 4];
+							ptr = &rgbaData[y * x * 4];
 							y = 0;
 						}
 					}
@@ -455,7 +455,7 @@ bool BitmapTGA::loadTGA( InputStream *is, bool invertAlpha )
 							if( x == 0 )
 								goto quickexit;
 							x--;
-							ptr = &_rgba[x * y * 4];
+							ptr = &rgbaData[x * y * 4];
 							y = 0;
 						}
 					}
@@ -486,7 +486,7 @@ void TextImage::paint( Panel *p )
 	int w, h;
 	getSize( w, h );
 
-	if( _text == nullptr )
+	if( text == nullptr )
 		return;
 
 	Color c;
@@ -504,7 +504,7 @@ void TextImage::paint( Panel *p )
 	int x = 0, y = 0, tall = f->getTall();
 	for( int i = 0; ; i++ )
 	{
-		int ch = _text[i];
+		int ch = text[i];
 
 		int a, b, c;
 		f->getCharABCwide( ch, a, b, c );
@@ -525,7 +525,7 @@ void TextImage::paint( Panel *p )
 
 		if( ch == ' ' )
 		{
-			int ch2 = _text[i + 1];
+			int ch2 = text[i + 1];
 
 			f->getCharABCwide( ' ', a, b, c );
 
@@ -545,7 +545,7 @@ void TextImage::paint( Panel *p )
 		int word;
 		for( word = 1; ; word++ )
 		{
-			int ch2 = _text[i + word];
+			int ch2 = text[i + word];
 
 			if( ch2 == '\0' || ch2 == '\n' || ch2 == '\r' || ch2 == ' ' )
 				break;
@@ -562,7 +562,7 @@ void TextImage::paint( Panel *p )
 
 		for( int j = 0; j < word; j++ )
 		{
-			ch = _text[i + j];
+			ch = text[i + j];
 
 			f->getCharABCwide( ch, a, b, c );
 			drawPrintChar( x, y, ch );
@@ -577,16 +577,16 @@ void TextImage::paint( Panel *p )
 void TextImage::setSize(int w, int h)
 {
 	Image::setSize( w, h );
-	// _size[0] = w;
-	// _size[1] = h;
+	// size[0] = w;
+	// size[1] = h;
 }
 
 void TextImage::init(int len, const char *str)
 {
-	_schemeFont = Scheme::SF_PRIMARY1;
-	_text = nullptr;
-	_font = nullptr;
-	_textBufferLen = 0;
+	schemeFont = Scheme::SF_PRIMARY1;
+	text = nullptr;
+	font = nullptr;
+	textBufferSize = 0;
 	setText( str ); // ???
 
 	int w, h;
@@ -599,35 +599,35 @@ void TextImage::getTextSize( int &w, int &h )
 	w = 0;
 	h = 0;
 
-	if( _text == nullptr )
+	if( text == nullptr )
 		return;
 
 	Font *f = getFont();
 	if( f == nullptr )
 		return;
 
-	f->getTextSize( _text, w, h );
+	f->getTextSize( text, w, h );
 }
 
-void TextImage::getTextSizeWrapped( int &_w, int &_h )
+void TextImage::getTextSizeWrapped( int &wide, int &tall )
 {
 	// a1ba: maybe not accurate, based on paint() code
 
-	_w = 0;
-	_h = 0;
+	wide = 0;
+	tall = 0;
 
-	if( _text == nullptr )
+	if( text == nullptr )
 		return;
 
-	int w, h;
-	getSize( w, h );
+	int wrapWide, wrapTall;
+	getSize( wrapWide, wrapTall );
 
 	Font *f = getFont();
-	int x = 0, y = 0, tall = f->getTall();
+	int x = 0, y = 0, lineTall = f->getTall();
 
 	for( int i = 0; ; i++ )
 	{
-		int ch = _text[i];
+		int ch = text[i];
 
 		int a, b, c;
 		f->getCharABCwide( ch, a, b, c );
@@ -642,23 +642,23 @@ void TextImage::getTextSizeWrapped( int &_w, int &_h )
 		if( ch == '\n' )
 		{
 			x = 0;
-			y += tall;
+			y += lineTall;
 			continue;
 		}
 
 		if( ch == ' ' )
 		{
-			int ch2 = _text[i + 1];
+			int ch2 = text[i + 1];
 
 			f->getCharABCwide( ' ', a, b, c );
 
 			if( ch2 != '\0' && ch2 != '\n' && ch2 != '\r' )
 			{
 				x += a + b + c;
-				if( x > w )
+				if( x > wrapWide )
 				{
 					x = 0;
-					y += tall;
+					y += lineTall;
 				}
 			}
 
@@ -668,7 +668,7 @@ void TextImage::getTextSizeWrapped( int &_w, int &_h )
 		int word;
 		for( word = 1; ; word++ )
 		{
-			int ch2 = _text[i + word];
+			int ch2 = text[i + word];
 
 			if( ch2 == '\0' || ch2 == '\n' || ch2 == '\r' || ch2 == ' ' )
 				break;
@@ -677,23 +677,23 @@ void TextImage::getTextSizeWrapped( int &_w, int &_h )
 			len += a + b + c;
 		}
 
-		if( x + len > w )
+		if( x + len > wrapWide )
 		{
 			x = 0;
-			y += tall;
+			y += lineTall;
 		}
 
 		for( int j = 0; j < word; j++ )
 		{
-			ch = _text[i + j];
+			ch = text[i + j];
 
 			f->getCharABCwide( ch, a, b, c );
 
-			if( x + a + b + c > _w )
-				_w = x + a + b + c;
+			if( x + a + b + c > wide )
+				wide = x + a + b + c;
 
-			if( y + tall > _h )
-				_h = y + tall;
+			if( y + lineTall > tall )
+				tall = y + lineTall;
 
 			x += a + b + c;
 		}
@@ -704,26 +704,26 @@ void TextImage::getTextSizeWrapped( int &_w, int &_h )
 
 Font *TextImage::getFont()
 {
-	if( _font )
-		return _font;
+	if( font )
+		return font;
 
-	return App::getInstance()->getScheme()->getFont( _schemeFont );
+	return App::getInstance()->getScheme()->getFont( schemeFont );
 }
 
 void TextImage::setText( int len, const char *str )
 {
-	if( len > _textBufferLen )
+	if( len > textBufferSize )
 	{
-		delete[] _text;
-		_textBufferLen = len;
-		_text = new char[len];
+		delete[] text;
+		textBufferSize = len;
+		text = new char[len];
 
-		if( !_text )
-			_textBufferLen = 0;
+		if( !text )
+			textBufferSize = 0;
 	}
 
-	if( _text )
-		vgui_strcpy( _text, _textBufferLen, str );
+	if( text )
+		vgui_strcpy( text, textBufferSize, str );
 
 	int w, h;
 	getTextSize( w, h );
@@ -737,12 +737,12 @@ void TextImage::setText(const char *str)
 
 void TextImage::setFont(Scheme::SchemeFont sf)
 {
-	_schemeFont = sf;
+	schemeFont = sf;
 }
 
 void TextImage::setFont(Font *f)
 {
-	_font = f;
+	font = f;
 }
 
 EtchedBorder::EtchedBorder() : Border()
@@ -798,19 +798,19 @@ void LineBorder::paint( Panel *p )
 	p->getSize( w, h );
 
 	int r, g, b, a;
-	_color.getColor( r, g, b, a );
+	color.getColor( r, g, b, a );
 	drawSetColor( r, g, b, a );
 
-	drawFilledRect( 0, 0, w, _inset[1] );
-	drawFilledRect( 0, h - _inset[3], w, h );
-	drawFilledRect( 0, _inset[1], _inset[0], h - _inset[3] );
-	drawFilledRect( w - _inset[2], _inset[1], w, h - _inset[3] );
+	drawFilledRect( 0, 0, w, inset[1] );
+	drawFilledRect( 0, h - inset[3], w, h );
+	drawFilledRect( 0, inset[1], inset[0], h - inset[3] );
+	drawFilledRect( w - inset[2], inset[1], w, h - inset[3] );
 }
 
 void LineBorder::init(int thickness, Color c)
 {
 	setInset( thickness, thickness, thickness, thickness );
-	_color = c;
+	color = c;
 }
 
 LoweredBorder::LoweredBorder() : Border()
@@ -861,72 +861,72 @@ void RaisedBorder::paint( Panel *p )
 
 Border::Border(int left, int top, int right, int bottom)
 {
-	_panel = nullptr;
-	_inset[0] = left;
-	_inset[1] = top;
-	_inset[2] = right;
-	_inset[3] = bottom;
+	panel = nullptr;
+	inset[0] = left;
+	inset[1] = top;
+	inset[2] = right;
+	inset[3] = bottom;
 }
 
 void Border::setInset(int left, int top, int right, int bottom)
 {
-	_inset[0] = left;
-	_inset[1] = top;
-	_inset[2] = right;
-	_inset[3] = bottom;
+	inset[0] = left;
+	inset[1] = top;
+	inset[2] = right;
+	inset[3] = bottom;
 }
 
 void Border::getInset(int &left, int &top, int &right, int &bottom)
 {
-	left = _inset[0];
-	top = _inset[1];
-	right = _inset[2];
-	bottom = _inset[3];
+	left = inset[0];
+	top = inset[1];
+	right = inset[2];
+	bottom = inset[3];
 }
 
 void Border::drawFilledRect(int x0, int y0, int x1, int y1)
 {
-	Image::drawFilledRect( x0 - _inset[0], y0 - _inset[1], x1 - _inset[0], y1 - _inset[1] );
+	Image::drawFilledRect( x0 - inset[0], y0 - inset[1], x1 - inset[0], y1 - inset[1] );
 }
 
 void Border::drawOutlinedRect(int x0, int y0, int x1, int y1)
 {
-	Image::drawOutlinedRect( x0 - _inset[0], y0 - _inset[1], x1 - _inset[0], y1 - _inset[1] );
+	Image::drawOutlinedRect( x0 - inset[0], y0 - inset[1], x1 - inset[0], y1 - inset[1] );
 }
 
 void Border::drawSetTextPos(int x, int y)
 {
-	Image::drawSetTextPos( x - _inset[0], y - _inset[1] );
+	Image::drawSetTextPos( x - inset[0], y - inset[1] );
 }
 
 void Border::drawPrintText(int x, int y, const char *str, int len)
 {
-	Image::drawPrintText( x - _inset[0], y - _inset[1], str, len );
+	Image::drawPrintText( x - inset[0], y - inset[1], str, len );
 }
 
 void Border::drawPrintChar(int x, int y, char ch)
 {
-	Image::drawPrintChar( x - _inset[0], y - _inset[1], ch );
+	Image::drawPrintChar( x - inset[0], y - inset[1], ch );
 }
 
 BorderPair::BorderPair(Border *border1, Border *border2)
 {
-	_border[0] = border1;
-	_border[1] = border2;
+	borders[0] = border1;
+	borders[1] = border2;
 }
 
 void BorderPair::doPaint(Panel *p)
 {
-	if( _border[0] )
-		_border[0]->doPaint( p );
-	if( _border[1] )
-		_border[1]->doPaint( p );
+	if( borders[0] )
+		borders[0]->doPaint( p );
+	if( borders[1] )
+		borders[1]->doPaint( p );
 }
 
 void BorderPair::paint(Panel *p)
 {
-	if( _border[0] )
-		_border[0]->paint( p );
-	if( _border[1] )
-		_border[1]->paint( p );
+	if( borders[0] )
+		borders[0]->paint( p );
+	if( borders[1] )
+		borders[1]->paint( p );
 }

@@ -97,9 +97,9 @@ void XashSurface::enableMouseCapture( bool )
 	// the engine delivers all input to us regardless, so there is nothing to capture
 }
 
-void XashSurface::setCursor( Cursor *cursor )
+void XashSurface::setCursor( Cursor *newCursor )
 {
-	_currentCursor = cursor;
+	cursor = newCursor;
 
 	// bitmap cursors report DC_USER, which the engine platform layer hides just like DC_NONE
 	if( cursor )

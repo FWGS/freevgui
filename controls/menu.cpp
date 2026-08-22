@@ -24,12 +24,12 @@ void Menu::addMenuItem( Panel *panel )
 	addChild( panel );
 }
 
-MenuItem::MenuItem( const char *text ) : Button( text, 0, 0 ), _subMenu( nullptr )
+MenuItem::MenuItem( const char *text ) : Button( text, 0, 0 ), subMenu( nullptr )
 {
 	setButtonBorderEnabled( false );
 }
 
-MenuItem::MenuItem( const char *text, Menu *menu ) : Button( text, 0, 0 ), _subMenu( menu )
+MenuItem::MenuItem( const char *text, Menu *menu ) : Button( text, 0, 0 ), subMenu( menu )
 {
 	setButtonBorderEnabled( false );
 }

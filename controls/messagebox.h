@@ -16,9 +16,9 @@ public:
 protected:
 	virtual void performLayout() override;
 
-	Label*  _messageLabel;
-	Button* _okButton;
-	Dar<ActionSignal*> _actionSignalDar;
+	Label*  messageLabel;
+	Button* okButton;
+	Dar<ActionSignal*> actionSignals;
 public:
 	virtual void addActionSignal( ActionSignal* );
 	virtual void fireActionSignal();

@@ -18,9 +18,9 @@ public:
 	virtual Panel* getClient();
 	virtual TreeFolder* getFolder();
 protected:
-	TreeFolder *_treeFolder;
-	Panel *_client;
-	Button *_okButton, *_cancelButton, *_applyButton, *_helpButton;
+	TreeFolder *treeFolder;
+	Panel *client;
+	Button *okButton, *cancelButton, *applyButton, *helpButton;
 };
 CHECK_STRUCT_SIZE( ConfigWizard, 212, 312, 312 );
 }

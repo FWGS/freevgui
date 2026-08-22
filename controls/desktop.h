@@ -18,7 +18,7 @@ public:
 	virtual Frame* createInstance() = 0;
 protected:
 	virtual void setName( const char* );
-	char* _name;
+	char* name;
 };
 CHECK_STRUCT_SIZE( MiniApp, 8, 16, 16 );
 
@@ -30,9 +30,9 @@ public:
 protected:
 	virtual void performLayout() override;
 
-	class Dar<Frame*> _frameDar;
-	class Dar<Button*> _taskButtonDar;
-	class Panel* _tray;
+	class Dar<Frame*> frames;
+	class Dar<Button*> taskButtons;
+	class Panel* tray;
 };
 CHECK_STRUCT_SIZE( TaskBar, 216, 304, 304 );
 
@@ -48,9 +48,9 @@ public:
 protected:
 	virtual void paintBackground() override;
 
-	Desktop* _desktop;
-	MiniApp* _miniApp;
-	Image*   _image;
+	Desktop* desktop;
+	MiniApp* miniApp;
+	Image*   image;
 };
 CHECK_STRUCT_SIZE( DesktopIcon, 200, 288, 288 );
 
@@ -67,11 +67,11 @@ public:
 
 protected:
 
-	Panel* _background;
-	Panel* _foreground;
-	TaskBar* _taskBar;
-	Dar<DesktopIcon*> _desktopIconDar;
-	int _cascade[2];
+	Panel* background;
+	Panel* foreground;
+	TaskBar* taskBar;
+	Dar<DesktopIcon*> desktopIcons;
+	int nextFramePos[2];
 };
 CHECK_STRUCT_SIZE( Desktop, 220, 312, 312 );
 

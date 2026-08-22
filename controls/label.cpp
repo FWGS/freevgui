@@ -10,32 +10,30 @@
 
 namespace vgui
 {
-class FooDumb : public Panel, public ActionSignal
+class LabelProperties : public Panel, public ActionSignal
 {
 public:
-	Label *_label;
-	TextEntry *_textEntry;
+	Label *editedLabel;
+	TextEntry *textEntry;
 
-	FooDumb( Label *label ) : Panel( 0, 0, 200, 30 ),
-		_label( label ),
-		_textEntry( new TextEntry( "", 0, 0, 80, 20 ))
+	LabelProperties( Label *label ) : Panel( 0, 0, 200, 30 ), editedLabel( label ), textEntry( new TextEntry( "", 0, 0, 80, 20 ))
 	{
 		setLayout( new FlowLayout( 2 ));
 
 		Label *l = new Label( "setText" );
 		l->setParent( this );
 
-		_textEntry->setParent( this );
-		_textEntry->addActionSignal( this );
+		textEntry->setParent( this );
+		textEntry->addActionSignal( this );
 	}
 
 	void actionPerformed( Panel *p )
 	{
 		char buf[256];
 
-		_textEntry->getText( 0, buf, sizeof( buf ));
-		_label->setText( buf );
-		_label->repaint();
+		textEntry->getText( 0, buf, sizeof( buf ));
+		editedLabel->setText( buf );
+		editedLabel->repaint();
 	}
 };
 
@@ -63,9 +61,9 @@ Label::Label( int len, const char *str, int x, int y, int w, int h ) :
 	init( len, str, false );
 }
 
-void Label::setImage( Image *image )
+void Label::setImage( Image *newImage )
 {
-	_image = image;
+	image = newImage;
 	recomputeMinimumSize();
 	if( image )
 		repaint();
@@ -73,7 +71,7 @@ void Label::setImage( Image *image )
 
 void Label::setText( int len, const char *str )
 {
-	_textImage->setText( len, str );
+	textImage->setText( len, str );
 	recomputeMinimumSize();
 	repaint();
 }
@@ -104,21 +102,21 @@ void Label::setText( const char *str, ... )
 
 void Label::setFont( Scheme::SchemeFont sf )
 {
-	_textImage->setFont( sf );
+	textImage->setFont( sf );
 	recomputeMinimumSize();
 	repaint();
 }
 
 void Label::setFont( Font *f )
 {
-	_textImage->setFont( f );
+	textImage->setFont( f );
 	recomputeMinimumSize();
 	repaint();
 }
 
 void Label::getTextSize( int &w, int &h )
 {
-	_textImage->getSize( w, h );
+	textImage->getSize( w, h );
 }
 
 void Label::getContentSize( int &w, int &h )
@@ -135,14 +133,14 @@ void Label::getContentSize( int &w, int &h )
 
 void Label::setTextAlignment( Alignment alignment )
 {
-	_textAlignment = alignment;
+	textAlignment = alignment;
 	recomputeMinimumSize();
 	repaint();
 }
 
 void Label::setContentAlignment( Alignment alignment )
 {
-	_contentAlignment = alignment;
+	contentAlignment = alignment;
 	recomputeMinimumSize();
 	repaint();
 }
@@ -153,7 +151,7 @@ Panel *Label::createPropertyPanel()
 
 	TreeFolder *tf = new TreeFolder( "Label" );
 	p->addChild( tf );
-	tf->addChild( new FooDumb( this ));
+	tf->addChild( new LabelProperties( this ));
 	tf->addChild( new Label( "setContentAlignment" ));
 
 	return p;
@@ -162,20 +160,20 @@ Panel *Label::createPropertyPanel()
 void Label::setFgColor( int r, int g, int b, int a )
 {
 	Panel::setFgColor( r, g, b, a );
-	_textImage->setColor( Color( r, g, b, a	) );
+	textImage->setColor( Color( r, g, b, a	) );
 	repaint();
 }
 
 void Label::setFgColor( Scheme::SchemeColor scheme_color )
 {
 	Panel::setFgColor( scheme_color );
-	_textImage->setColor( scheme_color );
+	textImage->setColor( scheme_color );
 	repaint();
 }
 
 void Label::setContentFitted( bool fit )
 {
-	_contentFitted = fit;
+	contentFitted = fit;
 	recomputeMinimumSize();
 	repaint();
 }
@@ -185,7 +183,7 @@ void Label::recomputeMinimumSize()
 	int w, h;
 	getContentSize( w, h );
 	setPreferredSize( w, h );
-	if( _contentFitted )
+	if( contentFitted )
 		setSize( w, h );
 }
 
@@ -198,15 +196,15 @@ void Label::computeAlignment( int &tx0, int &ty0, int &tx1, int &ty1, int &ix0, 
 	getTextSize( tw, th );
 
 	ix0 = iy0 = ix1 = iy1 = 0;
-	if( _image )
-		_image->getSize( ix1, iy1 );
+	if( image )
+		image->getSize( ix1, iy1 );
 
 	tx0 = 0;
 	ty0 = 0;
 	tx1 = tw;
 	ty1 = th;
 
-	switch( _textAlignment )
+	switch( textAlignment )
 	{
 	case TOPLEFT:
 	case LEFT:
@@ -225,7 +223,7 @@ void Label::computeAlignment( int &tx0, int &ty0, int &tx1, int &ty1, int &ix0, 
 		break;
 	}
 
-	switch( _textAlignment )
+	switch( textAlignment )
 	{
 	case TOPLEFT:
 	case TOP:
@@ -262,7 +260,7 @@ void Label::computeAlignment( int &tx0, int &ty0, int &tx1, int &ty1, int &ix0, 
 	minY = 0;
 
 	int offx, offy;
-	switch( _contentAlignment )
+	switch( contentAlignment )
 	{
 	case TOPLEFT:
 	case LEFT:
@@ -281,7 +279,7 @@ void Label::computeAlignment( int &tx0, int &ty0, int &tx1, int &ty1, int &ix0, 
 		break;
 	}
 
-	switch( _contentAlignment )
+	switch( contentAlignment )
 	{
 	case TOPLEFT:
 	case TOP:
@@ -314,16 +312,16 @@ void Label::paint()
 
 	computeAlignment( tx0, ty0, tx1, ty1, ix0, iy0, ix1, iy1, minX, minY, maxX, maxY );
 
-	if( _image )
+	if( image )
 	{
-		_image->setPos( ix0, iy0 );
-		_image->doPaint( this );
+		image->setPos( ix0, iy0 );
+		image->doPaint( this );
 	}
 
-	if( _textImage )
+	if( textImage )
 	{
-		_textImage->setPos( tx0, ty0 );
-		_textImage->doPaint( this );
+		textImage->setPos( tx0, ty0 );
+		textImage->doPaint( this );
 	}
 
 	if( hasFocus() )
@@ -335,27 +333,26 @@ void Label::paint()
 
 void Label::init( int len, const char *str, bool textFitted )
 {
-	_contentFitted = textFitted;
-	_textAlignment = CENTER;
-	_contentAlignment = CENTER;
-	_textImage = new TextImage( len, str );
-	_textImage->setColor( Color( Scheme::SC_BLACK ));
-	_image = nullptr;
+	contentFitted = textFitted;
+	textAlignment = CENTER;
+	contentAlignment = CENTER;
+	textImage = new TextImage( len, str );
+	textImage->setColor( Color( Scheme::SC_BLACK ));
+	image = nullptr;
 	setText( len, str );
 }
 
 IntLabel::IntLabel( int value, int x, int y, int wide, int tall ) :
-	Label( nullptr, x, y, wide, tall )
+	Label( nullptr, x, y, wide, tall ), value( value )
 {
-	_value = value;
 }
 
-void IntLabel::setValue( int value )
+void IntLabel::setValue( int newValue )
 {
-	if( _value == value )
+	if( value == newValue )
 		return;
 
-	_value = value;
+	value = newValue;
 	repaint();
 }
 
@@ -368,7 +365,7 @@ void IntLabel::paintBackground()
 {
 	char buf[50];
 
-	snprintf( buf, sizeof( buf ), "%d", _value );
+	snprintf( buf, sizeof( buf ), "%d", value );
 	Panel::paintBackground();
 	drawSetTextFont( Scheme::SF_PRIMARY1 );
 	drawSetTextColor( Scheme::SC_BLACK );

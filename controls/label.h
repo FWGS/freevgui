@@ -23,7 +23,7 @@ public:
 	Label( const char *str, int x, int y );
 	Label( const char *str, int x, int y, int w, int h );
 	Label( int len, const char *str, int x, int y, int w, int h );
-	virtual void setImage( Image *image );
+	virtual void setImage( Image *newImage );
 	virtual void setText( int len, const char *str );
 	virtual void setText( const char *str, ... );
 	virtual void setFont( Scheme::SchemeFont sf );
@@ -47,10 +47,10 @@ protected:
 
 	virtual void recomputeMinimumSize();
 
-	bool _textEnabled, _imageEnabled, _contentFitted;
-	Alignment _textAlignment, _contentAlignment;
-	TextImage *_textImage;
-	Image *_image;
+	bool textEnabled, imageEnabled, contentFitted;
+	Alignment textAlignment, contentAlignment;
+	TextImage *textImage;
+	Image *image;
 
 private:
 	void init( int len, const char *str, bool textFitted );
@@ -61,12 +61,12 @@ class CLASSEXPORT IntLabel : public Label, public IntChangeSignal
 {
 public:
 	IntLabel( int value, int x, int y, int wide, int tall );
-	virtual void setValue( int value );
+	virtual void setValue( int newValue );
 	virtual void intChanged( int value, Panel *p ) override;
 protected:
 	virtual void paintBackground() override;
 
-	int _value;
+	int value;
 };
 CHECK_STRUCT_SIZE( IntLabel, 216, 304, 304 );
 }

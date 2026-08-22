@@ -18,8 +18,8 @@ public:
 	virtual void setProgress( float );
 	virtual int getSegmentCount();
 private:
-	int   _segmentCount;
-	float _progress;
+	int   segmentCount;
+	float segmentsLit;
 };
 CHECK_STRUCT_SIZE( ProgressBar, 196, 272, 272 );
 

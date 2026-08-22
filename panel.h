@@ -67,7 +67,7 @@ public:
 	virtual Panel *isWithinTraverse( int x, int y );
 	virtual void localToScreen( int &x, int &y );
 	virtual void screenToLocal( int &x, int &y );
-	virtual void setCursor( Cursor *cursor );
+	virtual void setCursor( Cursor *newCursor );
 	virtual void setCursor( Scheme::SchemeCursor scu );
 	virtual Cursor *getCursor();
 	virtual void setMinimumSize( int w, int h );
@@ -76,7 +76,7 @@ public:
 	virtual bool hasFocus();
 	virtual int getChildCount();
 	virtual Panel *getChild( int i );
-	virtual void setLayout( Layout *layout );
+	virtual void setLayout( Layout *newLayout );
 	virtual void invalidateLayout( bool layoutNow );
 	virtual void setFocusNavGroup( FocusNavGroup *fng );
 	virtual void requestFocusPrev();
@@ -84,7 +84,7 @@ public:
 	virtual void addFocusChangeSignal( FocusChangeSignal *fcs );
 	virtual bool isAutoFocusNavEnabled();
 	virtual void setAutoFocusNavEnabled( bool enable );
-	virtual void setBorder( Border *border );
+	virtual void setBorder( Border *newBorder );
 	virtual void setPaintBorderEnabled( bool enable );
 	virtual void setPaintBackgroundEnabled( bool enable );
 	virtual void setPaintEnabled( bool enable );
@@ -161,46 +161,46 @@ protected:
 	virtual void internalFocusChanged( bool );
 	virtual void internalSetCursor();
 
-	int _pos[2];
-	int _size[2];
-	int _loc[2];
-	int _minimumSize[2];
-	int _preferredSize[2];
+	int origin[2];
+	int size[2];
+	int screenOrigin[2];
+	int minimumSize[2];
+	int preferredSize[2];
 
-	Dar<Panel*> _childDar;
-	Panel *_parent;
-	SurfaceBase *_surfaceBase;
+	Dar<Panel*> children;
+	Panel *parent;
+	SurfaceBase *surfaceBase;
 
-	Dar<InputSignal*> _inputSignalDar;
-	Dar<RepaintSignal*> _repaintSignalDar;
+	Dar<InputSignal*> inputSignals;
+	Dar<RepaintSignal*> repaintSignals;
 
-	int _clipRect[4];
+	int clipRect[4];
 
-	Cursor *_cursor;
-	Scheme::SchemeCursor _schemeCursor;
+	Cursor *cursor;
+	Scheme::SchemeCursor schemeCursor;
 
-	bool _visible;
+	bool visible;
 
-	Layout *_layout;
-	bool _needsLayout;
+	Layout *layout;
+	bool pendingLayout;
 
-	FocusNavGroup *_focusNavGroup;
-	Dar<FocusChangeSignal*> _focusChangeSignalDar;
-	bool _autoFocusNavEnabled;
+	FocusNavGroup *focusNavGroup;
+	Dar<FocusChangeSignal*> focusChangeSignals;
+	bool autoFocusNavEnabled;
 
-	Border *_border;
+	Border *border;
 private:
 	void init( int x, int y, int w, int h );
 
-	bool _needsRepaint;
-	bool _enabled;
-	BuildGroup *_buildGroup;
-	Color _fgColor;
-	Color _bgColor;
-	LayoutInfo *_layoutInfo;
-	bool _paintBorderEnabled;
-	bool _paintBackgroundEnabled;
-	bool _paintEnabled;
+	bool pendingRepaint;
+	bool enabled;
+	BuildGroup *buildGroup;
+	Color foregroundColor;
+	Color backgroundColor;
+	LayoutInfo *layoutInfo;
+	bool paintBorderEnabled;
+	bool paintBackgroundEnabled;
+	bool paintEnabled;
 };
 CHECK_STRUCT_SIZE( Panel, 188, 264, 264 );
 
@@ -216,8 +216,8 @@ protected:
 	virtual void requestFocusNext();
 	virtual void setCurrentPanel( Panel *panel );
 
-	Dar<Panel*> _panelDar;
-	int _currentIndex;
+	Dar<Panel*> panels;
+	int index;
 };
 CHECK_STRUCT_SIZE( FocusNavGroup, 20, 32, 32 );
 

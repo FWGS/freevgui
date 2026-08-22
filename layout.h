@@ -33,7 +33,7 @@ public:
 	virtual void performLayout( Panel * ) override;
 	virtual LayoutInfo *createLayoutInfo( Alignment );
 private:
-	int _inset;
+	int inset;
 };
 CHECK_STRUCT_SIZE( BorderLayout, 8, 16, 16 );
 
@@ -44,7 +44,7 @@ public:
 
 	virtual void performLayout( Panel * ) override;
 private:
-	int _hgap;
+	int horizontalGap;
 };
 CHECK_STRUCT_SIZE( FlowLayout, 8, 16, 16 );
 
@@ -55,8 +55,8 @@ public:
 
 	virtual void performLayout( Panel * ) override;
 private:
-	int _vgap;
-	bool _fitWide;
+	int verticalGap;
+	bool fitWide;
 };
 CHECK_STRUCT_SIZE( StackLayout, 12, 16, 16 );
 }

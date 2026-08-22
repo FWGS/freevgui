@@ -32,18 +32,18 @@ void HeaderPanel::performLayout()
 	int x_left = 0, w, h;
 	getPaintSize( w, h );
 
-	_sectionLayer->setBounds( 0, 0, w, h );
+	sectionLayer->setBounds( 0, 0, w, h );
 
-	for( int i = 0; i < _sectionPanelDar.getCount(); i++ )
+	for( int i = 0; i < sectionPanels.getCount(); i++ )
 	{
 		int x, y, x_right;
 
-		Panel *slider = _sliderPanelDar[i];
+		Panel *slider = sliderPanels[i];
 		slider->getPos( x, y );
 
-		x_right = x + _sliderWide / 2;
+		x_right = x + sliderWide / 2;
 
-		Panel *panel = _sectionPanelDar[i];
+		Panel *panel = sectionPanels[i];
 		panel->setBounds( x_left, 0, x_right - x_left, h );
 
 		x_left = x_right;
@@ -51,14 +51,14 @@ void HeaderPanel::performLayout()
 }
 
 HeaderPanel::HeaderPanel( int x, int y, int w, int h ) : Panel( x, y, w, h ),
-	_sectionLayer( new Panel( 0, 0, w, h )),
-	_sliderWide( 11 ),
-	_dragging( false )
+	sectionLayer( new Panel( 0, 0, w, h )),
+	sliderWide( 11 ),
+	dragging( false )
 {
-	_sectionLayer->setPaintBorderEnabled( false );
-	_sectionLayer->setPaintBackgroundEnabled( false );
-	_sectionLayer->setPaintEnabled( false );
-	_sectionLayer->setParent( this );
+	sectionLayer->setPaintBorderEnabled( false );
+	sectionLayer->setPaintBackgroundEnabled( false );
+	sectionLayer->setPaintEnabled( false );
+	sectionLayer->setParent( this );
 }
 
 void HeaderPanel::addSectionPanel( Panel *p )
@@ -67,20 +67,20 @@ void HeaderPanel::addSectionPanel( Panel *p )
 
 	int x = 0, y = 0, w = 0, h = 0;
 
-	for( auto section : _sectionPanelDar )
+	for( auto section : sectionPanels )
 	{
 		section->getBounds( x, y, w, h );
 
-		x += w + _sliderWide;
+		x += w + sliderWide;
 	}
-	_sectionPanelDar.addElement( p );
+	sectionPanels.addElement( p );
 	p->setPos( x, 0 );
-	p->setParent( _sectionLayer );
+	p->setParent( sectionLayer );
 	p->setBounds( x, y, w, h );
 
 	getPaintSize( w, h );
 
-	Panel *slider = new Panel( 0, 0, _sliderWide, h );
+	Panel *slider = new Panel( 0, 0, sliderWide, h );
 	slider->setPaintBorderEnabled( false );
 	slider->setPaintBackgroundEnabled( false );
 	slider->setPaintEnabled( false );
@@ -88,7 +88,7 @@ void HeaderPanel::addSectionPanel( Panel *p )
 	slider->addInputSignal( new HeaderPanelSignal( this ));
 	slider->setCursor( getApp()->getScheme()->getCursor( (Scheme::SchemeCursor)Cursor::DefaultCursor::DC_SIZEWE ));
 	slider->setParent( this );
-	_sliderPanelDar.addElement( slider );
+	sliderPanels.addElement( slider );
 
 	invalidateLayout( false );
 	fireChangeSignal();
@@ -97,7 +97,7 @@ void HeaderPanel::addSectionPanel( Panel *p )
 
 void HeaderPanel::setSliderPos( int i, int pos )
 {
-	_sliderPanelDar[i]->setPos( pos - _sliderWide / 2, 0 );
+	sliderPanels[i]->setPos( pos - sliderWide / 2, 0 );
 	invalidateLayout( false );
 	fireChangeSignal();
 	repaint();
@@ -105,37 +105,37 @@ void HeaderPanel::setSliderPos( int i, int pos )
 
 int HeaderPanel::getSectionCount()
 {
-	return _sectionPanelDar.getCount();
+	return sectionPanels.getCount();
 }
 
 void HeaderPanel::getSectionExtents( int i, int &x_left, int &x_right )
 {
 	int x, y, w, h;
-	_sectionPanelDar[i]->getBounds( x, y, w, h );
+	sectionPanels[i]->getBounds( x, y, w, h );
 	x_left = x;
 	x_right = x + w;
 }
 
 void HeaderPanel::addChangeSignal( ChangeSignal *s )
 {
-	_changeSignalDar.putElement( s );
+	changeSignals.putElement( s );
 }
 
 void HeaderPanel::fireChangeSignal()
 {
 	invalidateLayout( true );
-	for( auto signal : _changeSignalDar )
+	for( auto signal : changeSignals )
 		signal->valueChanged( this );
 }
 
 void HeaderPanel::privateCursorMoved( int x, int y, Panel *p )
 {
-	if( !_dragging )
+	if( !dragging )
 		return;
 
 	getApp()->getCursorPos( x, y );
 	screenToLocal( x, y );
-	setSliderPos( _dragSliderIndex, x + _dragSliderStartPos - _dragSliderStartX );
+	setSliderPos( dragSliderIndex, x + dragSliderStartPos - dragSliderStartX );
 	invalidateLayout( false );
 	repaint();
 }
@@ -147,9 +147,9 @@ void HeaderPanel::privateMousePressed( MouseCode code, Panel *p )
 	getApp()->getCursorPos( mx, my );
 	screenToLocal( mx, my );
 
-	for( int i = 0; i < _sliderPanelDar.getCount(); i++ )
+	for( int i = 0; i < sliderPanels.getCount(); i++ )
 	{
-		Panel *slider = _sliderPanelDar[i];
+		Panel *slider = sliderPanels[i];
 
 		if( slider != p )
 			continue;
@@ -157,10 +157,10 @@ void HeaderPanel::privateMousePressed( MouseCode code, Panel *p )
 		int x, y;
 
 		p->getPos( x, y );
-		_dragging = true;
-		_dragSliderIndex = i;
-		_dragSliderStartPos = _sliderWide / 2 + x;
-		_dragSliderStartX = mx;
+		dragging = true;
+		dragSliderIndex = i;
+		dragSliderStartPos = sliderWide / 2 + x;
+		dragSliderStartX = mx;
 		slider->setAsMouseCapture( true );
 		break;
 	}
@@ -168,7 +168,7 @@ void HeaderPanel::privateMousePressed( MouseCode code, Panel *p )
 
 void HeaderPanel::privateMouseReleased( MouseCode code, Panel *p )
 {
-	_dragging = false;
+	dragging = false;
 	p->setAsMouseCapture( false );
 }
 }

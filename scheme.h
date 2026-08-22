@@ -53,9 +53,9 @@ public:
 	virtual Cursor *getCursor( SchemeCursor scu );
 
 private:
-	int _color[SC_COUNT][4];
-	Font *_font[SF_COUNT];
-	Cursor *_cursor[SCU_COUNT];
+	int colors[SC_COUNT][4];
+	Font *fonts[SF_COUNT];
+	Cursor *cursors[SCU_COUNT];
 };
 
 CHECK_STRUCT_SIZE( Scheme, 224, 304, 304 );

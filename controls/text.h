@@ -51,14 +51,14 @@ protected:
 	virtual void keyReleased( KeyCode, Panel* );
 	virtual void keyFocusTicked( Panel* );
 
-	Dar<char> _lineDar;
-	int       _cursorPos;
-	bool      _cursorBlink, _hideText;
-	long int  _cursorNextBlinkTime;
-	int       _cursorBlinkRate;
-	int       _select[2];
-	Dar<ActionSignal*> _actionSignalDar;
-	Font*    _font;
+	Dar<char> line;
+	int       cursorPos;
+	bool      cursorBlink, hideText;
+	long int  cursorNextBlinkTime;
+	int       cursorBlinkRate;
+	int       selection[2];
+	Dar<ActionSignal*> actionSignals;
+	Font*    font;
 };
 CHECK_STRUCT_SIZE( TextEntry, 244, 344, 336 );
 
@@ -74,9 +74,9 @@ public:
 protected:
 	virtual void paintBackground() override;
 
-	int _xy[2], _bgColor[3], _fgColor[3];
-	char* _grid;
-	int _gridSize[2];
+	int cursorPos[2], backgroundColor[3], foregroundColor[3];
+	char* grid;
+	int gridSize[2];
 };
 CHECK_STRUCT_SIZE( TextGrid, 232, 312, 312 );
 
@@ -94,7 +94,7 @@ public:
 protected:
 	virtual void paint() override;
 private:
-	TextImage* _textImage;
+	TextImage* textImage;
 };
 CHECK_STRUCT_SIZE( TextPanel, 192, 272, 272 );
 }

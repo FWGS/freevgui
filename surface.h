@@ -39,12 +39,12 @@ public:
 	virtual int createNewTextureID() = 0;
 	virtual void GetMousePos( int &, int & ) = 0;
 protected:
-	bool _needsSwap;
-	App *_app;
-	Panel *_embeddedPanel;
-	Dar<char *> _modeInfoDar;
-	ImagePanel *_emulatedCursor;
-	Cursor *_currentCursor;
+	bool pendingSwap;
+	App *app;
+	Panel *rootPanel;
+	Dar<char *> modes;
+	ImagePanel *softwareCursor;
+	Cursor *cursor;
 
 	~SurfaceBase();
 
@@ -106,10 +106,10 @@ protected:
 	virtual void popMakeCurrent( Panel * ) override; // platform-dependent
 	virtual void applyChanges() override; // platform-dependent
 
-	SurfacePlat *_plat;
-	bool _needsSwap;
-	Panel *_embeddedPanel;
-	Dar<char *> _modeInfoDar;
+	SurfacePlat *impl;
+	bool pendingSwap;
+	Panel *rootPanel;
+	Dar<char *> modes;
 };
 CHECK_STRUCT_SIZE( Surface, 60, 104, 104 );
 }

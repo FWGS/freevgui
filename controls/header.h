@@ -27,14 +27,14 @@ public:
 	virtual void privateMouseReleased( MouseCode code, Panel *p );
 
 private:
-	Dar<Panel*> _sliderPanelDar, _sectionPanelDar;
-	Dar<ChangeSignal*> _changeSignalDar;
-	Panel* _sectionLayer;
-	int  _sliderWide;
-	bool _dragging;
-	int  _dragSliderIndex;
-	int  _dragSliderStartPos;
-	int  _dragSliderStartX;
+	Dar<Panel*> sliderPanels, sectionPanels;
+	Dar<ChangeSignal*> changeSignals;
+	Panel* sectionLayer;
+	int  sliderWide;
+	bool dragging;
+	int  dragSliderIndex;
+	int  dragSliderStartPos;
+	int  dragSliderStartX;
 };
 CHECK_STRUCT_SIZE( HeaderPanel, 248, 344, 344 );
 

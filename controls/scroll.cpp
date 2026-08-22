@@ -8,75 +8,68 @@
 
 namespace vgui
 {
-class FooDefaultSliderSignal : public InputSignal
+class DefaultSliderSignal : public InputSignalAdapter
 {
-	Slider *_slider;
+	Slider *slider;
 public:
-	FooDefaultSliderSignal( Slider *slider ) : _slider( slider ) {}
+	DefaultSliderSignal( Slider *slider ) : slider( slider )
+	{
+	}
+
 	virtual void cursorMoved( int x, int y, Panel *p ) override
 	{
-		_slider->privateCursorMoved( x, y, p );
+		slider->privateCursorMoved( x, y, p );
 	}
-	virtual void cursorEntered( Panel * ) override {}
-	virtual void cursorExited( Panel * ) override {}
 	virtual void mousePressed( MouseCode code, Panel *p ) override
 	{
-		_slider->privateMousePressed( code, p );
+		slider->privateMousePressed( code, p );
 	}
-	virtual void mouseDoublePressed( MouseCode, Panel * ) override {}
 	virtual void mouseReleased( MouseCode code, Panel *p ) override
 	{
-		_slider->privateMouseReleased( code, p );
+		slider->privateMouseReleased( code, p );
 	}
-	virtual void mouseWheeled( int, Panel * ) override {}
-	virtual void keyPressed( KeyCode, Panel * ) override {}
-	virtual void keyTyped( KeyCode, Panel * ) override {}
-	virtual void keyReleased( KeyCode, Panel * ) override {}
-	virtual void keyFocusTicked( Panel * ) override {}
 };
 
-
-Slider::Slider( int x, int y, int w, int h, bool vertical ) :
-	Panel( x, y, w, h ),
-	_vertical( vertical ),
-	_dragging( false ),
-	_value( 0 ),
-	_rangeWindow( 0 ),
-	_rangeWindowEnabled( false ),
-	_buttonOffset( 0 )
+Slider::Slider( int x, int y, int w, int h, bool vertical ) : Panel( x, y, w, h ),
+	vertical( vertical ),
+	dragging( false ),
+	value( 0 ),
+	rangeWindow( 0 ),
+	rangeWindowEnabled( false ),
+	buttonOffset( 0 )
 {
-	_range[0] = 0;
-	_range[1] = 299;
+	range[0] = 0;
+	range[1] = 299;
 	recomputeNobPosFromValue();
-	addInputSignal( new FooDefaultSliderSignal( this ));
+	addInputSignal( new DefaultSliderSignal( this ));
 }
 
-void Slider::setValue(int value)
+void Slider::setValue(int newValue)
 {
-	int orig_value = _value;
+	int orig_value = value;
 
-	value = bound( _range[0], value, _range[1] );
+	newValue = bound( range[0], newValue, range[1] );
 
-	_value = value;
+	value = newValue;
 	recomputeNobPosFromValue();
 
-	if( _value != orig_value )
+	if( value != orig_value )
 		fireIntChangeSignal();
 }
 
 int Slider::getValue()
 {
-	return _value;
+	return value;
 }
 
 bool Slider::isVertical()
 {
-	return _vertical;
+	return vertical;
 }
 
 void Slider::addIntChangeSignal(IntChangeSignal *s)
 {
-	_intChangeSignalDar.putElement( s );
+	intChangeSignals.putElement( s );
 }
 
 void Slider::setRange(int imin, int imax)
@@ -84,24 +77,24 @@ void Slider::setRange(int imin, int imax)
 	if( imax < imin )
 		imax = imin;
 
-	_range[0] = imin;
-	_range[1] = imax;
+	range[0] = imin;
+	range[1] = imax;
 }
 
 void Slider::getRange(int &imin, int &imax)
 {
-	imin = _range[0];
-	imax = _range[1];
+	imin = range[0];
+	imax = range[1];
 }
 
-void Slider::setRangeWindow(int rangeWindow)
+void Slider::setRangeWindow(int newRangeWindow)
 {
-	_rangeWindow = rangeWindow;
+	rangeWindow = newRangeWindow;
 }
 
 void Slider::setRangeWindowEnabled(bool enable)
 {
-	_rangeWindowEnabled = enable;
+	rangeWindowEnabled = enable;
 }
 
 void Slider::setSize(int w, int h)
@@ -112,8 +105,8 @@ void Slider::setSize(int w, int h)
 
 void Slider::getNobPos(int &imin, int &imax)
 {
-	imin = _nobPos[0];
-	imax = _nobPos[1];
+	imin = knobPos[0];
+	imax = knobPos[1];
 }
 
 bool Slider::hasFullRange()
@@ -121,19 +114,19 @@ bool Slider::hasFullRange()
 	int w, h;
 	getPaintSize( w, h );
 
-	float range = _range[1] - _range[0];
-	float rangewindow = _rangeWindowEnabled ? _rangeWindow : range;
+	float span = range[1] - range[0];
+	float window = rangeWindowEnabled ? rangeWindow : span;
 
-	if( rangewindow < 0.0f )
+	if( window < 0.0f )
 		return false;
 
-	float size = _vertical ? h : w;
-	return rangewindow <= size + _buttonOffset;
+	float size = vertical ? h : w;
+	return window <= size + buttonOffset;
 }
 
 void Slider::setButtonOffset(int off)
 {
-	_buttonOffset = off;
+	buttonOffset = off;
 }
 
 void Slider::recomputeNobPosFromValue()
@@ -141,31 +134,31 @@ void Slider::recomputeNobPosFromValue()
 	int w, h;
 	getPaintSize( w, h );
 
-	float range = _range[1] - _range[0];
-	float value = _value - _range[0];
-	float rangewindow = range;
+	float span = range[1] - range[0];
+	float offset = value - range[0];
+	float window = span;
 
-	if( _rangeWindow < 0.0f && _rangeWindowEnabled )
+	if( rangeWindow < 0.0f && rangeWindowEnabled )
 	{
 		repaint();
 		return;
 	}
 
-	if( _rangeWindow >= 0.0f && _rangeWindowEnabled )
-		rangewindow = _rangeWindow;
+	if( rangeWindow >= 0.0f && rangeWindowEnabled )
+		window = rangeWindow;
 
-	if( rangewindow > 0.0f )
+	if( window > 0.0f )
 	{
-		float size = _vertical ? h : w;
-		float nobSize = size / rangewindow * size;
+		float size = vertical ? h : w;
+		float nobSize = size / window * size;
 
-		_nobPos[0] = ( size - nobSize ) * ( value / range );
-		_nobPos[1] = _nobPos[0] + nobSize;
+		knobPos[0] = ( size - nobSize ) * ( offset / span );
+		knobPos[1] = knobPos[0] + nobSize;
 
-		if( _nobPos[1] > size )
+		if( knobPos[1] > size )
 		{
-			_nobPos[0] = size - nobSize;
-			_nobPos[1] = size;
+			knobPos[0] = size - nobSize;
+			knobPos[1] = size;
 		}
 	}
 }
@@ -176,31 +169,31 @@ void Slider::recomputeValueFromNobPos()
 
 	getPaintSize( w, h );
 
-	float range = _range[1] - _range[0];
-	float value = _value - _range[0];
-	float rangewindow = range;
+	float span = range[1] - range[0];
+	float offset = value - range[0];
+	float window = span;
 
-	if( _rangeWindow < 0.0f && _rangeWindowEnabled )
+	if( rangeWindow < 0.0f && rangeWindowEnabled )
 	{
-		_value = bound( _range[0], (int)( _range[0] + value + 0.5f ), _range[1] );
+		value = bound( range[0], (int)( range[0] + offset + 0.5f ), range[1] );
 		return;
 	}
 
-	if( _rangeWindow >= 0.0f && _rangeWindowEnabled )
-		rangewindow = _rangeWindow;
+	if( rangeWindow >= 0.0f && rangeWindowEnabled )
+		window = rangeWindow;
 
-	if( rangewindow > 0 )
+	if( window > 0 )
 	{
-		float size = _vertical ? h : w;
-		value = _nobPos[0] / ( size - ( size / rangewindow ) * size ) * range;
+		float size = vertical ? h : w;
+		offset = knobPos[0] / ( size - ( size / window ) * size ) * span;
 	}
 
-	_value = bound( _range[0], (int)( _range[0] + value + 0.5f ), _range[1] );
+	value = bound( range[0], (int)( range[0] + offset + 0.5f ), range[1] );
 }
 
 void Slider::privateCursorMoved( int x, int y, Panel *p )
 {
-	if( _dragging == false )
+	if( dragging == false )
 		return;
 
 	getApp()->getCursorPos( x, y );
@@ -209,33 +202,33 @@ void Slider::privateCursorMoved( int x, int y, Panel *p )
 	int w, h;
 	getPaintSize( w, h );
 
-	if( _vertical == false )
+	if( vertical == false )
 	{
-		_nobPos[0] = _nobDragStartPos[0] + ( x - _dragStartPos[0] );
-		_nobPos[1] = _nobDragStartPos[1] + ( x - _dragStartPos[0] );
+		knobPos[0] = knobDragStartPos[0] + ( x - dragStartPos[0] );
+		knobPos[1] = knobDragStartPos[1] + ( x - dragStartPos[0] );
 
-		if( _nobPos[1] > w )
+		if( knobPos[1] > w )
 		{
-			_nobPos[0] = w - ( _nobPos[1] - _nobPos[0] );
-			_nobPos[1] = w;
+			knobPos[0] = w - ( knobPos[1] - knobPos[0] );
+			knobPos[1] = w;
 		}
 	}
 	else
 	{
-		_nobPos[0] = _nobDragStartPos[0] + ( y - _dragStartPos[1] );
-		_nobPos[1] = _nobDragStartPos[1] + ( y - _dragStartPos[1] );
+		knobPos[0] = knobDragStartPos[0] + ( y - dragStartPos[1] );
+		knobPos[1] = knobDragStartPos[1] + ( y - dragStartPos[1] );
 
-		if( _nobPos[1] > h )
+		if( knobPos[1] > h )
 		{
-			_nobPos[0] = h - ( _nobPos[1] - _nobPos[0] );
-			_nobPos[1] = h;
+			knobPos[0] = h - ( knobPos[1] - knobPos[0] );
+			knobPos[1] = h;
 		}
 	}
 
-	if( _nobPos[0] < 0 )
+	if( knobPos[0] < 0 )
 	{
-		_nobPos[1] = _nobPos[1] - _nobPos[0];
-		_nobPos[0] = 0;
+		knobPos[1] = knobPos[1] - knobPos[0];
+		knobPos[0] = 0;
 	}
 
 	recomputeValueFromNobPos();
@@ -249,35 +242,35 @@ void Slider::privateMousePressed( MouseCode code, Panel *p )
 	getApp()->getCursorPos( mx, my );
 	screenToLocal( mx, my );
 
-	if( _vertical == false )
+	if( vertical == false )
 	{
-		if( mx < _nobPos[0] || mx >= _nobPos[1] )
+		if( mx < knobPos[0] || mx >= knobPos[1] )
 			return;
 	}
 	else
 	{
-		if( my < _nobPos[0] || my >= _nobPos[1] )
+		if( my < knobPos[0] || my >= knobPos[1] )
 			return;
 	}
 
-	_dragging = true;
+	dragging = true;
 	getApp()->setMouseCapture( this );
-	_nobDragStartPos[0] = _nobPos[0];
-	_nobDragStartPos[1] = _nobPos[1];
-	_dragStartPos[0] = mx;
-	_dragStartPos[1] = my;
+	knobDragStartPos[0] = knobPos[0];
+	knobDragStartPos[1] = knobPos[1];
+	dragStartPos[0] = mx;
+	dragStartPos[1] = my;
 }
 
 void Slider::privateMouseReleased( MouseCode code, Panel *p )
 {
-	_dragging = false;
+	dragging = false;
 	getApp()->setMouseCapture( nullptr );
 }
 
 void Slider::fireIntChangeSignal()
 {
-	for( int i = 0; i < _intChangeSignalDar.getCount(); i++ )
-		_intChangeSignalDar[i]->intChanged( getValue(), this );
+	for( int i = 0; i < intChangeSignals.getCount(); i++ )
+		intChangeSignals[i]->intChanged( getValue(), this );
 }
 
 void Slider::paintBackground()
@@ -285,16 +278,16 @@ void Slider::paintBackground()
 	int w, h;
 	getPaintSize( w, h );
 
-	if( !_vertical )
+	if( !vertical )
 	{
 		drawSetColor( Scheme::SC_SECONDARY3 );
 		drawFilledRect( 0, 0, w, h );
 		drawSetColor( Scheme::SC_BLACK );
 		drawOutlinedRect( 0, 0, w, h );
 		drawSetColor( Scheme::SC_PRIMARY2 );
-		drawFilledRect( _nobPos[0], 0, _nobPos[1], h );
+		drawFilledRect( knobPos[0], 0, knobPos[1], h );
 		drawSetColor( Scheme::SC_BLACK );
-		drawOutlinedRect( _nobPos[0], 0, _nobPos[1], h );
+		drawOutlinedRect( knobPos[0], 0, knobPos[1], h );
 	}
 	else
 	{
@@ -306,49 +299,49 @@ void Slider::paintBackground()
 		drawSetColor( Scheme::SC_SECONDARY2 );
 		drawFilledRect( 1, 1,          w - 1, 2 );
 		drawFilledRect( 1, 2,          3,     h - 1 );
-		drawFilledRect( 2, _nobPos[1], w - 1, _nobPos[1] + 1 );
+		drawFilledRect( 2, knobPos[1], w - 1, knobPos[1] + 1 );
 		drawSetColor( Scheme::SC_SECONDARY3 );
 		drawFilledRect( 2, 2, w - 1, h - 1 );
 		drawSetColor( Scheme::SC_PRIMARY1 );
-		drawFilledRect( 0,     _nobPos[0],     w, _nobPos[0] + 1 );
-		drawFilledRect( 0,     _nobPos[1],     w, _nobPos[1] + 1 ) ;
-		drawFilledRect( 0,     _nobPos[0] + 1, 1, _nobPos[1] );
-		drawFilledRect( w - 1, _nobPos[0] + 1, w, _nobPos[1] );
+		drawFilledRect( 0,     knobPos[0],     w, knobPos[0] + 1 );
+		drawFilledRect( 0,     knobPos[1],     w, knobPos[1] + 1 ) ;
+		drawFilledRect( 0,     knobPos[0] + 1, 1, knobPos[1] );
+		drawFilledRect( w - 1, knobPos[0] + 1, w, knobPos[1] );
 		drawSetColor( Scheme::SC_PRIMARY3 );
-		drawFilledRect( 1, _nobPos[0] + 1, w - 1, _nobPos[0] + 2 );
-		drawFilledRect( 1, _nobPos[0] + 2, 2,     _nobPos[1] );
+		drawFilledRect( 1, knobPos[0] + 1, w - 1, knobPos[0] + 2 );
+		drawFilledRect( 1, knobPos[0] + 2, 2,     knobPos[1] );
 		drawSetColor( Scheme::SC_PRIMARY2 );
-		drawFilledRect( 2, _nobPos[0] + 2, w - 1, _nobPos[1] );
+		drawFilledRect( 2, knobPos[0] + 2, w - 1, knobPos[1] );
 	}
 }
 
-class FooDefaultScrollBarIntChangeSignal : public IntChangeSignal
+class DefaultScrollBarIntChangeSignal : public IntChangeSignal
 {
-	ScrollBar *_sb;
+	ScrollBar *scrollBar;
 public:
-	FooDefaultScrollBarIntChangeSignal( ScrollBar *sb ) : _sb( sb ) {}
+	DefaultScrollBarIntChangeSignal( ScrollBar *sb ) : scrollBar( sb ) {}
 	virtual void intChanged( int val, Panel *p ) override
 	{
-		_sb->fireIntChangeSignal();
+		scrollBar->fireIntChangeSignal();
 	}
 };
 
-class FooDefaultButtonSignal : public ActionSignal
+class DefaultButtonSignal : public ActionSignal
 {
-	ScrollBar *_sb;
-	int _buttonIndex;
+	ScrollBar *scrollBar;
+	int buttonIndex;
 public:
-	FooDefaultButtonSignal( ScrollBar *sb, int index ) : _sb( sb ), _buttonIndex( index ) {}
+	DefaultButtonSignal( ScrollBar *sb, int index ) : scrollBar( sb ), buttonIndex( index ) {}
 	virtual void actionPerformed( Panel *p ) override
 	{
-		_sb->doButtonPressed( _buttonIndex );
+		scrollBar->doButtonPressed( buttonIndex );
 	}
 };
 
 ScrollBar::ScrollBar( int x, int y, int w, int h, bool vertical ) : Panel( x, y, w, h )
 {
-	_slider = nullptr;
-	_button[0] = _button[1] = nullptr;
+	slider = nullptr;
+	buttons[0] = buttons[1] = nullptr;
 
 	if( vertical )
 	{
@@ -373,129 +366,129 @@ ScrollBar::ScrollBar( int x, int y, int w, int h, bool vertical ) : Panel( x, y,
 
 void ScrollBar::setValue( int value )
 {
-	_slider->setValue( value );
+	slider->setValue( value );
 }
 
 int ScrollBar::getValue()
 {
-	return _slider->getValue();
+	return slider->getValue();
 }
 
 void ScrollBar::addIntChangeSignal( IntChangeSignal *ics )
 {
-	_intChangeSignalDar.putElement( ics );
-	_slider->addIntChangeSignal( new FooDefaultScrollBarIntChangeSignal( this ));
+	intChangeSignals.putElement( ics );
+	slider->addIntChangeSignal( new DefaultScrollBarIntChangeSignal( this ));
 }
 
 void ScrollBar::setRange( int imin, int imax )
 {
-	_slider->setRange( imin, imax );
+	slider->setRange( imin, imax );
 }
 
 void ScrollBar::setRangeWindow( int rangeWindow )
 {
-	_slider->setRangeWindow( rangeWindow );
+	slider->setRangeWindow( rangeWindow );
 }
 
 void ScrollBar::setRangeWindowEnabled( bool enable )
 {
-	_slider->setRangeWindowEnabled( enable );
+	slider->setRangeWindowEnabled( enable );
 }
 
 void ScrollBar::setSize( int w, int h )
 {
 	Panel::setSize( w, h );
 
-	if( !_slider || !_button[0] || !_button[1] )
+	if( !slider || !buttons[0] || !buttons[1] )
 		return;
 
 	getPaintSize( w, h );
 
-	if( _slider->isVertical( ))
+	if( slider->isVertical( ))
 	{
-		_slider->setBounds( 0, w, w, h - w * 2 );
-		_button[0]->setBounds( 0, 0, w, w );
-		_button[1]->setBounds( 0, h - w, w, w );
+		slider->setBounds( 0, w, w, h - w * 2 );
+		buttons[0]->setBounds( 0, 0, w, w );
+		buttons[1]->setBounds( 0, h - w, w, w );
 	}
 	else
 	{
-		_slider->setBounds( h, 0, w - h * 2, h );
-		_button[0]->setBounds( 0, 0, h, h );
-		_button[1]->setBounds( w - h, 0, h, h );
+		slider->setBounds( h, 0, w - h * 2, h );
+		buttons[0]->setBounds( 0, 0, h, h );
+		buttons[1]->setBounds( w - h, 0, h, h );
 	}
 }
 
 bool ScrollBar::isVertical()
 {
-	return _slider->isVertical();
+	return slider->isVertical();
 }
 
 bool ScrollBar::hasFullRange()
 {
-	return _slider->hasFullRange();
+	return slider->hasFullRange();
 }
 
 void ScrollBar::setButton( Button *b, int i )
 {
-	if( _button[i] )
-		removeChild( _button[i] );
+	if( buttons[i] )
+		removeChild( buttons[i] );
 
-	_button[i] = b;
+	buttons[i] = b;
 	addChild( b );
-	b->addActionSignal( new FooDefaultButtonSignal( this, i ));
+	b->addActionSignal( new DefaultButtonSignal( this, i ));
 	validate();
 }
 
 Button *ScrollBar::getButton( int i )
 {
-	return _button[i];
+	return buttons[i];
 }
 
 void ScrollBar::setSlider( Slider *s )
 {
-	if( _slider )
-		removeChild( _slider );
+	if( slider )
+		removeChild( slider );
 
-	_slider = s;
+	slider = s;
 	addChild( s );
-	s->addIntChangeSignal( new FooDefaultScrollBarIntChangeSignal( this ));
+	s->addIntChangeSignal( new DefaultScrollBarIntChangeSignal( this ));
 	validate();
 }
 
 Slider *ScrollBar::getSlider()
 {
-	return _slider;
+	return slider;
 }
 
 void ScrollBar::doButtonPressed( int i )
 {
-	_slider->setValue( _slider->getValue() + ( _buttonPressedScrollValue * ( i == 0 ? -1 : 1 )));
+	slider->setValue( slider->getValue() + ( buttonPressedScrollValue * ( i == 0 ? -1 : 1 )));
 }
 
 void ScrollBar::setButtonPressedScrollValue( int i )
 {
-	_buttonPressedScrollValue = i;
+	buttonPressedScrollValue = i;
 }
 
 void ScrollBar::validate()
 {
-	if( _slider )
+	if( slider )
 	{
 		int buttonOffset = 0;
-		bool vertical = _slider->isVertical();
+		bool vertical = slider->isVertical();
 
 		for( int i = 0; i < 2; i++ )
 		{
-			if( _button[i] == nullptr || !_button[i]->isVisible( ))
+			if( buttons[i] == nullptr || !buttons[i]->isVisible( ))
 				continue;
 
 			if( vertical )
-				buttonOffset += _button[i]->getTall();
+				buttonOffset += buttons[i]->getTall();
 			else
-				buttonOffset += _button[i]->getWide();
+				buttonOffset += buttons[i]->getWide();
 		}
 
-		_slider->setButtonOffset( buttonOffset );
+		slider->setButtonOffset( buttonOffset );
 	}
 
 	int w, h;
@@ -505,8 +498,8 @@ void ScrollBar::validate()
 
 void ScrollBar::fireIntChangeSignal()
 {
-	for( int i = 0; i < _intChangeSignalDar.getCount(); i++ )
-		_intChangeSignalDar[i]->intChanged( _slider->getValue(), this );
+	for( int i = 0; i < intChangeSignals.getCount(); i++ )
+		intChangeSignals[i]->intChanged( slider->getValue(), this );
 }
 
 void ScrollBar::performLayout()
@@ -516,14 +509,14 @@ void ScrollBar::performLayout()
 
 class ChangeHandler : public IntChangeSignal
 {
-	ScrollPanel *_sp;
+	ScrollPanel *scrollPanel;
 
 public:
-	ChangeHandler( ScrollPanel *sp ) : _sp( sp ) {}
+	ChangeHandler( ScrollPanel *sp ) : scrollPanel( sp ) {}
 
 	void intChanged( int value, Panel *p ) override
 	{
-		_sp->recomputeScroll();
+		scrollPanel->recomputeScroll();
 	}
 };
 
@@ -533,30 +526,30 @@ ScrollPanel::ScrollPanel( int x, int y, int w, int h ) : Panel( x, y, w, h )
 	setPaintBackgroundEnabled( false );
 	setPaintEnabled( false );
 
-	_clientClip = new Panel( 0, 0, w - 16, h - 16 );
-	_clientClip->setParent( this );
-	_clientClip->setBgColor( Color( 0, 128, 0, 0 ));
-	_clientClip->setPaintBorderEnabled( true );
-	_clientClip->setPaintBackgroundEnabled( false );
-	_clientClip->setPaintEnabled( false );
+	clientClip = new Panel( 0, 0, w - 16, h - 16 );
+	clientClip->setParent( this );
+	clientClip->setBgColor( Color( 0, 128, 0, 0 ));
+	clientClip->setPaintBorderEnabled( true );
+	clientClip->setPaintBackgroundEnabled( false );
+	clientClip->setPaintEnabled( false );
 
-	_client = new Panel( 0, 0, w * 2, h * 2 );
-	_client->setParent( _clientClip );
-	_client->setPaintBorderEnabled( true );
-	_client->setPaintBackgroundEnabled( false );
-	_client->setPaintEnabled( false );
+	client = new Panel( 0, 0, w * 2, h * 2 );
+	client->setParent( clientClip );
+	client->setPaintBorderEnabled( true );
+	client->setPaintBackgroundEnabled( false );
+	client->setPaintEnabled( false );
 
-	_horizontalScrollBar = new ScrollBar( 0, h - 16, w - 16, 16, false );
-	_horizontalScrollBar->setParent( this );
-	_horizontalScrollBar->addIntChangeSignal( new ChangeHandler( this ));
-	_horizontalScrollBar->setVisible( false );
+	horizontalScrollBar = new ScrollBar( 0, h - 16, w - 16, 16, false );
+	horizontalScrollBar->setParent( this );
+	horizontalScrollBar->addIntChangeSignal( new ChangeHandler( this ));
+	horizontalScrollBar->setVisible( false );
 
-	_verticalScrollBar = new ScrollBar( w - 16, 0, 16, h - 16, true );
-	_verticalScrollBar->setParent( this );
-	_verticalScrollBar->addIntChangeSignal( new ChangeHandler( this ));
-	_verticalScrollBar->setVisible( false );
+	verticalScrollBar = new ScrollBar( w - 16, 0, 16, h - 16, true );
+	verticalScrollBar->setParent( this );
+	verticalScrollBar->addIntChangeSignal( new ChangeHandler( this ));
+	verticalScrollBar->setVisible( false );
 
-	_autoVisible[0] = _autoVisible[1] = true;
+	autoVisible[0] = autoVisible[1] = true;
 
 	validate();
 }
@@ -566,70 +559,70 @@ void ScrollPanel::setSize( int w, int h )
 	Panel::setSize( w, h );
 	getPaintSize( w, h );
 
-	if( _autoVisible[1] )
-		_verticalScrollBar->setVisible( !_verticalScrollBar->hasFullRange( ));
+	if( autoVisible[1] )
+		verticalScrollBar->setVisible( !verticalScrollBar->hasFullRange( ));
 
-	if( _verticalScrollBar->isVisible( ))
-		w -= _verticalScrollBar->getWide();
+	if( verticalScrollBar->isVisible( ))
+		w -= verticalScrollBar->getWide();
 
-	if( _autoVisible[0] )
-		_horizontalScrollBar->setVisible( !_horizontalScrollBar->hasFullRange( ));
+	if( autoVisible[0] )
+		horizontalScrollBar->setVisible( !horizontalScrollBar->hasFullRange( ));
 
-	if( _horizontalScrollBar->isVisible( ))
-		h -= _horizontalScrollBar->getTall();
+	if( horizontalScrollBar->isVisible( ))
+		h -= horizontalScrollBar->getTall();
 
-	_verticalScrollBar->setBounds( w, 0, _verticalScrollBar->getWide(), h );
-	_horizontalScrollBar->setBounds( 0, h, w, _horizontalScrollBar->getTall());
-	_clientClip->setSize( w, h );
+	verticalScrollBar->setBounds( w, 0, verticalScrollBar->getWide(), h );
+	horizontalScrollBar->setBounds( 0, h, w, horizontalScrollBar->getTall());
+	clientClip->setSize( w, h );
 	recomputeClientSize();
 	repaint();
 }
 
 void ScrollPanel::setScrollBarVisible( bool h, bool v )
 {
-	_horizontalScrollBar->setVisible( h );
-	_verticalScrollBar->setVisible( v );
+	horizontalScrollBar->setVisible( h );
+	verticalScrollBar->setVisible( v );
 
 	validate();
 }
 
 void ScrollPanel::setScrollBarAutoVisible( bool h, bool v )
 {
-	_autoVisible[0] = h;
-	_autoVisible[1] = v;
+	autoVisible[0] = h;
+	autoVisible[1] = v;
 	validate();
 }
 
 Panel *ScrollPanel::getClient()
 {
-	return _client;
+	return client;
 }
 
 Panel *ScrollPanel::getClientClip()
 {
-	return _clientClip;
+	return clientClip;
 }
 
 void ScrollPanel::setScrollValue( int h, int v )
 {
-	_horizontalScrollBar->setValue( h );
-	_verticalScrollBar->setValue( v );
+	horizontalScrollBar->setValue( h );
+	verticalScrollBar->setValue( v );
 	recomputeScroll();
 }
 
 void ScrollPanel::getScrollValue( int &h, int &v )
 {
-	h = _horizontalScrollBar->getValue();
-	v = _verticalScrollBar->getValue();
+	h = horizontalScrollBar->getValue();
+	v = verticalScrollBar->getValue();
 }
 
 void ScrollPanel::recomputeClientSize()
 {
 	int total_w = 0, total_h = 0;
 
-	for( int i = 0; i < _client->getChildCount(); i++ )
+	for( int i = 0; i < client->getChildCount(); i++ )
 	{
-		Panel *p = _client->getChild( i );
+		Panel *p = client->getChild( i );
 
 		if( !p->isVisible() )
 			continue;
@@ -648,29 +641,29 @@ void ScrollPanel::recomputeClientSize()
 			total_h = y;
 	}
 
-	_client->setSize( total_w, total_h );
+	client->setSize( total_w, total_h );
 
-	_horizontalScrollBar->setRange( 0, _client->getWide() - _clientClip->getWide( ));
-	_horizontalScrollBar->setRangeWindow( _client->getWide( ));
+	horizontalScrollBar->setRange( 0, client->getWide() - clientClip->getWide( ));
+	horizontalScrollBar->setRangeWindow( client->getWide( ));
 
-	_verticalScrollBar->setRange( 0, _client->getTall() - _clientClip->getTall( ));
-	_verticalScrollBar->setRangeWindow( _client->getTall( ));
+	verticalScrollBar->setRange( 0, client->getTall() - clientClip->getTall( ));
+	verticalScrollBar->setRangeWindow( client->getTall( ));
 }
 
 ScrollBar *ScrollPanel::getHorizontalScrollBar()
 {
-	return _horizontalScrollBar;
+	return horizontalScrollBar;
 }
 
 ScrollBar *ScrollPanel::getVerticalScrollBar()
 {
-	return _verticalScrollBar;
+	return verticalScrollBar;
 }
 
 void ScrollPanel::validate()
 {
-	_horizontalScrollBar->setRangeWindowEnabled( true );
-	_verticalScrollBar->setRangeWindowEnabled( true );
+	horizontalScrollBar->setRangeWindowEnabled( true );
+	verticalScrollBar->setRangeWindowEnabled( true );
 
 	int w, h;
 	getSize( w, h );
@@ -684,8 +677,8 @@ void ScrollPanel::recomputeScroll()
 {
 	int x, y;
 	getScrollValue( x, y );
-	_client->setPos( -x, -y );
-	_clientClip->repaint();
+	client->setPos( -x, -y );
+	clientClip->repaint();
 }
 
 }

@@ -17,7 +17,7 @@ protected:
 	virtual void paintBackground() override;
 	virtual void init( const char* );
 
-	bool _opened;
+	bool opened;
 public:
 	virtual void setOpenedTraverse( bool open );
 	virtual void setOpened( bool open );

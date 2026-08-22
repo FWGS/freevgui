@@ -24,7 +24,7 @@ public:
 class CLASSEXPORT DataInputStream : public InputStream
 {
 private:
-	InputStream *_is;
+	InputStream *stream;
 public:
 	DataInputStream( InputStream * );
 
@@ -53,7 +53,7 @@ CHECK_STRUCT_SIZE( DataInputStream, 8, 16, 16 );
 class CLASSEXPORT FileInputStream : public InputStream
 {
 private:
-	FILE *_fp;
+	FILE *fp;
 public:
 	FileInputStream( const char *name, bool textmode );
 	virtual void seekStart( bool &success ) override;

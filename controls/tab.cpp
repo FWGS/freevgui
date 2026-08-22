@@ -106,33 +106,33 @@ protected:
 }
 
 TabPanel::TabPanel( int x, int y, int wide, int tall ) : Panel( x, y, wide, tall ),
-	_tabPlacement( TOP ),
-	_tabArea( new Panel( 5, 5, wide, 5 )), _clientArea( new Panel( 5, 5, wide - 10, tall - 10 )),
-	_selectedTab( nullptr ), _selectedPanel( nullptr ),
-	_buttonGroup( new ButtonGroup())
+	tabPlacement( TOP ),
+	tabArea( new Panel( 5, 5, wide, 5 )), clientArea( new Panel( 5, 5, wide - 10, tall - 10 )),
+	selectedTab( nullptr ), selectedPanel( nullptr ),
+	buttonGroup( new ButtonGroup())
 {
-	_clientArea->setParent( this );
-	_clientArea->setBorder( new ClientAreaBorder());
-	_tabArea->setParent( this );
-	_tabArea->setBorder( new TabAreaBorder());
+	clientArea->setParent( this );
+	clientArea->setBorder( new ClientAreaBorder());
+	tabArea->setParent( this );
+	tabArea->setBorder( new TabAreaBorder());
 }
 
 Panel *TabPanel::addTab( const char *text )
 {
 	TabButton *tab = new TabButton( this, text, 0, 0 );
-	_tabArea->insertChildAt( tab, 0 );
-	tab->setButtonGroup( _buttonGroup );
+	tabArea->insertChildAt( tab, 0 );
+	tab->setButtonGroup( buttonGroup );
 
 	Panel *page = new Panel( 0, 0, 20, 20 );
-	_clientArea->insertChildAt( page, 0 );
+	clientArea->insertChildAt( page, 0 );
 	page->setVisible( false );
 
-	if( _selectedTab == nullptr )
+	if( selectedTab == nullptr )
 	{
 		page->setVisible( true );
 		tab->setSelected( true );
-		_selectedTab = tab;
-		_selectedPanel = page;
+		selectedTab = tab;
+		selectedPanel = page;
 	}
 
 	recomputeLayout();
@@ -141,20 +141,20 @@ Panel *TabPanel::addTab( const char *text )
 
 void TabPanel::setSelectedTab( Panel *tab )
 {
-	if( tab == nullptr || tab == _selectedTab )
+	if( tab == nullptr || tab == selectedTab )
 		return;
 
-	int count = _tabArea->getChildCount();
+	int count = tabArea->getChildCount();
 	for( int i = 0; i < count; i++ )
 	{
-		if( _tabArea->getChild( i ) != tab )
+		if( tabArea->getChild( i ) != tab )
 			continue;
 
-		if( _selectedPanel )
-			_selectedPanel->setVisible( false );
-		_selectedPanel = _clientArea->getChild( i );
-		_selectedPanel->setVisible( true );
-		_selectedTab = tab;
+		if( selectedPanel )
+			selectedPanel->setVisible( false );
+		selectedPanel = clientArea->getChild( i );
+		selectedPanel->setVisible( true );
+		selectedTab = tab;
 		break;
 	}
 
@@ -173,7 +173,7 @@ void TabPanel::recomputeLayoutTop()
 
 	getPaintSize( paintWide, paintTall );
 
-	int count = _tabArea->getChildCount();
+	int count = tabArea->getChildCount();
 	int minx = 5;
 	int maxx = paintWide - minx;
 	int x = 5, y = 0;
@@ -182,7 +182,7 @@ void TabPanel::recomputeLayoutTop()
 	// walk tabs from the last index down to 0 (addTab call order, left to right)
 	for( int i = count - 1; i >= 0; i-- )
 	{
-		Panel *tab = _tabArea->getChild( i );
+		Panel *tab = tabArea->getChild( i );
 
 		int wide, tall;
 		tab->getPreferredSize( wide, tall );
@@ -201,7 +201,7 @@ void TabPanel::recomputeLayoutTop()
 
 			for( int j = rowFirst; j > i; j-- )
 			{
-				Panel *rowTab = _tabArea->getChild( j );
+				Panel *rowTab = tabArea->getChild( j );
 				int px, py, tw, th;
 
 				rowTab->getPos( px, py );
@@ -230,13 +230,13 @@ void TabPanel::recomputeLayoutTop()
 	{
 		int px, py;
 
-		_tabArea->getChild( i )->getPos( px, py );
+		tabArea->getChild( i )->getPos( px, py );
 		if( py < miny )
 			miny = py;
 	}
 	for( int i = 0; i < count; i++ )
 	{
-		Panel *tab = _tabArea->getChild( i );
+		Panel *tab = tabArea->getChild( i );
 		int px, py;
 
 		tab->getPos( px, py );
@@ -244,17 +244,17 @@ void TabPanel::recomputeLayoutTop()
 	}
 
 	int tabWide, tabTall;
-	_tabArea->getChild( 0 )->getSize( tabWide, tabTall );
+	tabArea->getChild( 0 )->getSize( tabWide, tabTall );
 	int tabAreaHeight = tabTall - miny;
 
-	_tabArea->setBounds( 0, 5, paintWide, tabAreaHeight );
-	_clientArea->setBounds( 0, tabAreaHeight + 4, paintWide, paintTall - tabAreaHeight - 5 );
+	tabArea->setBounds( 0, 5, paintWide, tabAreaHeight );
+	clientArea->setBounds( 0, tabAreaHeight + 4, paintWide, paintTall - tabAreaHeight - 5 );
 
 	int clientWide, clientTall;
-	_clientArea->getSize( clientWide, clientTall );
-	for( int i = 0; i < _clientArea->getChildCount(); i++ )
+	clientArea->getSize( clientWide, clientTall );
+	for( int i = 0; i < clientArea->getChildCount(); i++ )
 	{
-		Panel *page = _clientArea->getChild( i );
+		Panel *page = clientArea->getChild( i );
 
 		page->setBounds( 5, 5, clientWide - 10, clientTall - 10 );
 		page->invalidateLayout( false );
@@ -263,9 +263,9 @@ void TabPanel::recomputeLayoutTop()
 
 void TabPanel::recomputeLayout()
 {
-	if( _tabArea->getChildCount() != 0 )
+	if( tabArea->getChildCount() != 0 )
 	{
-		if( _tabPlacement == TOP )
+		if( tabPlacement == TOP )
 			recomputeLayoutTop();
 
 		// NOTE: no other tabPlacement is supported

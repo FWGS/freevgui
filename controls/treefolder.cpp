@@ -86,7 +86,7 @@ TreeFolder::TreeFolder( const char *name, int x, int y ) : Panel( x, y, 500, 500
 
 void TreeFolder::init( const char *name )
 {
-	_opened = false;
+	opened = false;
 
 	Label *label = new Label( name, 0, 0 );
 	label->addInputSignal( new TreeFolderLabelHandler( this ));
@@ -97,10 +97,10 @@ void TreeFolder::init( const char *name )
 
 void TreeFolder::setOpened( bool open )
 {
-	if( _opened == open )
+	if( opened == open )
 		return;
 
-	_opened = open;
+	opened = open;
 
 	// invalidate layout up the folder chain, tracking the topmost folder
 	TreeFolder *top = nullptr;
@@ -136,7 +136,7 @@ void TreeFolder::setOpenedTraverse( bool open )
 
 bool TreeFolder::isOpened()
 {
-	return _opened;
+	return opened;
 }
 
 void TreeFolder::paintBackground()

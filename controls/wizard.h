@@ -18,18 +18,18 @@ public:
 	{
 		friend class WizardPanel;
 	private:
-		WizardPage* _backWizardPage;
-		WizardPage* _nextWizardPage;
-		bool _backButtonEnabled, _nextButtonEnabled, _finishedButtonEnabled,
-			_cancelButtonEnabled, _backButtonVisible, _nextButtonVisible,
-			_finishedButtonVisible, _cancelButtonVisible;
-		char* _backButtonText;
-		char* _nextButtonText;
-		char* _finishedButtonText;
-		char* _cancelButtonText;
-		Dar<ActionSignal*> _switchingToBackPageSignalDar, _switchingToNextPageSignalDar;
-		char* _title;
-		Panel* _wantedFocus;
+		WizardPage* backWizardPage;
+		WizardPage* nextWizardPage;
+		bool backButtonEnabled, nextButtonEnabled, finishedButtonEnabled,
+			cancelButtonEnabled, backButtonVisible, nextButtonVisible,
+			finishedButtonVisible, cancelButtonVisible;
+		char* backButtonText;
+		char* nextButtonText;
+		char* finishedButtonText;
+		char* cancelButtonText;
+		Dar<ActionSignal*> switchingToBackPageSignals, switchingToNextPageSignals;
+		char* title;
+		Panel* wantedFocus;
 
 		virtual void fireSwitchingToBackPageSignals();
 		virtual void fireSwitchingToNextPageSignals();
@@ -74,12 +74,12 @@ public:
 		virtual void getTitle( char*, int );
 	};
 private:
-	Button* _backButton;
-	Button* _nextButton;
-	Button* _finishedButton;
-	Button* _cancelButton;
-	WizardPage* _currentWizardPage;
-	Dar<vgui::ActionSignal*> _pageChangedActionSignalDar;
+	Button* backButton;
+	Button* nextButton;
+	Button* finishedButton;
+	Button* cancelButton;
+	WizardPage* wizardPage;
+	Dar<vgui::ActionSignal*> pageChangedActionSignals;
 
 	virtual void fireFinishedActionSignal();
 	virtual void fireCancelledActionSignal();

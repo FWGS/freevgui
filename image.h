@@ -30,8 +30,8 @@ public:
 	virtual int operator[]( int i );
 
 private:
-	unsigned char _color[4];
-	Scheme::SchemeColor _schemeColor;
+	unsigned char rgba[4];
+	Scheme::SchemeColor schemeColor;
 };
 CHECK_STRUCT_SIZE( Color, 12, 16, 16 );
 
@@ -65,10 +65,10 @@ public:
 	virtual void doPaint( Panel *p );
 
 private:
-	int    _pos[2];
-	int    _size[2];
-	Panel* _panel;
-	Color  _color;
+	int    origin[2];
+	int    size[2];
+	Panel* panel;
+	Color  color;
 };
 CHECK_STRUCT_SIZE( Image, 36, 48, 48 );
 
@@ -80,14 +80,14 @@ public:
 	virtual void paint( Panel* ) override;
 
 private:
-	int  _id;
-	bool _uploaded;
+	int  id;
+	bool uploaded;
 
 protected:
 	virtual void setSize( int wide, int tall ) override;
 	virtual void setRGBA( int x, int y, unsigned char r, unsigned char g, unsigned char b, unsigned char a );
 
-	unsigned char* _rgba;
+	unsigned char* rgbaData;
 };
 CHECK_STRUCT_SIZE( Bitmap, 48, 64, 64 );
 
@@ -122,12 +122,12 @@ public:
 	virtual void setFont( Font *f );
 	virtual void setSize( int w, int h ) override;
 
-	char *_text;
-	int _textBufferLen;
-	Scheme::SchemeFont _schemeFont;
-	Font *_font;
-	int _textColor[4];
-	Scheme::SchemeColor _textSchemeColor;
+	char *text;
+	int textBufferSize;
+	Scheme::SchemeFont schemeFont;
+	Font *font;
+	int textColor[4];
+	Scheme::SchemeColor textSchemeColor;
 };
 CHECK_STRUCT_SIZE( TextImage, 72, 96, 96 );
 
@@ -146,10 +146,10 @@ protected:
 	virtual void drawPrintText( int x, int y, const char *str, int len ) override;
 	virtual void drawPrintChar( int x, int y, char ch ) override;
 
-	int _inset[4];
+	int inset[4];
 
 private:
-	Panel *_panel;
+	Panel *panel;
 };
 CHECK_STRUCT_SIZE( Border, 56, 72, 72 );
 
@@ -162,7 +162,7 @@ public:
 protected:
 	virtual void paint( Panel *p ) override;
 
-	Border *_border[2];
+	Border *borders[2];
 };
 CHECK_STRUCT_SIZE( BorderPair, 64, 88, 88 );
 
@@ -189,7 +189,7 @@ protected:
 private:
 	virtual void init( int thickness, Color c );
 
-	Color _color;
+	Color color;
 };
 CHECK_STRUCT_SIZE( LineBorder, 68, 88, 88 );
 

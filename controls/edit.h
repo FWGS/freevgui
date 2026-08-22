@@ -41,11 +41,11 @@ protected:
 	virtual void shiftLineLeft( Dar<char>*, int, int );
 	virtual void shiftLineRight( Dar<char>*, int, int );
 
-	Dar<Dar<char>*> _lineDarDar;
-	int   _cursor[2];
-	bool  _cursorBlink;
-	int   _cursorNextBlinkTime;
-	Font* _font;
+	Dar<Dar<char>*> lines;
+	int   cursorPos[2];
+	bool  cursorBlink;
+	int   cursorNextBlinkTime;
+	Font* font;
 private:
 	virtual int spatialCharOffsetBetweenTwoLines( Dar<char>*, Dar<char>*, int );
 };

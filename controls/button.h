@@ -25,7 +25,7 @@ public:
 	virtual void setSelected( Button *b );
 
 protected:
-	Dar<Button*> _buttonDar;
+	Dar<Button*> buttons;
 };
 CHECK_STRUCT_SIZE( ButtonGroup, 16, 24, 24 );
 
@@ -36,7 +36,7 @@ public:
 	Button( const char *text, int x, int y );
 	virtual void setSelected( bool select );
 	virtual void setSelectedDirect( bool select );
-	virtual void setArmed( bool armed );
+	virtual void setArmed( bool state );
 	virtual bool isSelected();
 	virtual void doClick();
 	virtual void addActionSignal( ActionSignal *s );
@@ -52,12 +52,12 @@ protected:
 	virtual void setButtonController( ButtonController *bc );
 	virtual void paintBackground() override;
 
-	char* _text;
-	bool  _armed, _selected, _buttonBorderEnabled;
-	Dar<ActionSignal*> _actionSignalDar;
-	int                _mouseClickMask;
-	ButtonGroup*       _buttonGroup;
-	ButtonController*  _buttonController;
+	char* text;
+	bool  armed, selected, buttonBorderEnabled;
+	Dar<ActionSignal*> actionSignals;
+	int                mouseClickMask;
+	ButtonGroup*       buttonGroup;
+	ButtonController*  buttonController;
 };
 CHECK_STRUCT_SIZE( Button, 240, 344, 344 );
 

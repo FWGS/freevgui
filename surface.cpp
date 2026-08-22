@@ -14,42 +14,42 @@
 using namespace vgui;
 
 SurfaceBase::SurfaceBase( Panel *p ) :
-	_needsSwap( true ),
-	_embeddedPanel( p ),
-	_emulatedCursor( new ImagePanel( nullptr )),
-	_currentCursor( nullptr )
+	pendingSwap( true ),
+	rootPanel( p ),
+	softwareCursor( new ImagePanel( nullptr )),
+	cursor( nullptr )
 {
-	_emulatedCursor->setVisible( false );
-	_embeddedPanel->setSurfaceBaseTraverse( this );
+	softwareCursor->setVisible( false );
+	rootPanel->setSurfaceBaseTraverse( this );
 	App::getInstance()->surfaceBaseCreated( this );
-	_emulatedCursor->setParent( _embeddedPanel );
+	softwareCursor->setParent( rootPanel );
 }
 
 Panel *SurfaceBase::getPanel()
 {
-	return _embeddedPanel;
+	return rootPanel;
 }
 
 void SurfaceBase::requestSwap()
 {
-	_needsSwap = true;
+	pendingSwap = true;
 }
 
 void SurfaceBase::resetModeInfo()
 {
-	_modeInfoDar.removeAll();
+	modes.removeAll();
 }
 
 int SurfaceBase::getModeInfoCount()
 {
-	return _modeInfoDar.getCount();
+	return modes.getCount();
 }
 
 bool SurfaceBase::getModeInfo(int i, int &w, int &h, int &bpp)
 {
-	if( i >= 0 && i < _modeInfoDar.getCount() )
+	if( i >= 0 && i < modes.getCount() )
 	{
-		sscanf( _modeInfoDar[i], "%dx%dx%d", &w, &h, &bpp );
+		sscanf( modes[i], "%dx%dx%d", &w, &h, &bpp );
 		return true;
 	}
 	return false;
@@ -65,7 +65,7 @@ void SurfaceBase::addModeInfo(int w, int h, int bpp)
 	char buf[256];
 	snprintf( buf, sizeof( buf ), "%dx%dx%d", w, h, bpp );
 
-	_modeInfoDar.putElement( vgui_strdup( buf ));
+	modes.putElement( vgui_strdup( buf ));
 }
 
 App *SurfaceBase::getApp()
@@ -75,25 +75,25 @@ App *SurfaceBase::getApp()
 
 void SurfaceBase::setEmulatedCursorVisible( bool visible )
 {
-	_emulatedCursor->setVisible( visible );
+	softwareCursor->setVisible( visible );
 }
 
 void SurfaceBase::setEmulatedCursorPos( int x, int y )
 {
-	getPanel()->removeChild( _emulatedCursor );
-	getPanel()->addChild( _emulatedCursor );
+	getPanel()->removeChild( softwareCursor );
+	getPanel()->addChild( softwareCursor );
 	getPanel()->screenToLocal( x, y );
-	if( _currentCursor && !_emulatedCursor->isVisible() )
+	if( cursor && !softwareCursor->isVisible() )
 	{
 		int hotx, hoty;
 
-		_currentCursor->getHotspot( hotx, hoty );
+		cursor->getHotspot( hotx, hoty );
 
 		x -= hotx;
 		y -= hoty;
 	}
 
-	_emulatedCursor->setPos( x, y );
+	softwareCursor->setPos( x, y );
 }
 
 // Ideally, Surface must be provided by the platform but I have no plans to revive Win32 backend
@@ -113,8 +113,7 @@ public:
 class Texture
 {
 public:
-	int _id, _wide, _tall;
-	void *_dib;
+	int id, wide, tall;
 };
 
 static Texture *staticTextureCurrent = nullptr;
@@ -123,11 +122,11 @@ static int staticTextureCount = 0;
 
 static Texture *staticGetTextureById( int id )
 {
-	if( !staticTextureCurrent || id != staticTextureCurrent->_id )
+	if( !staticTextureCurrent || id != staticTextureCurrent->id )
 	{
 		for( int i = 0; i < staticTextureCount; i++ )
 		{
-			if( staticTexture[i]._id == id )
+			if( staticTexture[i].id == id )
 				return &staticTexture[i];
 		}
 
@@ -139,7 +138,7 @@ static Texture *staticGetTextureById( int id )
 
 Surface::Surface(Panel *p) :
 	SurfaceBase( p ),
-	_plat( nullptr )
+	impl( nullptr )
 {
 	createPlat();
 	recreateContext();
@@ -147,8 +146,8 @@ Surface::Surface(Panel *p) :
 
 void Surface::createPopup( Panel *p )
 {
-	_embeddedPanel->setParent( nullptr );
-	new Surface( _embeddedPanel );
+	rootPanel->setParent( nullptr );
+	new Surface( rootPanel );
 }
 
 int Surface::getModeInfoCount()
@@ -167,13 +166,13 @@ void Surface::setTitle( const char * )
 
 bool Surface::setFullscreenMode( int w, int h, int bpp )
 {
-	if( _plat->isFullscreen )
+	if( impl->isFullscreen )
 		return true;
 
-	if( _plat->fullscreenInfo[0] == w && _plat->fullscreenInfo[1] == h && _plat->fullscreenInfo[2] == bpp )
+	if( impl->fullscreenInfo[0] == w && impl->fullscreenInfo[1] == h && impl->fullscreenInfo[2] == bpp )
 		return true;
 
-	if( _modeInfoDar.getCount() == 0 )
+	if( modes.getCount() == 0 )
 		getModeInfoCount();
 
 	return false;
@@ -226,7 +225,7 @@ void Surface::drawOutlinedRect( int x0, int y0, int x1, int y1 )
 
 void Surface::drawSetTextFont( Font *f )
 {
-	if( f && f->_plat ) f->_plat->drawSetTextFont( _plat );
+	if( f && f->impl ) f->impl->drawSetTextFont( impl );
 }
 
 void Surface::drawSetTextColor( int, int, int, int )
@@ -251,11 +250,11 @@ void Surface::drawSetTextureRGBA( int id, const char *rgba, int w, int h )
 			return;
 
 		tex = &staticTexture[staticTextureCount++];
-		tex->_id = id;
+		tex->id = id;
 	}
 
-	tex->_wide = w;
-	tex->_tall = h;
+	tex->wide = w;
+	tex->tall = h;
 }
 
 void Surface::drawSetTexture( int id )
@@ -273,11 +272,11 @@ void Surface::invalidate( Panel * )
 
 bool Surface::createPlat()
 {
-	if( _plat )
+	if( impl )
 		return true;
 
-	_plat = new SurfacePlat;
-	memset( _plat, 0, sizeof( *_plat ));
+	impl = new SurfacePlat;
+	memset( impl, 0, sizeof( *impl ));
 
 	return true;
 }
@@ -294,19 +293,19 @@ void Surface::enableMouseCapture( bool )
 {
 }
 
-void Surface::setCursor( Cursor *cursor )
+void Surface::setCursor( Cursor *newCursor )
 {
-	_currentCursor = cursor;
+	cursor = newCursor;
 
 	if( cursor )
 	{
 		Bitmap *image = cursor->getBitmap();
-		_emulatedCursor->setImage( image );
+		softwareCursor->setImage( image );
 
 		cursor->getDefaultCursor();
 	}
 	else
-		_emulatedCursor->setImage( nullptr );
+		softwareCursor->setImage( nullptr );
 }
 
 void Surface::swapBuffers()

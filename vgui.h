@@ -66,41 +66,41 @@ template <typename T>
 class Dar
 {
 protected:
-	int _count;
-	int _capacity;
-	T*  _data;
+	int count;
+	int capacity;
+	T*  data;
 public:
-	Dar( int capacity ) : _count( 0 ), _capacity( capacity ), _data( new T[capacity] ) {}
+	Dar( int capacity ) : count( 0 ), capacity( capacity ), data( new T[capacity] ) {}
 	Dar() : Dar( 4 ) {}
 
-	void setCount( int count )
+	void setCount( int newCount )
 	{
-		_count = count >= 0 ? count < _capacity ? count : _capacity : 0;
+		count = newCount >= 0 ? newCount < capacity ? newCount : capacity : 0;
 	}
 
 	int getCount() // can't make const due to ABI
 	{
-		return _count;
+		return count;
 	}
 
-	void ensureCapacity( int capacity )
+	void ensureCapacity( int newCapacity )
 	{
-		T *newptr = new T[capacity];
+		T *newptr = new T[newCapacity];
 
-		if( _data )
+		if( data )
 		{
-			memcpy( newptr, _data, sizeof( T ) * _count );
-			delete[] _data;
+			memcpy( newptr, data, sizeof( T ) * count );
+			delete[] data;
 		}
 
-		_data = newptr;
-		_capacity = capacity;
+		data = newptr;
+		capacity = newCapacity;
 	}
 
 	void addElement( T element )
 	{
-		ensureCapacity( _count + 1 );
-		_data[_count++] = element;
+		ensureCapacity( count + 1 );
+		data[count++] = element;
 	}
 
 	void putElement( T element )
@@ -113,52 +113,52 @@ public:
 	{
 		int i = 0;
 
-		for( ; i < _count; i++ )
+		for( ; i < count; i++ )
 		{
-			if( _data[i] == element )
+			if( data[i] == element )
 				break;
 		}
 
-		return i != _count;
+		return i != count;
 	}
 
 	void insertElementAt( T element, int at )
 	{
-		if( at < 0 || at > _count ) // specifically allow 0
+		if( at < 0 || at > count ) // specifically allow 0
 			return;
 
-		if( at == _count || !_count ) // simple case
+		if( at == count || !count ) // simple case
 		{
 			addElement( element );
 			return;
 		}
 
-		memmove( &_data[at + 1], &_data[at], sizeof( T ) * ( _count - at ));
-		_data[at] = element;
-		_count++;
+		memmove( &data[at + 1], &data[at], sizeof( T ) * ( count - at ));
+		data[at] = element;
+		count++;
 	}
 
 	void setElementAt( T element, int at )
 	{
-		if( at < 0 || at >= _count )
+		if( at < 0 || at >= count )
 			return;
-		_data[at] = element;
+		data[at] = element;
 	}
 
 	void removeElementAt( int at )
 	{
-		if( at < 0 || at >= _count )
+		if( at < 0 || at >= count )
 			return;
 
-		memmove( &_data[at], &_data[at + 1], sizeof( T ) * ( _count - at - 1 ));
-		_count--;
+		memmove( &data[at], &data[at + 1], sizeof( T ) * ( count - at - 1 ));
+		count--;
 	}
 
 	void removeElement( T element )
 	{
-		for( int i = 0; i < _count; i++ )
+		for( int i = 0; i < count; i++ )
 		{
-			if( _data[i] != element )
+			if( data[i] != element )
 				continue;
 
 			removeElementAt( i );
@@ -171,12 +171,12 @@ public:
 		setCount( 0 );
 	}
 
-	T operator[]( int i ) { return _data[i]; }
+	T operator[]( int i ) { return data[i]; }
 
-	T *begin() { return _data; }
-	T *end() { return _data + _count; }
-	const T *begin() const { return _data; }
-	const T *end() const { return _data + _count; }
+	T *begin() { return data; }
+	T *end() { return data + count; }
+	const T *begin() const { return data; }
+	const T *end() const { return data + count; }
 };
 
 CHECK_STRUCT_SIZE( Dar<void*>, 12, 16, 16 );

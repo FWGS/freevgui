@@ -7,41 +7,41 @@ namespace vgui
 {
 
 Cursor::Cursor(DefaultCursor dc) :
-	_dc( dc )
+	defaultCursor( dc )
 {
 	// a default cursor is a system shape, so it carries no bitmap and no
 	// hotspot of its own -- whoever draws it supplies both
-	_bitmap = nullptr;
-	_hotspot[0] = _hotspot[1] = 0;
+	bitmap = nullptr;
+	hotspot[0] = hotspot[1] = 0;
 }
 
 Cursor::Cursor(Bitmap *bmp, int x, int y) :
-	_dc( DC_USER )
+	defaultCursor( DC_USER )
 {
 	privateInit( bmp, x, y );
 }
 
 void Cursor::getHotspot(int &x, int &y)
 {
-	x = _hotspot[0];
-	y = _hotspot[1];
+	x = hotspot[0];
+	y = hotspot[1];
 }
 
 void Cursor::privateInit(Bitmap *bmp, int x, int y)
 {
-	_bitmap = bmp;
-	_hotspot[0] = x;
-	_hotspot[1] = y;
+	bitmap = bmp;
+	hotspot[0] = x;
+	hotspot[1] = y;
 }
 
 Bitmap *Cursor::getBitmap()
 {
-	return _bitmap;
+	return bitmap;
 }
 
 Cursor::DefaultCursor Cursor::getDefaultCursor()
 {
-	return _dc;
+	return defaultCursor;
 }
 
 }

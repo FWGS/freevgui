@@ -24,7 +24,7 @@ public:
 	MenuItem( const char* );
 	MenuItem( const char*, Menu* );
 protected:
-	Menu* _subMenu;
+	Menu* subMenu;
 };
 CHECK_STRUCT_SIZE( MenuItem, 244, 352, 352 );
 

@@ -15,19 +15,19 @@ public:
 		return this;
 	}
 
-	BorderLayout::Alignment _alignment;
+	BorderLayout::Alignment alignment;
 };
 
 LayoutInfo *BorderLayout::createLayoutInfo( Alignment alignment )
 {
 	BorderLayoutInfo *bli = new BorderLayoutInfo();
-	bli->_alignment = alignment;
+	bli->alignment = alignment;
 
 	return bli;
 }
 
 BorderLayout::BorderLayout( int inset ) :
-	_inset( inset )
+	inset( inset )
 {
 
 }
@@ -48,25 +48,25 @@ void BorderLayout::performLayout( Panel *p )
 
 		Panel *child = p->getChild( i );
 
-		switch( bli->_alignment )
+		switch( bli->alignment )
 		{
 		case TOP:
 		case BOTTOM:
 		case RIGHT: // a1ba: probably a mistake?
-			if( child->getTall() > max[bli->_alignment] )
-				max[bli->_alignment] = child->getTall();
+			if( child->getTall() > max[bli->alignment] )
+				max[bli->alignment] = child->getTall();
 			break;
 		case LEFT:
-			if( child->getWide() > max[bli->_alignment] )
-				max[bli->_alignment] = child->getWide();
+			if( child->getWide() > max[bli->alignment] )
+				max[bli->alignment] = child->getWide();
 			break;
 		}
 	}
 
-	int x0 = max[LEFT] + _inset;
-	int y0 = max[TOP] + _inset;
-	int x1 = w - max[RIGHT] - _inset;
-	int y1 = h - max[BOTTOM] - _inset;
+	int x0 = max[LEFT] + inset;
+	int y0 = max[TOP] + inset;
+	int x1 = w - max[RIGHT] - inset;
+	int y1 = h - max[BOTTOM] - inset;
 
 	for( int i = 0; i < p->getChildCount(); i++ )
 	{
@@ -77,7 +77,7 @@ void BorderLayout::performLayout( Panel *p )
 
 		Panel *child = p->getChild( i );
 
-		switch( bli->_alignment )
+		switch( bli->alignment )
 		{
 		case CENTER:
 			child->setBounds( x0, y0, x1 - x0, y1 - y0 );
@@ -98,7 +98,7 @@ void BorderLayout::performLayout( Panel *p )
 	}
 }
 
-FlowLayout::FlowLayout( int hgap ) : _hgap( hgap )
+FlowLayout::FlowLayout( int hgap ) : horizontalGap( hgap )
 {
 
 }
@@ -114,12 +114,12 @@ void FlowLayout::performLayout( Panel *p )
 		child->getBounds( x, y, w, h );
 		child->setPos( newx, y );
 
-		newx += _hgap + w;
+		newx += horizontalGap + w;
 	}
 }
 
 StackLayout::StackLayout(int vgap, bool fitWide) :
-	_vgap( vgap ), _fitWide( fitWide )
+	verticalGap( vgap ), fitWide( fitWide )
 {
 
 }
@@ -136,7 +136,7 @@ void StackLayout::performLayout( Panel *p )
 		child->getBounds( x, y, w, h );
 		child->setPos( x, newy );
 
-		if( _fitWide )
+		if( fitWide )
 		{
 			int pwide, ptall;
 
@@ -144,7 +144,7 @@ void StackLayout::performLayout( Panel *p )
 			child->setSize( pwide, h );
 		}
 
-		newy += _vgap + h;
+		newy += verticalGap + h;
 	}
 }
 

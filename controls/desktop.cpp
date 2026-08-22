@@ -144,34 +144,34 @@ private:
 };
 }
 
-MiniApp::MiniApp() : _name((char *)"" )
+MiniApp::MiniApp() : name((char *)"" )
 {
 }
 
 void MiniApp::getName( char *buf, int bufLen )
 {
-	vgui_strcpy( buf, bufLen, _name );
+	vgui_strcpy( buf, bufLen, name );
 }
 
-void MiniApp::setName( const char *name )
+void MiniApp::setName( const char *newName )
 {
-	_name = vgui_strdup( name );
+	name = vgui_strdup( newName );
 }
 
 TaskBar::TaskBar( int x, int y, int wide, int tall ) :
-	Panel( x, y, wide, tall ), _tray( new Panel( 100, 0, 120, 26 ))
+	Panel( x, y, wide, tall ), tray( new Panel( 100, 0, 120, 26 ))
 {
 	setBorder( new RaisedBorder());
 
-	_tray->setBorder( new LoweredBorder());
-	addChild( _tray );
+	tray->setBorder( new LoweredBorder());
+	addChild( tray );
 
-	_tray->addChild( new TrayClock( 25, 2, 85, 20 ));
+	tray->addChild( new TrayClock( 25, 2, 85, 20 ));
 }
 
 void TaskBar::addFrame( Frame *frame )
 {
-	_frameDar.addElement( frame );
+	frames.addElement( frame );
 
 	char title[256];
 	frame->getTitle( title, sizeof( title ));
@@ -184,7 +184,7 @@ void TaskBar::addFrame( Frame *frame )
 	frame->addFrameSignal( handler );
 	frame->addFocusChangeSignal( handler );
 
-	_taskButtonDar.addElement( button );
+	taskButtons.addElement( button );
 	invalidateLayout( false );
 }
 
@@ -194,11 +194,11 @@ void TaskBar::performLayout()
 	getPaintSize( wide, tall );
 
 	int trayWide, trayTall;
-	_tray->getSize( trayWide, trayTall );
-	_tray->setBounds( wide - trayWide - 3, 2, trayWide, tall - 4 );
+	tray->getSize( trayWide, trayTall );
+	tray->setBounds( wide - trayWide - 3, 2, trayWide, tall - 4 );
 
 	int x = 3;
-	for( Button *button : _taskButtonDar )
+	for( Button *button : taskButtons )
 	{
 		int bx, by;
 		button->getBounds( bx, by, wide, tall );
@@ -208,7 +208,7 @@ void TaskBar::performLayout()
 }
 
 DesktopIcon::DesktopIcon( MiniApp *miniApp, Image *image ) :
-	Panel( 0, 0, 32, 50 ), _desktop( nullptr ), _miniApp( miniApp )
+	Panel( 0, 0, 32, 50 ), desktop( nullptr ), miniApp( miniApp )
 {
 	setImage( image );
 	addInputSignal( new IconDragHandler( this ));
@@ -216,13 +216,13 @@ DesktopIcon::DesktopIcon( MiniApp *miniApp, Image *image ) :
 
 void DesktopIcon::doActivate()
 {
-	if( _desktop )
-		_desktop->iconActivated( this );
+	if( desktop )
+		desktop->iconActivated( this );
 }
 
-void DesktopIcon::setImage( Image *image )
+void DesktopIcon::setImage( Image *newImage )
 {
-	_image = image;
+	image = newImage;
 
 	if( !image )
 		return;
@@ -232,14 +232,14 @@ void DesktopIcon::setImage( Image *image )
 	setSize( wide, tall );
 }
 
-void DesktopIcon::setDesktop( Desktop *desktop )
+void DesktopIcon::setDesktop( Desktop *newDesktop )
 {
-	_desktop = desktop;
+	desktop = newDesktop;
 }
 
 MiniApp *DesktopIcon::getMiniApp()
 {
-	return _miniApp;
+	return miniApp;
 }
 
 void DesktopIcon::paintBackground()
@@ -249,15 +249,15 @@ void DesktopIcon::paintBackground()
 	int wide, tall;
 	getPaintSize( wide, tall );
 
-	if( _image )
-		_image->doPaint( this );
+	if( image )
+		image->doPaint( this );
 
 	drawSetTextFont( Scheme::SF_PRIMARY1 );
 
-	if( _miniApp )
+	if( miniApp )
 	{
 		char name[256];
-		_miniApp->getName( name, sizeof( name ));
+		miniApp->getName( name, sizeof( name ));
 
 		int tWide, tTall;
 		App::getInstance()->getScheme()->getFont( Scheme::SF_PRIMARY2 )->getTextSize( name, tWide, tTall );
@@ -270,25 +270,25 @@ void DesktopIcon::paintBackground()
 
 Desktop::Desktop( int x, int y, int wide, int tall ) :
 	Panel( x, y, wide, tall ),
-	_background( new Panel( 0, 0, wide, tall - 36 )),
-	_foreground( new Panel( 0, 0, wide, tall - 36 )),
-	_taskBar( new TaskBar( 0, tall - 36, wide, 36 )),
-	_cascade{ 50, 50 }
+	background( new Panel( 0, 0, wide, tall - 36 )),
+	foreground( new Panel( 0, 0, wide, tall - 36 )),
+	taskBar( new TaskBar( 0, tall - 36, wide, 36 )),
+	nextFramePos{ 50, 50 }
 {
 	setBgColor( 0, 128, 128, 0 );
 	setPaintBorderEnabled( false );
 	setPaintBackgroundEnabled( false );
 	setPaintEnabled( false );
 
-	_background->setBgColor( 0, 128, 128, 0 );
-	addChild( _background );
+	background->setBgColor( 0, 128, 128, 0 );
+	addChild( background );
 
-	_foreground->setPaintBorderEnabled( false );
-	_foreground->setPaintBackgroundEnabled( false );
-	_foreground->setPaintEnabled( false );
-	addChild( _foreground );
+	foreground->setPaintBorderEnabled( false );
+	foreground->setPaintBackgroundEnabled( false );
+	foreground->setPaintEnabled( false );
+	addChild( foreground );
 
-	addChild( _taskBar );
+	addChild( taskBar );
 }
 
 void Desktop::setSize( int wide, int tall )
@@ -296,9 +296,9 @@ void Desktop::setSize( int wide, int tall )
 	Panel::setSize( wide, tall );
 
 	getPaintSize( wide, tall );
-	_background->setBounds( 0, 0, wide, tall - 36 );
-	_foreground->setBounds( 0, 0, wide, tall - 36 );
-	_taskBar->setBounds( 0, tall - 36, wide, 36 );
+	background->setBounds( 0, 0, wide, tall - 36 );
+	foreground->setBounds( 0, 0, wide, tall - 36 );
+	taskBar->setBounds( 0, tall - 36, wide, 36 );
 }
 
 void Desktop::iconActivated( DesktopIcon *icon )
@@ -308,34 +308,34 @@ void Desktop::iconActivated( DesktopIcon *icon )
 	if( !frame )
 		return;
 
-	frame->setPos( _cascade[0], _cascade[1] );
-	_foreground->addChild( frame );
-	_taskBar->addFrame( frame );
+	frame->setPos( nextFramePos[0], nextFramePos[1] );
+	foreground->addChild( frame );
+	taskBar->addFrame( frame );
 	frame->requestFocus();
 
-	_cascade[0] += 25;
-	_cascade[1] += 50;
+	nextFramePos[0] += 25;
+	nextFramePos[1] += 50;
 
-	if( _cascade[1] > 400 )
+	if( nextFramePos[1] > 400 )
 	{
-		_cascade[0] = 50;
-		_cascade[1] = 50;
+		nextFramePos[0] = 50;
+		nextFramePos[1] = 50;
 	}
 }
 
 void Desktop::addIcon( DesktopIcon *icon )
 {
 	icon->setDesktop( this );
-	_foreground->addChild( icon );
+	foreground->addChild( icon );
 	icon->setPos( 10, 10 );
-	_desktopIconDar.addElement( icon );
+	desktopIcons.addElement( icon );
 }
 
 void Desktop::arrangeIcons()
 {
 	int x = 15, y = 10;
 
-	for( DesktopIcon *icon : _desktopIconDar )
+	for( DesktopIcon *icon : desktopIcons )
 	{
 		icon->setPos( x, y );
 		y += 60;
@@ -350,10 +350,10 @@ void Desktop::arrangeIcons()
 
 Panel *Desktop::getBackground()
 {
-	return _background;
+	return background;
 }
 
 Panel *Desktop::getForeground()
 {
-	return _foreground;
+	return foreground;
 }

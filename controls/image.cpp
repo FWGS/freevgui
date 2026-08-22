@@ -11,9 +11,9 @@ ImagePanel::ImagePanel( Image *image )
 	setImage( image );
 }
 
-void ImagePanel::setImage( Image *image )
+void ImagePanel::setImage( Image *newImage )
 {
-	_image = image;
+	image = newImage;
 
 	if( image )
 	{
@@ -28,10 +28,10 @@ void ImagePanel::setImage( Image *image )
 
 void ImagePanel::paintBackground()
 {
-	if( _image )
+	if( image )
 	{
 		drawSetColor( Scheme::SC_WHITE );
-		_image->doPaint( this );
+		image->doPaint( this );
 	}
 }
 

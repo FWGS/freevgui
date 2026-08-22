@@ -13,11 +13,11 @@
 
 using namespace vgui;
 
-class FooDefaultEditPanelSignal : public InputSignalAdapter
+class DefaultEditPanelSignal : public InputSignalAdapter
 {
 	EditPanel *ep;
 public:
-	FooDefaultEditPanelSignal( EditPanel *ep ) : ep( ep ) {}
+	DefaultEditPanelSignal( EditPanel *ep ) : ep( ep ) {}
 
 	virtual void mousePressed( MouseCode, Panel * ) override
 	{
@@ -79,22 +79,22 @@ public:
 	}
 };
 
-EditPanel::EditPanel( int x, int y, int wide, int tall ) : Panel( x, y, wide, tall ), _cursor{ 0, 0 }, _font( nullptr )
+EditPanel::EditPanel( int x, int y, int wide, int tall ) : Panel( x, y, wide, tall ), cursorPos{ 0, 0 }, font( nullptr )
 {
 	setCursorBlink( true );
-	addInputSignal( new FooDefaultEditPanelSignal( this ));
+	addInputSignal( new DefaultEditPanelSignal( this ));
 	getLine( 0 );
 }
 
 void EditPanel::doCursorUp()
 {
-	if( _cursor[1] > 0 )
+	if( cursorPos[1] > 0 )
 	{
-		Dar<char> *src = getLine( _cursor[1] );
-		Dar<char> *dst = getLine( _cursor[1] - 1 );
+		Dar<char> *src = getLine( cursorPos[1] );
+		Dar<char> *dst = getLine( cursorPos[1] - 1 );
 
-		_cursor[0] = spatialCharOffsetBetweenTwoLines( src, dst, _cursor[0] );
-		_cursor[1]--;
+		cursorPos[0] = spatialCharOffsetBetweenTwoLines( src, dst, cursorPos[0] );
+		cursorPos[1]--;
 	}
 
 	setCursorBlink( true );
@@ -102,17 +102,17 @@ void EditPanel::doCursorUp()
 
 void EditPanel::doCursorDown()
 {
-	int visible = getVisibleLineCount();
+	int visibleLines = getVisibleLineCount();
 	int count = getLineCount();
-	int maxLine = visible < count ? visible : count;
+	int maxLine = visibleLines < count ? visibleLines : count;
 
-	if( _cursor[1] + 1 < maxLine )
+	if( cursorPos[1] + 1 < maxLine )
 	{
-		Dar<char> *src = getLine( _cursor[1] );
-		Dar<char> *dst = getLine( _cursor[1] + 1 );
+		Dar<char> *src = getLine( cursorPos[1] );
+		Dar<char> *dst = getLine( cursorPos[1] + 1 );
 
-		_cursor[0] = spatialCharOffsetBetweenTwoLines( src, dst, _cursor[0] );
-		_cursor[1]++;
+		cursorPos[0] = spatialCharOffsetBetweenTwoLines( src, dst, cursorPos[0] );
+		cursorPos[1]++;
 	}
 
 	setCursorBlink( true );
@@ -120,56 +120,56 @@ void EditPanel::doCursorDown()
 
 void EditPanel::doCursorLeft()
 {
-	if( _cursor[0] > 0 )
-		_cursor[0]--;
+	if( cursorPos[0] > 0 )
+		cursorPos[0]--;
 
 	setCursorBlink( true );
 }
 
 void EditPanel::doCursorRight()
 {
-	_cursor[0]++;
+	cursorPos[0]++;
 	setCursorBlink( true );
 }
 
 void EditPanel::doCursorToStartOfLine()
 {
-	_cursor[0] = 0;
+	cursorPos[0] = 0;
 }
 
 void EditPanel::doCursorToEndOfLine()
 {
-	Dar<char> *line = getLine( _cursor[1] );
+	Dar<char> *line = getLine( cursorPos[1] );
 
 	if( !line )
 		return;
 
-	_cursor[0] = line->getCount();
+	cursorPos[0] = line->getCount();
 }
 
 void EditPanel::doCursorInsertChar( char ch )
 {
-	Dar<char> *line = getLine( _cursor[1] );
+	Dar<char> *line = getLine( cursorPos[1] );
 
 	if( !line )
 		return;
 
-	shiftLineRight( line, _cursor[0], 1 );
-	setChar( line, _cursor[0], ch );
+	shiftLineRight( line, cursorPos[0], 1 );
+	setChar( line, cursorPos[0], ch );
 	doCursorRight();
 	repaint();
 }
 
 void EditPanel::doCursorBackspace()
 {
-	Dar<char> *line = getLine( _cursor[1] );
+	Dar<char> *line = getLine( cursorPos[1] );
 
 	if( !line )
 		return;
 
-	if( _cursor[0] == 0 )
+	if( cursorPos[0] == 0 )
 	{
-		Dar<char> *prev = getLine( _cursor[1] - 1 );
+		Dar<char> *prev = getLine( cursorPos[1] - 1 );
 
 		if( !prev )
 			return;
@@ -179,13 +179,13 @@ void EditPanel::doCursorBackspace()
 		for( int i = 0; i < line->getCount(); i++ )
 			prev->addElement( (*line)[i] );
 
-		_lineDarDar.removeElementAt( _cursor[1] );
-		_cursor[1]--;
-		_cursor[0] = prevLen;
+		lines.removeElementAt( cursorPos[1] );
+		cursorPos[1]--;
+		cursorPos[0] = prevLen;
 	}
 	else
 	{
-		shiftLineLeft( line, _cursor[0], 1 );
+		shiftLineLeft( line, cursorPos[0], 1 );
 		doCursorLeft();
 	}
 
@@ -194,19 +194,19 @@ void EditPanel::doCursorBackspace()
 
 void EditPanel::doCursorNewLine()
 {
-	Dar<char> *line = getLine( _cursor[1] );
+	Dar<char> *line = getLine( cursorPos[1] );
 
 	if( !line )
 		return;
 
 	Dar<char> *newLine = new Dar<char>();
 
-	for( int i = _cursor[0]; i < line->getCount(); i++ )
+	for( int i = cursorPos[0]; i < line->getCount(); i++ )
 		newLine->addElement( (*line)[i] );
 
-	_lineDarDar.insertElementAt( newLine, _cursor[1] + 1 );
-	line->setCount( _cursor[0] );
-	_cursor[0] = 0;
+	lines.insertElementAt( newLine, cursorPos[1] + 1 );
+	line->setCount( cursorPos[0] );
+	cursorPos[0] = 0;
 	doCursorDown();
 	repaint();
 }
@@ -214,7 +214,7 @@ void EditPanel::doCursorNewLine()
 void EditPanel::doCursorDelete()
 {
 	doCursorRight();
-	shiftLineLeft( getLine( _cursor[1] ), _cursor[0], 1 );
+	shiftLineLeft( getLine( cursorPos[1] ), cursorPos[0], 1 );
 	doCursorLeft();
 	repaint();
 }
@@ -241,7 +241,7 @@ void EditPanel::doCursorPrintf( char *format, ... )
 
 int EditPanel::getLineCount()
 {
-	return _lineDarDar.getCount();
+	return lines.getCount();
 }
 
 int EditPanel::getVisibleLineCount()
@@ -250,21 +250,21 @@ int EditPanel::getVisibleLineCount()
 
 	getPaintSize( w, h );
 
-	Font *font = _font ? _font : getApp()->getScheme()->getFont( Scheme::SF_PRIMARY1 );
+	Font *f = font ? font : getApp()->getScheme()->getFont( Scheme::SF_PRIMARY1 );
 
-	return h / font->getTall();
+	return h / f->getTall();
 }
 
 void EditPanel::setCursorBlink( bool state )
 {
-	_cursorBlink = state;
-	_cursorNextBlinkTime = (int)( getApp()->getTimeMillis() + 400 );
+	cursorBlink = state;
+	cursorNextBlinkTime = (int)( getApp()->getTimeMillis() + 400 );
 	repaint();
 }
 
-void EditPanel::setFont( Font *font )
+void EditPanel::setFont( Font *f )
 {
-	_font = font;
+	font = f;
 	repaint();
 }
 
@@ -285,8 +285,8 @@ void EditPanel::getText( int lineIndex, int offset, char *buf, int bufLen )
 
 void EditPanel::getCursorBlink( bool &blink, int &nextBlinkTime )
 {
-	blink = _cursorBlink;
-	nextBlinkTime = _cursorNextBlinkTime;
+	blink = cursorBlink;
+	nextBlinkTime = cursorNextBlinkTime;
 }
 
 void EditPanel::paintBackground()
@@ -300,15 +300,15 @@ void EditPanel::paintBackground()
 
 void EditPanel::paint()
 {
-	Font *font = _font ? _font : getApp()->getScheme()->getFont( Scheme::SF_PRIMARY1 );
-	int lineHeight = font->getTall();
+	Font *f = font ? font : getApp()->getScheme()->getFont( Scheme::SF_PRIMARY1 );
+	int lineHeight = f->getTall();
 	int y = 0;
 
-	drawSetTextFont( font );
+	drawSetTextFont( f );
 
-	for( int line = 0; line < _lineDarDar.getCount(); line++ )
+	for( int line = 0; line < lines.getCount(); line++ )
 	{
-		Dar<char> *lineDar = _lineDarDar[line];
+		Dar<char> *lineDar = lines[line];
 		int x = 0;
 		int caretX = 0;
 
@@ -319,23 +319,23 @@ void EditPanel::paint()
 			char ch = (*lineDar)[col];
 			int a, b, c;
 
-			if( line == _cursor[1] && col == _cursor[0] )
+			if( line == cursorPos[1] && col == cursorPos[0] )
 				caretX = x;
 
-			font->getCharABCwide( ch, a, b, c );
+			f->getCharABCwide( ch, a, b, c );
 			drawPrintChar( x, y, ch );
 			x += a + b + c;
 		}
 
-		if( line == _cursor[1] && _cursor[0] >= lineDar->getCount() )
+		if( line == cursorPos[1] && cursorPos[0] >= lineDar->getCount() )
 		{
 			int a, b, c;
 
-			font->getCharABCwide( ' ', a, b, c );
-			caretX = x + ( _cursor[0] - lineDar->getCount() ) * ( a + b + c );
+			f->getCharABCwide( ' ', a, b, c );
+			caretX = x + ( cursorPos[0] - lineDar->getCount() ) * ( a + b + c );
 		}
 
-		if( line == _cursor[1] && _cursorBlink )
+		if( line == cursorPos[1] && cursorBlink )
 		{
 			drawSetColor( 255, 0, 0, 0 );
 			drawFilledRect( caretX - 1, y, caretX + 1, y + lineHeight );
@@ -354,18 +354,18 @@ Dar<char> *EditPanel::getLine( int lineIndex )
 	if( lineIndex < 0 )
 		return nullptr;
 
-	if( lineIndex == 0 && _lineDarDar.getCount() == 0 )
+	if( lineIndex == 0 && lines.getCount() == 0 )
 	{
 		Dar<char> *line = new Dar<char>();
 
-		_lineDarDar.addElement( line );
+		lines.addElement( line );
 		return line;
 	}
 
-	if( lineIndex >= _lineDarDar.getCount() )
+	if( lineIndex >= lines.getCount() )
 		return nullptr;
 
-	return _lineDarDar[lineIndex];
+	return lines[lineIndex];
 }
 
 void EditPanel::setChar( Dar<char> *lineDar, int x, char ch, char fill )
@@ -422,7 +422,7 @@ int EditPanel::spatialCharOffsetBetweenTwoLines( Dar<char> *src, Dar<char> *dst,
 	if( !src || !dst )
 		return x;
 
-	Font *font = _font ? _font : getApp()->getScheme()->getFont( Scheme::SF_PRIMARY1 );
+	Font *f = font ? font : getApp()->getScheme()->getFont( Scheme::SF_PRIMARY1 );
 
 	int pixelX = 0;
 
@@ -430,7 +430,7 @@ int EditPanel::spatialCharOffsetBetweenTwoLines( Dar<char> *src, Dar<char> *dst,
 	{
 		int a, b, c;
 
-		font->getCharABCwide( (*src)[i], a, b, c );
+		f->getCharABCwide( (*src)[i], a, b, c );
 		pixelX += a + b + c;
 	}
 
@@ -440,7 +440,7 @@ int EditPanel::spatialCharOffsetBetweenTwoLines( Dar<char> *src, Dar<char> *dst,
 	{
 		int a, b, c;
 
-		font->getCharABCwide( (*dst)[col], a, b, c );
+		f->getCharABCwide( (*dst)[col], a, b, c );
 		cur += a + b + c;
 		col++;
 	}

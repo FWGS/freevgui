@@ -11,10 +11,10 @@
 namespace vgui
 {
 TextEntry::TextEntry( const char *str, int x, int y, int w, int h ) : Panel( x, y, w, h ),
-	_cursorPos( 0 ), _hideText( false ), _cursorBlinkRate( 400 ), _font( nullptr )
+	cursorPos( 0 ), hideText( false ), cursorBlinkRate( 400 ), font( nullptr )
 {
-	_select[0] = -1;
-	_select[1] = -1;
+	selection[0] = -1;
+	selection[1] = -1;
 	resetCursorBlink();
 	setText( str, strlen( str ));
 	addInputSignal( this );
@@ -27,12 +27,12 @@ TextEntry::TextEntry( const char *str, int x, int y, int w, int h ) : Panel( x, 
 
 void TextEntry::setText( const char *text, int len )
 {
-	_lineDar.removeAll();
-	_lineDar.ensureCapacity( len );
+	line.removeAll();
+	line.ensureCapacity( len );
 
 	for( int i = 0; i < len; i++ )
 	{
-		_lineDar.addElement( text[i] );
+		line.addElement( text[i] );
 		setCharAt( text[i], i );
 	}
 
@@ -47,24 +47,24 @@ void TextEntry::getText( int off, char *buf, int len )
 	for( int i = off; i < len - 1; i++ )
 	{
 		buf[i - off] = 0;
-		if( i >= _lineDar.getCount())
+		if( i >= line.getCount())
 			break;
 
-		buf[i - off] = _lineDar[i];
+		buf[i - off] = line[i];
 	}
 	buf[len - 1] = 0;
 }
 
 void TextEntry::resetCursorBlink()
 {
-	_cursorBlink = false;
-	_cursorNextBlinkTime = getApp()->getTimeMillis() + _cursorBlinkRate;
+	cursorBlink = false;
+	cursorNextBlinkTime = getApp()->getTimeMillis() + cursorBlinkRate;
 }
 
 void TextEntry::doGotoLeft()
 {
 	selectCheck();
-	_cursorPos = Q_max( _cursorPos - 1, 0 );
+	cursorPos = Q_max( cursorPos - 1, 0 );
 	resetCursorBlink();
 	repaint();
 }
@@ -72,7 +72,7 @@ void TextEntry::doGotoLeft()
 void TextEntry::doGotoRight()
 {
 	selectCheck();
-	_cursorPos = Q_min( _cursorPos + 1, _lineDar.getCount());
+	cursorPos = Q_min( cursorPos + 1, line.getCount());
 	resetCursorBlink();
 	repaint();
 }
@@ -80,7 +80,7 @@ void TextEntry::doGotoRight()
 void TextEntry::doGotoFirstOfLine()
 {
 	selectCheck();
-	_cursorPos = 0;
+	cursorPos = 0;
 	resetCursorBlink();
 	repaint();
 }
@@ -88,55 +88,55 @@ void TextEntry::doGotoFirstOfLine()
 void TextEntry::doGotoEndOfLine()
 {
 	selectCheck();
-	_cursorPos = _lineDar.getCount();
+	cursorPos = line.getCount();
 	resetCursorBlink();
 	repaint();
 }
 
 void TextEntry::doInsertChar( char ch )
 {
-	_lineDar.ensureCapacity( _lineDar.getCount() + 1 );
-	_lineDar.setCount( _lineDar.getCount() + 1 );
-	for( int i = _lineDar.getCount() - 1; i >= _cursorPos; i-- )
-		setCharAt( _lineDar[i], i + 1 );
+	line.ensureCapacity( line.getCount() + 1 );
+	line.setCount( line.getCount() + 1 );
+	for( int i = line.getCount() - 1; i >= cursorPos; i-- )
+		setCharAt( line[i], i + 1 );
 
-	setCharAt( ch, _cursorPos );
-	_cursorPos++;
+	setCharAt( ch, cursorPos );
+	cursorPos++;
 	resetCursorBlink();
 	repaint();
 }
 
 void TextEntry::doBackspace()
 {
-	if( !_cursorPos || !_lineDar.getCount( ))
+	if( !cursorPos || !line.getCount( ))
 		return;
 
-	for( int i = _cursorPos; i < _lineDar.getCount(); i++ )
-		setCharAt( _lineDar[i],	i - 1 );
+	for( int i = cursorPos; i < line.getCount(); i++ )
+		setCharAt( line[i],	i - 1 );
 
-	_lineDar.setCount( _lineDar.getCount() - 1 );
-	_cursorPos--;
+	line.setCount( line.getCount() - 1 );
+	cursorPos--;
 	resetCursorBlink();
 	repaint();
 }
 
 void TextEntry::doDelete()
 {
-	if( !_lineDar.getCount() || _cursorPos != _lineDar.getCount( ))
+	if( !line.getCount() || cursorPos != line.getCount( ))
 		return;
 
-	for( int i = _cursorPos + 1; i < _lineDar.getCount(); i++ )
-		setCharAt( _lineDar[i], i - 1 );
+	for( int i = cursorPos + 1; i < line.getCount(); i++ )
+		setCharAt( line[i], i - 1 );
 
-	_lineDar.setCount( _lineDar.getCount() - 1 );
-	_cursorPos--;
+	line.setCount( line.getCount() - 1 );
+	cursorPos--;
 	resetCursorBlink();
 	repaint();
 }
 
 void TextEntry::doSelectNone()
 {
-	_select[0] = -1;
+	selection[0] = -1;
 	repaint();
 }
 
@@ -155,7 +155,7 @@ void TextEntry::doCopySelected()
 		if( x + i >= y )
 			break;
 
-		buf[i] = _lineDar[x + i];
+		buf[i] = line[x + i];
 	}
 
 	buf[i] = 0;
@@ -184,24 +184,24 @@ void TextEntry::doDeleteSelected()
 
 void TextEntry::addActionSignal( ActionSignal *as )
 {
-	_actionSignalDar.putElement( as );
+	actionSignals.putElement( as );
 }
 
 void TextEntry::setFont( Font *f )
 {
-	_font = f;
+	font = f;
 }
 
 void TextEntry::setTextHidden( bool hide )
 {
-	_hideText = hide;
+	hideText = hide;
 	repaint();
 }
 
 void TextEntry::paintBackground()
 {
-	Font *font = _font ? _font : getApp()->getScheme()->getFont( Scheme::SF_PRIMARY1 );
-	int text_h = font->getTall();
+	Font *f = font ? font : getApp()->getScheme()->getFont( Scheme::SF_PRIMARY1 );
+	int text_h = f->getTall();
 
 	{
 		int x, y;
@@ -211,40 +211,40 @@ void TextEntry::paintBackground()
 			y += 3;
 			drawSetColor( Scheme::SC_WHITE );
 			drawFilledRect( 0, 0, x, text_h + 1 );
-			drawFilledRect( x, 0, _size[0], text_h + 1 );
+			drawFilledRect( x, 0, size[0], text_h + 1 );
 			drawSetColor( 0, 0, 200, 0 );
 			drawFilledRect( x, 0, y, text_h + 1 );
 		}
 		else
 		{
 			drawSetColor(Scheme::SC_WHITE);
-			drawFilledRect(0,0,_size[0],_size[1]);
+			drawFilledRect(0,0,size[0],size[1]);
 		}
 	}
 
-	drawSetTextFont( font );
+	drawSetTextFont( f );
 	drawSetColor( Scheme::SC_BLACK );
 	drawSetTextPos( 3, 0 );
 
-	for( int i = 0; i < _lineDar.getCount(); i++ )
+	for( int i = 0; i < line.getCount(); i++ )
 	{
-		if( _hideText )
+		if( hideText )
 			drawPrintChar( '*' );
 		else
-			drawPrintChar( _lineDar[i] );
+			drawPrintChar( line[i] );
 	}
 
 	if( hasFocus( ))
 	{
 		drawSetColor( Scheme::SC_BLACK );
-		drawFilledRect( 0, 0, _size[0], 1 );
-		drawFilledRect( 0, _size[1] - 1, _size[0], _size[1] );
-		drawFilledRect( 0, 1, 1, _size[1] - 1 );
-		drawFilledRect( _size[0] - 1, 1, _size[0], _size[1] - 1 );
+		drawFilledRect( 0, 0, size[0], 1 );
+		drawFilledRect( 0, size[1] - 1, size[0], size[1] );
+		drawFilledRect( 0, 1, 1, size[1] - 1 );
+		drawFilledRect( size[0] - 1, 1, size[0], size[1] - 1 );
 
-		if( !_cursorBlink )
+		if( !cursorBlink )
 		{
-				int x = cursorToPixelSpace( _cursorPos );
+				int x = cursorToPixelSpace( cursorPos );
 				drawSetColor( Scheme::SC_BLACK );
 				drawFilledRect( x + 3, 2, x + 4, text_h - 1 );
 		}
@@ -256,23 +256,23 @@ void TextEntry::setCharAt( char ch, int at )
 	if( at < 0 )
 		return;
 
-	_lineDar.ensureCapacity( at + 1 );
-	_lineDar.setElementAt( ch, at );
+	line.ensureCapacity( at + 1 );
+	line.setElementAt( ch, at );
 }
 
 void TextEntry::fireActionSignal()
 {
-	for( auto signal : _actionSignalDar )
+	for( auto signal : actionSignals )
 		signal->actionPerformed( this );
 }
 
 bool TextEntry::getSelectedRange( int &x, int &y )
 {
-	if( _select[0] == -1 )
+	if( selection[0] == -1 )
 		return false;
 
-	x = _select[0];
-	y = _select[1];
+	x = selection[0];
+	y = selection[1];
 	if( x > y )
 	{
 		int temp = x;
@@ -295,18 +295,18 @@ bool TextEntry::getSelectedPixelRange( int &x, int &y )
 
 int TextEntry::cursorToPixelSpace( int at )
 {
-	Font *font = _font ? _font : getApp()->getScheme()->getFont( Scheme::SF_PRIMARY1 );
+	Font *f = font ? font : getApp()->getScheme()->getFont( Scheme::SF_PRIMARY1 );
 
 	int x = 0;
-	for( int i = 0; i < _lineDar.getCount(); i++ )
+	for( int i = 0; i < line.getCount(); i++ )
 	{
 		if( i == at )
 			break;
 
 		int a, b, c;
-		if( _hideText )
-			font->getCharABCwide( '*', a, b, c );
-		else font->getCharABCwide( _lineDar[i], a, b, c );
+		if( hideText )
+			f->getCharABCwide( '*', a, b, c );
+		else f->getCharABCwide( line[i], a, b, c );
 
 		x += a + b + c;
 	}
@@ -317,8 +317,8 @@ int TextEntry::cursorToPixelSpace( int at )
 void TextEntry::selectCheck()
 {
 	if( isKeyDown( KEY_LSHIFT ) || isKeyDown( KEY_RSHIFT ))
-		_select[0] = _cursorPos;
-	else _select[0] = -1;
+		selection[0] = cursorPos;
+	else selection[0] = -1;
 }
 
 void TextEntry::cursorMoved( int, int, Panel * )
@@ -423,7 +423,7 @@ void TextEntry::keyTyped( KeyCode code, Panel *p )
 		}
 	}
 
-	_select[1] = _cursorPos;
+	selection[1] = cursorPos;
 
 	if( code == KEY_ENTER )
 		fireActionSignal();
@@ -437,16 +437,16 @@ void TextEntry::keyReleased( KeyCode, Panel* )
 void TextEntry::keyFocusTicked( Panel* )
 {
 	int time = getApp()->getTimeMillis();
-	if( time > _cursorNextBlinkTime )
+	if( time > cursorNextBlinkTime )
 	{
-		_cursorBlink = !_cursorBlink;
-		_cursorNextBlinkTime = time + _cursorBlinkRate;
+		cursorBlink = !cursorBlink;
+		cursorNextBlinkTime = time + cursorBlinkRate;
 		repaint();
 	}
 }
 
 TextGrid::TextGrid( int grid_w, int grid_h, int x, int y, int w, int h ) : Panel( x, y, w, h ),
-	_grid( nullptr ), _gridSize{ 0, 0 }, _xy{ 0, 0 }
+	grid( nullptr ), gridSize{ 0, 0 }, cursorPos{ 0, 0 }
 {
 	setGridSize( grid_w, grid_h );
 	setBgColor( 255, 255, 255, 0 );
@@ -458,42 +458,42 @@ void TextGrid::setGridSize( int w, int h )
 	if( w <= 0 || h <= 0 )
 		return;
 
-	delete[] _grid;
-	_grid = new char[w * h * 7];
-	memset( _grid, 0, w * h * 7 );
-	_gridSize[0] = w;
-	_gridSize[1] = h;
+	delete[] grid;
+	grid = new char[w * h * 7];
+	memset( grid, 0, w * h * 7 );
+	gridSize[0] = w;
+	gridSize[1] = h;
 }
 
 void TextGrid::newLine()
 {
-	if( _xy[1] == _gridSize[1] - 1 )
+	if( cursorPos[1] == gridSize[1] - 1 )
 	{
-		if( _gridSize[1] > 1 )
+		if( gridSize[1] > 1 )
 		{
-			size_t lineSize = _gridSize[0] * 7;
+			size_t lineSize = gridSize[0] * 7;
 
-			memset( &_grid[( _xy[1] * _gridSize[0] + _xy[0] ) * 7], 0, _gridSize[0] - _xy[0] );
-			for( int j = 1; j < _gridSize[1]; j++ )
+			memset( &grid[( cursorPos[1] * gridSize[0] + cursorPos[0] ) * 7], 0, gridSize[0] - cursorPos[0] );
+			for( int j = 1; j < gridSize[1]; j++ )
 			{
-				memcpy( &_grid[( j - 1 ) * lineSize], &_grid[j * lineSize], lineSize );
+				memcpy( &grid[( j - 1 ) * lineSize], &grid[j * lineSize], lineSize );
 			}
-			memset( &_grid[_xy[1] * lineSize], 0, lineSize );
+			memset( &grid[cursorPos[1] * lineSize], 0, lineSize );
 		}
 
-		_xy[0] = 0;
+		cursorPos[0] = 0;
 	}
 	else
 	{
-		_xy[0] = 0;
-		++_xy[1];
+		cursorPos[0] = 0;
+		++cursorPos[1];
 	}
 }
 
 void TextGrid::setXY( int x, int y )
 {
-	_xy[0] = x;
-	_xy[1] = y;
+	cursorPos[0] = x;
+	cursorPos[1] = y;
 }
 
 int TextGrid::vprintf( const char *fmt, va_list va )
@@ -513,12 +513,12 @@ int TextGrid::vprintf( const char *fmt, va_list va )
 			continue;
 		}
 
-		if( _xy[0] >= 0 && _xy[0] < _gridSize[0] )
+		if( cursorPos[0] >= 0 && cursorPos[0] < gridSize[0] )
 		{
-			if( _xy[1] >= 0 && _xy[1] < _gridSize[1] )
+			if( cursorPos[1] >= 0 && cursorPos[1] < gridSize[1] )
 			{
-				_grid[(_xy[1] * _gridSize[0] + _xy[0]) * 7] = buf[i];
-				++_xy[0];
+				grid[(cursorPos[1] * gridSize[0] + cursorPos[0]) * 7] = buf[i];
+				++cursorPos[0];
 			}
 		}
 	}
@@ -551,11 +551,11 @@ void TextGrid::paintBackground()
 
 	int red, green, blue, alpha;
 
-	for( int j = 0; j < _gridSize[1]; j++ )
+	for( int j = 0; j < gridSize[1]; j++ )
 	{
-		for( int i = 0; i < _gridSize[0]; i++ )
+		for( int i = 0; i < gridSize[0]; i++ )
 		{
-			char ch = _grid[(j * _gridSize[0] + i) * 7];
+			char ch = grid[(j * gridSize[0] + i) * 7];
 
 			if( ch )
 			{
@@ -568,52 +568,52 @@ void TextGrid::paintBackground()
 }
 
 TextPanel::TextPanel( const char *str, int x, int y, int w, int h ) : Panel( x, y, w, h ),
-	_textImage( new TextImage( str ))
+	textImage( new TextImage( str ))
 {
-	_textImage->setSize( w, h );
+	textImage->setSize( w, h );
 }
 
 void TextPanel::setText( const char *str )
 {
-	_textImage->setText( str );
+	textImage->setText( str );
 }
 
 void TextPanel::setFont( Scheme::SchemeFont sf )
 {
-	_textImage->setFont( sf );
+	textImage->setFont( sf );
 }
 
 void TextPanel::setFont( Font *f )
 {
-	_textImage->setFont( f );
+	textImage->setFont( f );
 }
 
 void TextPanel::setSize( int w, int h )
 {
 	Panel::setSize( w, h );
 	getPaintSize( w, h );
-	_textImage->setSize( w, h );
+	textImage->setSize( w, h );
 }
 
 void TextPanel::setFgColor( int r, int g, int b, int a )
 {
 	Panel::setFgColor( r, g, b, a );
-	_textImage->setColor( Color( r, g, b, a ));
+	textImage->setColor( Color( r, g, b, a ));
 }
 
 void TextPanel::setFgColor( Scheme::SchemeColor sc )
 {
 	Panel::setFgColor( sc );
-	_textImage->setColor( Color( sc ));
+	textImage->setColor( Color( sc ));
 }
 
 TextImage *TextPanel::getTextImage()
 {
-	return _textImage;
+	return textImage;
 }
 
 void TextPanel::paint()
 {
-	_textImage->doPaint( this );
+	textImage->doPaint( this );
 }
 }

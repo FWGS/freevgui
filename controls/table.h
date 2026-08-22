@@ -41,14 +41,14 @@ public:
 	virtual void privateMouseDoublePressed( MouseCode, Panel* );
 	virtual void privateKeyTyped( KeyCode code, Panel* );
 
-	Dar<int> _columnDar;
-	bool _gridVisible[2];
-	int _gridWide, _gridTall, _selectedCell[2], _mouseOverCell[2], _editableCell[2];
-	Panel *_fakeInputPanel;
-	bool _columnSelectionEnabled, _rowSelectionEnabled, _cellSelectionEnabled;
-	Panel *_editableCellPanel;
-	int _virtualSize[2];
-	bool _cellEditingEnabled;
+	Dar<int> columns;
+	bool gridVisible[2];
+	int gridWide, gridTall, selectedCell[2], mouseOverCell[2], editableCell[2];
+	Panel *fakeInputPanel;
+	bool columnSelectionEnabled, rowSelectionEnabled, cellSelectionEnabled;
+	Panel *editableCellPanel;
+	int virtualSize[2];
+	bool cellEditingEnabled;
 };
 CHECK_STRUCT_SIZE( TablePanel, 260, 360, 360 );
 }

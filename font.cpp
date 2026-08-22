@@ -65,22 +65,22 @@ Font::Font( const char *name, void *pFileData, int fileDataLen, int tall, int wi
 	init( name, pFileData, fileDataLen, tall, wide, rotation, weight, italic, underline, strikeout, symbol );
 }
 
-void Font::init( const char *name, void *pFileData, int fileDataLen, int tall, int wide, float rotation, int weight, bool italic, bool underline, bool strikeout, bool symbol )
+void Font::init( const char *newName, void *pFileData, int fileDataLen, int tall, int wide, float rotation, int weight, bool italic, bool underline, bool strikeout, bool symbol )
 {
-	_name = vgui_strdup( name );
-	_id = -1;
-	_plat = nullptr;
+	name = vgui_strdup( newName );
+	id = -1;
+	impl = nullptr;
 
 	if( pFileData )
 	{
 		FileImageStream_Memory stream( pFileData, fileDataLen );
-		FontPlat_Bitmap *bitmap = FontPlat_Bitmap::Create( _name, &stream );
+		FontPlat_Bitmap *bitmap = FontPlat_Bitmap::Create( name, &stream );
 
 		if( bitmap )
 		{
-			_plat = bitmap;
-			staticFontPlatDar.addElement( _plat );
-			_id = staticFontId++;
+			impl = bitmap;
+			staticFontPlatDar.addElement( impl );
+			id = staticFontId++;
 		}
 	}
 	else
@@ -89,28 +89,28 @@ void Font::init( const char *name, void *pFileData, int fileDataLen, int tall, i
 		{
 			if( staticFontPlatDar[i]->equals( name, tall, wide, rotation, weight, italic, underline, strikeout, symbol ))
 			{
-				_plat = staticFontPlatDar[i];
+				impl = staticFontPlatDar[i];
 				break;
 			}
 		}
 
-		if( !_plat )
+		if( !impl )
 		{
-			_plat = new StubFontPlat( name, tall, wide, rotation, weight, italic, underline, strikeout, symbol );
-			staticFontPlatDar.addElement( _plat );
-			_id = staticFontId++;
+			impl = new StubFontPlat( name, tall, wide, rotation, weight, italic, underline, strikeout, symbol );
+			staticFontPlatDar.addElement( impl );
+			id = staticFontId++;
 		}
 	}
 }
 
 void Font::getCharRGBA( int ch, int rgbaX, int rgbaY, int rgbaWide, int rgbaTall, unsigned char *rgba )
 {
-	_plat->getCharRGBA( ch, rgbaX, rgbaY, rgbaWide, rgbaTall, rgba );
+	impl->getCharRGBA( ch, rgbaX, rgbaY, rgbaWide, rgbaTall, rgba );
 }
 
 void Font::getCharABCwide( int ch, int &a, int &b, int &c )
 {
-	_plat->getCharABCwide( ch, a, b, c );
+	impl->getCharABCwide( ch, a, b, c );
 }
 
 void Font::getTextSize( const char *str, int &wide, int &tall )
@@ -147,20 +147,20 @@ void Font::getTextSize( const char *str, int &wide, int &tall )
 
 BaseFontPlat *Font::getPlat()
 {
-	return _plat;
+	return impl;
 }
 
 int Font::getTall()
 {
-	return _plat->getTall();
+	return impl->getTall();
 }
 
 int Font::getWide()
 {
-	return _plat->getWide();
+	return impl->getWide();
 }
 
 int Font::getId()
 {
-	return _id;
+	return id;
 }

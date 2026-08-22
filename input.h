@@ -144,9 +144,9 @@ public:
 private:
 	virtual void privateInit( Bitmap *bmp, int x, int y );
 
-	int           _hotspot[2];
-	Bitmap*       _bitmap;
-	DefaultCursor _dc;
+	int           hotspot[2];
+	Bitmap*       bitmap;
+	DefaultCursor defaultCursor;
 public:
 	virtual Bitmap* getBitmap();
 	virtual DefaultCursor getDefaultCursor();

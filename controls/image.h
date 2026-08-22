@@ -11,12 +11,12 @@ namespace vgui
 
 class CLASSEXPORT ImagePanel : public Panel {
 public:
-	ImagePanel() : _image( NULL ) { }
+	ImagePanel() : image( NULL ) { }
 	ImagePanel( Image *image );
-	virtual void setImage( Image *image );
+	virtual void setImage( Image *newImage );
 protected:
 	virtual void paintBackground() override;
-	Image* _image;
+	Image* image;
 };
 
 CHECK_STRUCT_SIZE( ImagePanel, 192, 272, 272 );

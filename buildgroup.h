@@ -28,24 +28,24 @@ private:
 	virtual void applySnap( Panel *p );
 	virtual void fireCurrentPanelChangeSignal();
 
-	bool _enabled;
-	int _snapX, _snapY;
-	Cursor *_cursor_sizenwse;
-	Cursor *_cursor_sizenesw;
-	Cursor *_cursor_sizewe;
-	Cursor *_cursor_sizens;
-	Cursor *_cursor_sizeall;
+	bool enabled;
+	int snapX, snapY;
+	Cursor *sizeNwSeCursor;
+	Cursor *sizeNeSwCursor;
+	Cursor *sizeWeCursor;
+	Cursor *sizeNsCursor;
+	Cursor *sizeAllCursor;
 
-	bool _dragging;
-	MouseCode _dragMouseCode;
-	int _dragStartPanelPos[2];
-	int _dragStartCursorPos[2];
+	bool dragging;
+	MouseCode dragMouseCode;
+	int dragStartPanelPos[2];
+	int dragStartCursorPos[2];
 
-	Panel *_currentPanel;
-	Dar<ChangeSignal *> _currentPanelChangeSignalDar;
+	Panel *selectedPanel;
+	Dar<ChangeSignal *> selectedPanelChangeSignals;
 
-	Dar<Panel *> _panelDar;
-	Dar<char *> _panelNameDar;
+	Dar<Panel *> panels;
+	Dar<char *> panelNames;
 protected:
 	virtual void panelAdded( Panel *p, const char *str );
 	virtual void cursorMoved( int x, int y, Panel *p );

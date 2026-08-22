@@ -9,15 +9,15 @@
 using namespace vgui;
 
 ListPanel::ListPanel( int x, int y, int wide, int tall ) : Panel( x, y, wide, tall ),
-	_vpanel( new Panel( 0, 0, wide - 15, tall * 2 )),
-	_scroll( new ScrollBar( wide - 15, 0, 15, tall, true ))
+	itemPanel( new Panel( 0, 0, wide - 15, tall * 2 )),
+	scrollBar( new ScrollBar( wide - 15, 0, 15, tall, true ))
 {
-	_vpanel->setParent( this );
-	_vpanel->setLayout( new StackLayout( 1, false ));
-	_vpanel->setBgColor( 0, 0, 100, 0 );
+	itemPanel->setParent( this );
+	itemPanel->setLayout( new StackLayout( 1, false ));
+	itemPanel->setBgColor( 0, 0, 100, 0 );
 
-	_scroll->setParent( this );
-	_scroll->addIntChangeSignal( makeIntChangeHandler([this]( int value, Panel * )
+	scrollBar->setParent( this );
+	scrollBar->addIntChangeSignal( makeIntChangeHandler([this]( int value, Panel * )
 	{
 		setPixelScroll( -value );
 	}));
@@ -36,49 +36,49 @@ void ListPanel::addString( const char *str )
 
 void ListPanel::addItem( Panel *panel )
 {
-	panel->setParent( _vpanel );
-	_vpanel->invalidateLayout( true );
+	panel->setParent( itemPanel );
+	itemPanel->invalidateLayout( true );
 
-	Panel *last = _vpanel->getChild( _vpanel->getChildCount() - 1 );
+	Panel *last = itemPanel->getChild( itemPanel->getChildCount() - 1 );
 	int x, y, w, h;
 	last->getBounds( x, y, w, h );
 
 	int vw, vh;
-	_vpanel->getSize( vw, vh );
-	_vpanel->setSize( vw, y + h );
+	itemPanel->getSize( vw, vh );
+	itemPanel->setSize( vw, y + h );
 
-	_scroll->setRange( 0, y + h - _size[1] );
+	scrollBar->setRange( 0, y + h - size[1] );
 }
 
 void ListPanel::setPixelScroll( int value )
 {
-	_vpanel->setPos( 0, value );
+	itemPanel->setPos( 0, value );
 	repaint();
-	_vpanel->repaint();
+	itemPanel->repaint();
 }
 
 void ListPanel::translatePixelScroll( int delta )
 {
 	int x, y;
 
-	_vpanel->getPos( x, y );
-	_vpanel->setPos( 0, y + delta );
+	itemPanel->getPos( x, y );
+	itemPanel->setPos( 0, y + delta );
 	repaint();
-	_vpanel->repaint();
+	itemPanel->repaint();
 }
 
 void ListPanel::performLayout()
 {
-	if( _vpanel->getChildCount() == 0 )
+	if( itemPanel->getChildCount() == 0 )
 		return;
 
-	Panel *last = _vpanel->getChild( _vpanel->getChildCount() - 1 );
+	Panel *last = itemPanel->getChild( itemPanel->getChildCount() - 1 );
 	int x, y, w, h;
 	last->getBounds( x, y, w, h );
 
-	_vpanel->setSize( _size[0] - 15, y + h );
-	_scroll->setBounds( _size[0] - 15, 0, 15, _size[1] );
-	_scroll->setRange( 0, y + h - _size[1] );
+	itemPanel->setSize( size[0] - 15, y + h );
+	scrollBar->setBounds( size[0] - 15, 0, 15, size[1] );
+	scrollBar->setRange( 0, y + h - size[1] );
 }
 
 void ListPanel::paintBackground()

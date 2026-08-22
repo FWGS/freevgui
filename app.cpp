@@ -10,7 +10,7 @@
 
 using namespace vgui;
 
-App* App::_instance = nullptr;
+App* App::singleton = nullptr;
 static const char* staticKeyTrans[KEY_LAST] =
 {
 	"0)KEY_0",
@@ -121,31 +121,31 @@ static const char* staticKeyTrans[KEY_LAST] =
 App::App( bool externalMain )
 {
 	init();
-	_externalMain = externalMain;
+	externalMainLoop = externalMain;
 }
 
 App::App() : App( false ) { }
 
 App *App::getInstance()
 {
-	return _instance;
+	return singleton;
 }
 
 void App::start()
 {
-	if( !_externalMain )
+	if( !externalMainLoop )
 	{
 		run();
-		for( int i = 0; i < _surfaceBaseDar.getCount(); i++ )
+		for( int i = 0; i < surfaces.getCount(); i++ )
 		{
-			_surfaceBaseDar[i]->setWindowedMode();
+			surfaces[i]->setWindowedMode();
 		}
 	}
 }
 
 void App::stop()
 {
-	_running = false;
+	running = false;
 }
 
 void App::externalTick()
@@ -155,59 +155,59 @@ void App::externalTick()
 
 bool App::wasMousePressed( MouseCode code, Panel * )
 {
-	return _mousePressed[code];
+	return mousePressed[code];
 }
 
 bool App::wasMouseDoublePressed( MouseCode code, Panel * )
 {
-	return _mouseDoublePressed[code];
+	return mouseDoublePressed[code];
 }
 
 bool App::isMouseDown( MouseCode code, Panel * )
 {
-	return _mouseDown[code];
+	return mouseDown[code];
 }
 
 bool App::wasMouseReleased( MouseCode code, Panel * )
 {
-	return _mouseReleased[code];
+	return mouseReleased[code];
 }
 
 bool App::wasKeyPressed( KeyCode code, Panel *p )
 {
-	if( p && _keyFocus != p )
+	if( p && keyFocusPanel != p )
 		return false;
 
-	return _keyPressed[code];
+	return keyPressed[code];
 }
 
 bool App::isKeyDown( KeyCode code, Panel *p )
 {
-	if( p && _keyFocus != p )
+	if( p && keyFocusPanel != p )
 		return false;
 
-	return _keyDown[code];
+	return keyDown[code];
 }
 
 bool App::wasKeyTyped( KeyCode code, Panel *p )
 {
-	if( p && _keyFocus != p )
+	if( p && keyFocusPanel != p )
 		return false;
 
-	return _keyTyped[code];
+	return keyTyped[code];
 }
 
 bool App::wasKeyReleased( KeyCode code, Panel *p )
 {
-	if( p && _keyFocus != p )
+	if( p && keyFocusPanel != p )
 		return false;
 
-	return _keyReleased[code];
+	return keyReleased[code];
 }
 
 void App::addTickSignal( TickSignal *s )
 {
-	_tickSignalDar.putElement( s );
+	tickSignals.putElement( s );
 }
 
 void App::setCursorPos( int x, int y )
@@ -217,17 +217,17 @@ void App::setCursorPos( int x, int y )
 
 void App::getCursorPos( int &x, int &y )
 {
-	_surfaceBaseDar[0]->GetMousePos( x, y );
+	surfaces[0]->GetMousePos( x, y );
 }
 
 void App::setMouseCapture( Panel *p )
 {
 	if( p )
-		p->_surfaceBase->enableMouseCapture( true );
-	else if( _mouseCapture )
-		_mouseCapture->_surfaceBase->enableMouseCapture( false );
+		p->surfaceBase->enableMouseCapture( true );
+	else if( mouseCapturePanel )
+		mouseCapturePanel->surfaceBase->enableMouseCapture( false );
 
-	_mouseCapture = p;
+	mouseCapturePanel = p;
 }
 
 void App::setMouseArena( int x1, int y1, int x2, int y2, bool enable )
@@ -238,24 +238,24 @@ void App::setMouseArena( int x1, int y1, int x2, int y2, bool enable )
 
 void App::setMouseArena( Panel *p )
 {
-	_mouseArenaPanel = p;
+	mouseArenaPanel = p;
 }
 
 void App::requestFocus( Panel *p )
 {
-	_wantedKeyFocus = p;
+	keyFocusPanelRequested = p;
 }
 
 Panel *App::getFocus()
 {
-	return _keyFocus;
+	return keyFocusPanel;
 }
 
 void App::repaintAll()
 {
-	for( int i = 0; i < _surfaceBaseDar.getCount(); i++ )
+	for( int i = 0; i < surfaces.getCount(); i++ )
 	{
-		SurfaceBase* s = _surfaceBaseDar[i];
+		SurfaceBase* s = surfaces[i];
 		Panel* p = s->getPanel();
 		p->repaintAll();
 		s->invalidate( p );
@@ -267,18 +267,18 @@ void App::setScheme( Scheme *sc )
 	if( !sc )
 		return;
 
-	_scheme = sc;
+	scheme = sc;
 	repaintAll();
 }
 
 Scheme *App::getScheme()
 {
-	return _scheme;
+	return scheme;
 }
 
 void App::enableBuildMode()
 {
-	_wantedBuildMode = true;
+	buildModeRequested = true;
 }
 
 char App::getKeyCodeChar( KeyCode code, bool shift )
@@ -307,10 +307,10 @@ int App::getClipboardText( int, char*, int )
 
 void App::reset()
 {
-	_mouseArenaPanel = nullptr;
-	_tickSignalDar.removeAll();
-	_keyFocus = _mouseFocus = _mouseCapture = _wantedKeyFocus = nullptr;
-	_buildMode = _wantedBuildMode = false;
+	mouseArenaPanel = nullptr;
+	tickSignals.removeAll();
+	keyFocusPanel = mouseFocusPanel = mouseCapturePanel = keyFocusPanelRequested = nullptr;
+	buildModeEnabled = buildModeRequested = false;
 	Font_Reset();
 	setScheme( new Scheme( ));
 }
@@ -337,26 +337,26 @@ bool App::getRegistryInteger( const char *, int & )
 
 void App::setCursorOveride( Cursor *c )
 {
-	_cursorOveride = c;
+	cursorOverride = c;
 }
 
 Cursor *App::getCursorOveride()
 {
-	return _cursorOveride;
+	return cursorOverride;
 }
 
 void App::setMinimumTickMillisInterval( int i )
 {
-	_minimumTickMillisInterval = i;
+	minimumTickMillisInterval = i;
 }
 
 void App::run()
 {
-	_running = true;
+	running = true;
 	do
 	{
 		internalTick();
-	} while( _running );
+	} while( running );
 	setMouseArena( 0, 0, 0, 0, false );
 }
 
@@ -364,55 +364,55 @@ void App::internalCursorMoved( int x, int y, SurfaceBase *s )
 {
 	s->getPanel()->localToScreen( x, y );
 
-	if( !_buildMode )
+	if( !buildModeEnabled )
 	{
 		updateMouseFocus( x, y, s );
-		if( _mouseFocus )
-			_mouseFocus->internalCursorMoved( x, y );
+		if( mouseFocusPanel )
+			mouseFocusPanel->internalCursorMoved( x, y );
 	}
 }
 
 void App::internalMousePressed( MouseCode code, SurfaceBase * )
 {
-	_mousePressed[code] = true;
-	_mouseDown[code] = true;
+	mousePressed[code] = true;
+	mouseDown[code] = true;
 
-	if( !_buildMode && _mouseFocus )
-		_mouseFocus->internalMousePressed( code );
+	if( !buildModeEnabled && mouseFocusPanel )
+		mouseFocusPanel->internalMousePressed( code );
 }
 
 void App::internalMouseDoublePressed( MouseCode code, SurfaceBase * )
 {
-	_mouseDoublePressed[code] = true;
+	mouseDoublePressed[code] = true;
 
-	if( !_buildMode && _mouseFocus )
-		_mouseFocus->internalMouseDoublePressed( code );
+	if( !buildModeEnabled && mouseFocusPanel )
+		mouseFocusPanel->internalMouseDoublePressed( code );
 }
 
 void App::internalMouseReleased( MouseCode code, SurfaceBase * )
 {
-	_mouseReleased[code] = true;
-	_mouseDown[code] = false;
+	mouseReleased[code] = true;
+	mouseDown[code] = false;
 
-	if( !_buildMode && _mouseFocus )
-		_mouseFocus->internalMouseReleased( code );
+	if( !buildModeEnabled && mouseFocusPanel )
+		mouseFocusPanel->internalMouseReleased( code );
 }
 
 void App::internalMouseWheeled( int i, SurfaceBase * )
 {
-	if( !_buildMode && _mouseFocus )
-		_mouseFocus->internalMouseWheeled( i );
+	if( !buildModeEnabled && mouseFocusPanel )
+		mouseFocusPanel->internalMouseWheeled( i );
 }
 
 void App::internalKeyPressed( KeyCode code, SurfaceBase * )
 {
 	if( code >= KEY_0 && code < KEY_LAST )
 	{
-		_keyPressed[code] = true;
-		_keyDown[code] = true;
+		keyPressed[code] = true;
+		keyDown[code] = true;
 
-		if( !_buildMode && _keyFocus )
-			_keyFocus->internalKeyPressed( code );
+		if( !buildModeEnabled && keyFocusPanel )
+			keyFocusPanel->internalKeyPressed( code );
 	}
 }
 
@@ -420,10 +420,10 @@ void App::internalKeyTyped( KeyCode code, SurfaceBase * )
 {
 	if( code >= KEY_0 && code < KEY_LAST )
 	{
-		_keyTyped[code] = true;
+		keyTyped[code] = true;
 
-		if( !_buildMode && _keyFocus )
-			_keyFocus->internalKeyTyped( code );
+		if( !buildModeEnabled && keyFocusPanel )
+			keyFocusPanel->internalKeyTyped( code );
 	}
 }
 
@@ -431,42 +431,42 @@ void App::internalKeyReleased( KeyCode code, SurfaceBase * )
 {
 	if( code >= KEY_0 && code < KEY_LAST )
 	{
-		_keyReleased[code] = true;
-		_keyDown[code] = false;
+		keyReleased[code] = true;
+		keyDown[code] = false;
 
-		if( !_buildMode && _keyFocus )
-			_keyFocus->internalKeyReleased( code );
+		if( !buildModeEnabled && keyFocusPanel )
+			keyFocusPanel->internalKeyReleased( code );
 	}
 }
 
 void App::init()
 {
-	_externalMain = false;
-	_running = false;
-	_keyFocus = _oldMouseFocus = _mouseCapture = _wantedKeyFocus = nullptr;
-	_instance = this;
-	_scheme = new Scheme();
-	_mouseArenaPanel = nullptr;
-	_buildMode = _wantedBuildMode = false;
-	_cursorOveride = nullptr;
-	_nextTickMillis = getTimeMillis();
-	_minimumTickMillisInterval = 50;
+	externalMainLoop = false;
+	running = false;
+	keyFocusPanel = oldMouseFocusPanel = mouseCapturePanel = keyFocusPanelRequested = nullptr;
+	singleton = this;
+	scheme = new Scheme();
+	mouseArenaPanel = nullptr;
+	buildModeEnabled = buildModeRequested = false;
+	cursorOverride = nullptr;
+	nextTickMillis = getTimeMillis();
+	minimumTickMillisInterval = 50;
 
-	memset( _mousePressed, 0, sizeof( _mousePressed ));
-	memset( _mouseDoublePressed, 0, sizeof( _mouseDoublePressed ));
-	memset( _mouseReleased, 0, sizeof( _mouseReleased ));
-	memset( _mouseDown, 0, sizeof( _mouseDown ));
-	memset( _keyPressed, 0, sizeof( _keyPressed ));
-	memset( _keyTyped, 0, sizeof( _keyTyped ));
-	memset( _keyReleased, 0, sizeof( _keyReleased ));
-	memset( _keyDown, 0, sizeof( _keyDown ));
+	memset( mousePressed, 0, sizeof( mousePressed ));
+	memset( mouseDoublePressed, 0, sizeof( mouseDoublePressed ));
+	memset( mouseReleased, 0, sizeof( mouseReleased ));
+	memset( mouseDown, 0, sizeof( mouseDown ));
+	memset( keyPressed, 0, sizeof( keyPressed ));
+	memset( keyTyped, 0, sizeof( keyTyped ));
+	memset( keyReleased, 0, sizeof( keyReleased ));
+	memset( keyDown, 0, sizeof( keyDown ));
 }
 
 void App::updateMouseFocus( int x, int y, SurfaceBase *s )
 {
-	if( _mouseCapture )
+	if( mouseCapturePanel )
 	{
-		setMouseFocus( _mouseCapture );
+		setMouseFocus( mouseCapturePanel );
 	}
 	else if( s->isWithin( x, y ))
 	{
@@ -478,33 +478,33 @@ void App::updateMouseFocus( int x, int y, SurfaceBase *s )
 
 void App::setMouseFocus( Panel *p )
 {
-	if( p != _mouseFocus )
+	if( p != mouseFocusPanel )
 	{
-		_oldMouseFocus = _mouseFocus;
-		_mouseFocus = p;
+		oldMouseFocusPanel = mouseFocusPanel;
+		mouseFocusPanel = p;
 
-		if( _oldMouseFocus )
-			_oldMouseFocus->internalCursorExited();
+		if( oldMouseFocusPanel )
+			oldMouseFocusPanel->internalCursorExited();
 
-		if( _mouseFocus )
-			_mouseFocus->internalCursorEntered();
+		if( mouseFocusPanel )
+			mouseFocusPanel->internalCursorEntered();
 	}
 }
 
 void App::surfaceBaseCreated( SurfaceBase *s )
 {
-	_surfaceBaseDar.putElement( s );
+	surfaces.putElement( s );
 }
 
 void App::surfaceBaseDeleted( SurfaceBase *s )
 {
-	_surfaceBaseDar.removeElement( s );
-	_mouseFocus = _keyFocus = _mouseCapture = nullptr;
+	surfaces.removeElement( s );
+	mouseFocusPanel = keyFocusPanel = mouseCapturePanel = nullptr;
 }
 
 void App::internalTick()
 {
-	if( getTimeMillis() < _nextTickMillis )
+	if( getTimeMillis() < nextTickMillis )
 		return;
 
 	platTick();
@@ -513,9 +513,9 @@ void App::internalTick()
 	getCursorPos( x, y );
 
 	bool found = false;
-	for( int i = 0; i < _surfaceBaseDar.getCount(); i++ )
+	for( int i = 0; i < surfaces.getCount(); i++ )
 	{
-		SurfaceBase *s = _surfaceBaseDar[i];
+		SurfaceBase *s = surfaces[i];
 
 		updateMouseFocus( x, y, s );
 
@@ -528,34 +528,34 @@ void App::internalTick()
 	if( !found )
 		setMouseFocus( nullptr );
 
-	if( _mouseFocus )
-		_mouseFocus->internalSetCursor();
+	if( mouseFocusPanel )
+		mouseFocusPanel->internalSetCursor();
 
-	for( int i = 0; i < _tickSignalDar.getCount(); i++ )
-		_tickSignalDar[i]->ticked();
+	for( int i = 0; i < tickSignals.getCount(); i++ )
+		tickSignals[i]->ticked();
 
-	if( _keyFocus )
+	if( keyFocusPanel )
 	{
-		_keyFocus->internalKeyFocusTicked();
+		keyFocusPanel->internalKeyFocusTicked();
 	}
 	else
 	{
-		_surfaceBaseDar[0]->getPanel()->requestFocus();
-		if( _keyFocus )
-			_keyFocus->internalKeyFocusTicked();
+		surfaces[0]->getPanel()->requestFocus();
+		if( keyFocusPanel )
+			keyFocusPanel->internalKeyFocusTicked();
 	}
 
-	memset( _mousePressed, 0, sizeof( _mousePressed ));
-	memset( _mouseDoublePressed, 0, sizeof( _mouseDoublePressed ));
-	memset( _mouseReleased, 0, sizeof( _mouseReleased ));
-	memset( _keyPressed, 0, sizeof( _keyPressed ));
-	memset( _keyTyped, 0, sizeof( _keyTyped ));
-	memset( _keyReleased, 0, sizeof( _keyReleased ));
+	memset( mousePressed, 0, sizeof( mousePressed ));
+	memset( mouseDoublePressed, 0, sizeof( mouseDoublePressed ));
+	memset( mouseReleased, 0, sizeof( mouseReleased ));
+	memset( keyPressed, 0, sizeof( keyPressed ));
+	memset( keyTyped, 0, sizeof( keyTyped ));
+	memset( keyReleased, 0, sizeof( keyReleased ));
 
 	found = false;
-	for( int i = 0; i < _surfaceBaseDar.getCount(); i++ )
+	for( int i = 0; i < surfaces.getCount(); i++ )
 	{
-		if( _surfaceBaseDar[i]->hasFocus() )
+		if( surfaces[i]->hasFocus() )
 		{
 			found = true;
 			break;
@@ -563,41 +563,41 @@ void App::internalTick()
 	}
 
 	if( !found )
-		_wantedKeyFocus = nullptr;
+		keyFocusPanelRequested = nullptr;
 
-	if( _keyFocus != _wantedKeyFocus )
+	if( keyFocusPanel != keyFocusPanelRequested )
 	{
-		if( _keyFocus )
+		if( keyFocusPanel )
 		{
-			_keyFocus->internalFocusChanged( true );
-			_keyFocus->repaint();
+			keyFocusPanel->internalFocusChanged( true );
+			keyFocusPanel->repaint();
 		}
 
-		if( _wantedKeyFocus )
+		if( keyFocusPanelRequested )
 		{
-			_wantedKeyFocus->internalFocusChanged( false );
-			_wantedKeyFocus->repaint();
+			keyFocusPanelRequested->internalFocusChanged( false );
+			keyFocusPanelRequested->repaint();
 		}
 	}
 
-	_keyFocus = _wantedKeyFocus;
-	_buildMode = _wantedBuildMode;
+	keyFocusPanel = keyFocusPanelRequested;
+	buildModeEnabled = buildModeRequested;
 
-	for( int i = 0; i < _surfaceBaseDar.getCount(); i++ )
+	for( int i = 0; i < surfaces.getCount(); i++ )
 	{
-		_surfaceBaseDar[i]->getPanel()->solveTraverse();
-		_surfaceBaseDar[i]->applyChanges();
+		surfaces[i]->getPanel()->solveTraverse();
+		surfaces[i]->applyChanges();
 	}
 
-	if( _mouseArenaPanel )
+	if( mouseArenaPanel )
 	{
-		SurfaceBase *s = _mouseArenaPanel->getSurfaceBase();
+		SurfaceBase *s = mouseArenaPanel->getSurfaceBase();
 		if( s )
 		{
 			s->getPanel()->getPos( x, y );
 
 			int extents[4];
-			_mouseArenaPanel->getAbsExtents( extents[0], extents[1], extents[2], extents[3] );
+			mouseArenaPanel->getAbsExtents( extents[0], extents[1], extents[2], extents[3] );
 			internalSetMouseArena(
 				x + extents[0],
 				y + extents[1],
@@ -606,5 +606,5 @@ void App::internalTick()
 		}
 	}
 
-	_nextTickMillis = getTimeMillis() + _minimumTickMillisInterval;
+	nextTickMillis = getTimeMillis() + minimumTickMillisInterval;
 }

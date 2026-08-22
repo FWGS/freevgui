@@ -22,8 +22,8 @@ protected:
 	virtual void performLayout() override;
 	virtual void paintBackground() override;
 
-	Panel* _vpanel;
-	ScrollBar* _scroll;
+	Panel* itemPanel;
+	ScrollBar* scrollBar;
 };
 CHECK_STRUCT_SIZE( ListPanel, 196, 280, 280 );
 }

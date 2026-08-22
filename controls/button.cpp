@@ -9,9 +9,9 @@ namespace vgui
 {
 class MomentaryButtonController : public ButtonController, InputSignalAdapter
 {
-	Button *_button;
+	Button *buttons;
 public:
-	MomentaryButtonController( Button *b ) : _button( b ) {}
+	MomentaryButtonController( Button *b ) : buttons( b ) {}
 
 	void addSignals( Button *b ) override
 	{
@@ -25,20 +25,20 @@ public:
 
 	virtual void mousePressed( MouseCode code, Panel * ) override
 	{
-		if( _button->isEnabled() && _button->isMouseClickEnabled( code ))
+		if( buttons->isEnabled() && buttons->isMouseClickEnabled( code ))
 		{
-			_button->setSelected( true );
-			_button->repaint();
+			buttons->setSelected( true );
+			buttons->repaint();
 		}
 	}
 
 	virtual void mouseReleased( MouseCode code, Panel * ) override
 	{
-		if( _button->isEnabled() && _button->isMouseClickEnabled( code ))
+		if( buttons->isEnabled() && buttons->isMouseClickEnabled( code ))
 		{
-			_button->setSelected( false );
-			_button->fireActionSignal();
-			_button->repaint();
+			buttons->setSelected( false );
+			buttons->fireActionSignal();
+			buttons->repaint();
 		}
 	}
 };
@@ -46,9 +46,9 @@ public:
 // toggle controller: acts on press, not release
 class LatchingButtonController : public ButtonController, InputSignalAdapter
 {
-	Button *_button;
+	Button *buttons;
 public:
-	LatchingButtonController( Button *b ) : _button( b ) {}
+	LatchingButtonController( Button *b ) : buttons( b ) {}
 
 	void addSignals( Button *b ) override
 	{
@@ -62,9 +62,9 @@ public:
 
 	virtual void mousePressed( MouseCode, Panel * ) override
 	{
-		_button->setSelected( !_button->isSelected( ));
-		_button->fireActionSignal();
-		_button->repaint();
+		buttons->setSelected( !buttons->isSelected( ));
+		buttons->fireActionSignal();
+		buttons->repaint();
 	}
 };
 
@@ -140,12 +140,12 @@ public:
 
 void ButtonGroup::addButton( Button *b )
 {
-	_buttonDar.putElement( b );
+	buttons.putElement( b );
 }
 
 void ButtonGroup::setSelected( Button *b )
 {
-	for( auto button : _buttonDar )
+	for( auto button : buttons )
 	{
 		if( button != b )
 			button->setSelectedDirect( false );
@@ -156,22 +156,22 @@ void ButtonGroup::setSelected( Button *b )
 
 void Button::init()
 {
-	_buttonController = nullptr;
-	_buttonGroup = nullptr;
-	_armed = false;
-	_selected = false;
-	_buttonBorderEnabled = true;
-	_mouseClickMask = 0;
+	buttonController = nullptr;
+	buttonGroup = nullptr;
+	armed = false;
+	selected = false;
+	buttonBorderEnabled = true;
+	mouseClickMask = 0;
 	setMouseClickEnabled( MOUSE_LEFT, true );
 	setButtonController( new MomentaryButtonController( this ));
 }
 
 void Button::setButtonController( ButtonController *bc )
 {
-	if( _buttonController )
-		_buttonController->removeSignals( this );
+	if( buttonController )
+		buttonController->removeSignals( this );
 
-	_buttonController = bc;
+	buttonController = bc;
 	bc->addSignals( this );
 }
 
@@ -186,18 +186,18 @@ void Button::paintBackground()
 		drawSetColor( Scheme::SC_SECONDARY3 );
 		drawFilledRect( 0, 0, w, h );
 
-		if( _buttonBorderEnabled )
+		if( buttonBorderEnabled )
 		{
 			drawSetColor( Scheme::SC_SECONDARY1 );
-			drawFilledRect( 0, 0, _size[0] - 1, 1 );
-			drawFilledRect( 2, _size[1] - 2, _size[0] - 1, _size[1] - 1 );
-			drawFilledRect( 0, 1, 1, _size[1] - 1 );
-			drawFilledRect( _size[0] - 2, 2, _size[0] - 1, _size[1] - 2 );
+			drawFilledRect( 0, 0, size[0] - 1, 1 );
+			drawFilledRect( 2, size[1] - 2, size[0] - 1, size[1] - 1 );
+			drawFilledRect( 0, 1, 1, size[1] - 1 );
+			drawFilledRect( size[0] - 2, 2, size[0] - 1, size[1] - 2 );
 			drawSetColor( Scheme::SC_WHITE );
-			drawFilledRect( 1, 1, _size[0] - 2, 2 );
-			drawFilledRect( 1, _size[1] - 1, _size[0], _size[1] );
-			drawFilledRect( 1, 2, 2, _size[1] - 2 );
-			drawFilledRect( _size[0] - 1, 1, _size[0], _size[1] - 1);
+			drawFilledRect( 1, 1, size[0] - 2, 2 );
+			drawFilledRect( 1, size[1] - 1, size[0], size[1] );
+			drawFilledRect( 1, 2, 2, size[1] - 2 );
+			drawFilledRect( size[0] - 1, 1, size[0], size[1] - 1);
 		}
 	}
 	else
@@ -232,26 +232,26 @@ Button::Button( const char *text, int x, int y ) : Label( text, x, y )
 
 void Button::setSelected( bool select )
 {
-	if( _buttonGroup )
-		_buttonGroup->setSelected( this );
+	if( buttonGroup )
+		buttonGroup->setSelected( this );
 	setSelectedDirect( select );
 }
 
 void Button::setSelectedDirect( bool select )
 {
-	_selected = select;
+	selected = select;
 	repaint();
 }
 
-void Button::setArmed( bool armed )
+void Button::setArmed( bool state )
 {
-	_armed = armed;
+	armed = state;
 	repaint();
 }
 
 bool Button::isSelected()
 {
-	return _selected;
+	return selected;
 }
 
 void Button::doClick()
@@ -266,12 +266,12 @@ void Button::addActionSignal( ActionSignal *s )
 	if( s == nullptr )
 		return;
 
-	_actionSignalDar.putElement( s );
+	actionSignals.putElement( s );
 }
 
 void Button::setButtonGroup( ButtonGroup *bg )
 {
-	_buttonGroup = bg;
+	buttonGroup = bg;
 
 	if( bg )
 		bg->addButton( this );
@@ -279,31 +279,31 @@ void Button::setButtonGroup( ButtonGroup *bg )
 
 bool Button::isArmed()
 {
-	return _armed;
+	return armed;
 }
 
 void Button::setButtonBorderEnabled( bool enable )
 {
-	_buttonBorderEnabled = enable;
+	buttonBorderEnabled = enable;
 	repaint();
 }
 
 void Button::setMouseClickEnabled( MouseCode code, bool enable )
 {
 	if( enable )
-		_mouseClickMask |= (int)( code + 1 );
+		mouseClickMask |= (int)( code + 1 );
 	else
-		_mouseClickMask &= ~(int)( code + 1 );
+		mouseClickMask &= ~(int)( code + 1 );
 }
 
 bool Button::isMouseClickEnabled( MouseCode code )
 {
-	return ( _mouseClickMask & (int)( code + 1 )) != 0;
+	return ( mouseClickMask & (int)( code + 1 )) != 0;
 }
 
 void Button::fireActionSignal()
 {
-	for( auto signal : _actionSignalDar )
+	for( auto signal : actionSignals )
 		signal->actionPerformed( this );
 }
 
