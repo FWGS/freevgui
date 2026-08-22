@@ -107,9 +107,10 @@ protected:
 	virtual void applyChanges() override; // platform-dependent
 
 	SurfacePlat *impl;
-	bool pendingSwap;
-	Panel *rootPanel;
-	Dar<char *> modes;
+	// fix -Werror=shadow
+	bool ownPendingSwap;
+	Panel *ownRootPanel;
+	Dar<char *> ownModes;
 };
 CHECK_STRUCT_SIZE( Surface, 60, 104, 104 );
 }

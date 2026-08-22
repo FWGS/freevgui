@@ -146,8 +146,8 @@ Surface::Surface(Panel *p) :
 
 void Surface::createPopup( Panel *p )
 {
-	rootPanel->setParent( nullptr );
-	new Surface( rootPanel );
+	ownRootPanel->setParent( nullptr );
+	new Surface( ownRootPanel );
 }
 
 int Surface::getModeInfoCount()
@@ -172,7 +172,7 @@ bool Surface::setFullscreenMode( int w, int h, int bpp )
 	if( impl->fullscreenInfo[0] == w && impl->fullscreenInfo[1] == h && impl->fullscreenInfo[2] == bpp )
 		return true;
 
-	if( modes.getCount() == 0 )
+	if( ownModes.getCount() == 0 )
 		getModeInfoCount();
 
 	return false;
