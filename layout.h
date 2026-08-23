@@ -13,6 +13,7 @@ class Panel;
 class CLASSEXPORT Layout
 {
 public:
+	Layout();
 	virtual void performLayout( Panel * );
 };
 CHECK_STRUCT_SIZE( Layout, 4, 8, 8 );

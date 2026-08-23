@@ -148,6 +148,10 @@ void StackLayout::performLayout( Panel *p )
 	}
 }
 
+Layout::Layout()
+{
+}
+
 void Layout::performLayout(Panel *)
 {
 	return;

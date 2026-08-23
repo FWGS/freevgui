@@ -100,14 +100,14 @@ char *vgui::vgui_strdup( const char *src )
 	return dst;
 }
 
-void vgui::vgui_setMalloc( void *( *theMalloc )( size_t ))
+void vgui_setMalloc( void *( *theMalloc )( size_t ))
 {
 	if( !theMalloc )
 		staticMalloc = malloc;
 	else staticMalloc = theMalloc;
 }
 
-void vgui::vgui_setFree( void ( *theFree )( void* ))
+void vgui_setFree( void ( *theFree )( void* ))
 {
 	if( !theFree )
 		staticFree = free;

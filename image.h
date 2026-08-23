@@ -134,7 +134,7 @@ CHECK_STRUCT_SIZE( TextImage, 72, 96, 96 );
 class CLASSEXPORT Border : public Image
 {
 public:
-	Border() : Border( 0, 0, 0, 0 ) {}
+	Border();
 	Border( int left, int top, int right, int bottom );
 	virtual void setInset( int left, int top, int right, int bottom );
 	virtual void getInset( int &left, int &top, int &right, int &bottom );

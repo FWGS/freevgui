@@ -859,6 +859,10 @@ void RaisedBorder::paint( Panel *p )
 	drawFilledRect( w - 1, 1, w, h - 1 );
 }
 
+Border::Border() : Border( 0, 0, 0, 0 )
+{
+}
+
 Border::Border(int left, int top, int right, int bottom)
 {
 	panel = nullptr;
