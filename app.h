@@ -82,7 +82,7 @@ protected:
 	virtual void platTick();
 	virtual void internalTick();
 
-	static App *singleton;
+	static App *_instance; // kept as _instance because it's technically exported and renaming it breaks the ABI
 	bool running, externalMainLoop;
 	Dar<SurfaceBase*> surfaces;
 	Panel *keyFocusPanel;

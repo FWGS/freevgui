@@ -10,7 +10,7 @@
 
 using namespace vgui;
 
-App* App::singleton = nullptr;
+App* App::_instance = nullptr;
 static const char* staticKeyTrans[KEY_LAST] =
 {
 	"0)KEY_0",
@@ -128,7 +128,7 @@ App::App() : App( false ) { }
 
 App *App::getInstance()
 {
-	return singleton;
+	return _instance;
 }
 
 void App::start()
@@ -444,7 +444,7 @@ void App::init()
 	externalMainLoop = false;
 	running = false;
 	keyFocusPanel = oldMouseFocusPanel = mouseCapturePanel = keyFocusPanelRequested = nullptr;
-	singleton = this;
+	_instance = this;
 	scheme = new Scheme();
 	mouseArenaPanel = nullptr;
 	buildModeEnabled = buildModeRequested = false;

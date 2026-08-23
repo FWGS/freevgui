@@ -21,7 +21,8 @@ public:
 	virtual void close( bool &success ) = 0;
 };
 
-class CLASSEXPORT DataInputStream : public InputStream
+// "virtual public" here is not a typo, the inheritance is virtual in the original
+class CLASSEXPORT DataInputStream : virtual public InputStream
 {
 private:
 	InputStream *stream;
