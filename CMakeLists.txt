@@ -48,6 +48,7 @@ else()
 endif()
 
 target_include_directories(vgui PRIVATE .)
+target_compile_features(vgui PUBLIC cxx_std_11)
 
 if(FREEVGUI_XASH_SUPPORT)
 	target_include_directories(vgui PRIVATE ../engine)

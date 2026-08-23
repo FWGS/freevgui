@@ -6,6 +6,9 @@ def options(opt):
 	pass
 
 def configure(conf):
+	conf.load('fwgslib cxx11')
+	conf.check_std('cxx11', mandatory = True)
+
 	if conf.env.DEST_OS != 'android':
 		if conf.env.cxxshlib_PATTERN.startswith('lib'):
 			conf.env.cxxshlib_PATTERN = conf.env.cxxshlib_PATTERN[3:]
