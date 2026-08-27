@@ -23,7 +23,14 @@ public:
 	virtual void setOpened( bool open );
 	virtual bool isOpened();
 };
+
+#if defined( _MSC_VER )
+// TODO: validate the sizes!!!
+CHECK_STRUCT_SIZE( TreeFolder, 192, 272, 272 );
+#else
 CHECK_STRUCT_SIZE( TreeFolder, 188, 264, 264 );
+#endif
+
 }
 
 #endif // VGUI_TREEFOLDER_H

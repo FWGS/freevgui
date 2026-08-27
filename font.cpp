@@ -155,10 +155,12 @@ int Font::getTall()
 	return impl->getTall();
 }
 
+#ifndef _WIN32
 int Font::getWide()
 {
 	return impl->getWide();
 }
+#endif // _WIN32
 
 int Font::getId()
 {

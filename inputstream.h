@@ -49,7 +49,12 @@ public:
 	virtual double readDouble( bool &success );
 	virtual void readLine( char *str, int count, bool &success );
 };
+#if defined( _MSC_VER )
+// TODO: validate these numbers!!!
+CHECK_STRUCT_SIZE( DataInputStream, 20, 40, 40 );
+#else
 CHECK_STRUCT_SIZE( DataInputStream, 8, 16, 16 );
+#endif
 
 class CLASSEXPORT FileInputStream : public InputStream
 {

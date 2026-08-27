@@ -173,6 +173,24 @@ public:
 
 	T operator[]( int i ) { return data[i]; }
 
+	// not in the original interface: modern compilers instantiate every member of the
+	// exported instantiations below, and Dar<Dar<char>> needs element comparison for that
+	bool operator==( const Dar &other ) const
+	{
+		if( count != other.count )
+			return false;
+
+		for( int i = 0; i < count; i++ )
+		{
+			if( !( data[i] == other.data[i] ))
+				return false;
+		}
+
+		return true;
+	}
+
+	bool operator!=( const Dar &other ) const { return !( *this == other ); }
+
 	T *begin() { return data; }
 	T *end() { return data + count; }
 	const T *begin() const { return data; }
@@ -198,24 +216,25 @@ class RepaintSignal;
 class SurfaceBase;
 class TickSignal;
 
-class CLASSEXPORT Dar<char>;
-class CLASSEXPORT Dar<char*>;
-class CLASSEXPORT Dar<Dar<char>>;
-class CLASSEXPORT Dar<int>;
-class CLASSEXPORT Dar<ActionSignal*>;
-class CLASSEXPORT Dar<Button*>;
-class CLASSEXPORT Dar<ChangeSignal*>;
-class CLASSEXPORT Dar<DesktopIcon*>;
-class CLASSEXPORT Dar<FocusChangeSignal*>;
-class CLASSEXPORT Dar<Frame*>;
-class CLASSEXPORT Dar<FrameSignal*>;
-class CLASSEXPORT Dar<InputSignal*>;
-class CLASSEXPORT Dar<IntChangeSignal*>;
-class CLASSEXPORT Dar<Label*>;
-class CLASSEXPORT Dar<Panel*>;
-class CLASSEXPORT Dar<RepaintSignal*>;
-class CLASSEXPORT Dar<SurfaceBase*>;
-class CLASSEXPORT Dar<TickSignal*>;
+// explicit instantiation definitions, exported from the DLL for ABI compatibility with the original vgui.dll (modern syntax for the old `class CLASSEXPORT Dar<T>;` MSVC6-ism)
+template class CLASSEXPORT Dar<char>;
+template class CLASSEXPORT Dar<char*>;
+template class CLASSEXPORT Dar<Dar<char>>;
+template class CLASSEXPORT Dar<int>;
+template class CLASSEXPORT Dar<ActionSignal*>;
+template class CLASSEXPORT Dar<Button*>;
+template class CLASSEXPORT Dar<ChangeSignal*>;
+template class CLASSEXPORT Dar<DesktopIcon*>;
+template class CLASSEXPORT Dar<FocusChangeSignal*>;
+template class CLASSEXPORT Dar<Frame*>;
+template class CLASSEXPORT Dar<FrameSignal*>;
+template class CLASSEXPORT Dar<InputSignal*>;
+template class CLASSEXPORT Dar<IntChangeSignal*>;
+template class CLASSEXPORT Dar<Label*>;
+template class CLASSEXPORT Dar<Panel*>;
+template class CLASSEXPORT Dar<RepaintSignal*>;
+template class CLASSEXPORT Dar<SurfaceBase*>;
+template class CLASSEXPORT Dar<TickSignal*>;
 #endif
 }
 
