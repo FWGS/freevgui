@@ -22,7 +22,11 @@ protected:
 public:
 	Font( const char *name, int tall, int wide, float rotation, int weight, bool italic, bool underline, bool strikeout, bool symbol );
 	Font( const char *name, void *pFileData, int fileDataLen, int tall, int wide, float rotation, int weight, bool italic, bool underline, bool strikeout, bool symbol );
+
+private:
 	virtual void init( const char *newName, void *pFileData, int fileDataLen, int tall, int wide, float rotation, int weight, bool italic, bool underline, bool strikeout, bool symbol );
+
+public:
 	BaseFontPlat *getPlat();
 	virtual void getCharRGBA( int ch, int rgbaX, int rgbaY, int rgbaWide, int rgbaTall, unsigned char *rgba );
 	virtual void getCharABCwide( int ch, int &a, int &b, int &c );

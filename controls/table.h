@@ -9,8 +9,12 @@
 
 namespace vgui
 {
+class TablePanelSignalsHandler;
+
 class CLASSEXPORT TablePanel : public Panel
 {
+	friend class TablePanelSignalsHandler;
+
 public:
 	TablePanel( int x, int y, int w, int h, int columnCount );
 	virtual void setCellEditingEnabled( bool enable );
@@ -36,11 +40,12 @@ protected:
 	virtual void paint() override;
 	virtual Panel *isWithinTraverse( int, int ) override;
 
-public:
+private:
 	virtual void privateMousePressed( MouseCode, Panel* );
 	virtual void privateMouseDoublePressed( MouseCode, Panel* );
 	virtual void privateKeyTyped( KeyCode code, Panel* );
 
+public:
 	Dar<int> columns;
 	bool gridVisible[2];
 	int gridWide, gridTall, selectedCell[2], mouseOverCell[2], editableCell[2];

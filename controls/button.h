@@ -47,7 +47,10 @@ public:
 	virtual bool isMouseClickEnabled( MouseCode code );
 	virtual void fireActionSignal();
 	virtual Panel* createPropertyPanel() override;
+
+private:
 	void init();
+
 protected:
 	virtual void setButtonController( ButtonController *bc );
 	virtual void paintBackground() override;

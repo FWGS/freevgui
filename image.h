@@ -37,6 +37,9 @@ CHECK_STRUCT_SIZE( Color, 12, 16, 16 );
 
 class CLASSEXPORT Image
 {
+	friend class Panel;
+	friend class BorderPair;
+
 public:
 	Image();
 	virtual void setPos( int x, int y );
@@ -44,6 +47,8 @@ public:
 	virtual void getSize( int &w, int &h );
 	virtual void setColor( Color c );
 	virtual void getColor( Color &c );
+
+protected:
 	virtual void setSize( int w, int h );
 	virtual void drawSetColor( Scheme::SchemeColor sc );
 	virtual void drawSetColor( int r, int g, int b, int a );
@@ -62,6 +67,8 @@ public:
 	virtual void drawSetTexture( int id );
 	virtual void drawTexturedRect( int x0, int y0, int x1, int y1 );
 	virtual void paint( Panel *p );
+
+public:
 	virtual void doPaint( Panel *p );
 
 private:
