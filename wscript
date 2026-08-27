@@ -39,13 +39,20 @@ def build(bld):
 
 	if bld.env.FREEVGUI_XASH_SUPPORT:
 		source += bld.path.ant_glob('platform/xash3d-fwgs/*.cpp')
-		includes += ['../engine']
+		includes += ['../engine', '../../engine'] # this is horribly stupid, replace with exported includes later
 		# rename the entry point to what the engine looks for in the client library
 		if bld.env.USE_STATIC_FREEVGUI:
 			defines += ['INTERNAL_VGUI_SUPPORT']
 
 	install_path = None if bld.env.FREEVGUI_NO_INSTALL else bld.env.LIBDIR
 	fn = bld.stlib if bld.env.USE_STATIC_FREEVGUI else bld.shlib
+
+	linkflags = []
+
+	# client libraries reference us by DT_NEEDED vgui.so entry. The original library however misses DT_SONAME but we set it
+	# so the engine-preloaded vgui.so satisfies that lookup by an already loaded library, as DT_RUNPATH is not transitive and can't be relied upon here
+	if not bld.env.USE_STATIC_FREEVGUI and bld.env.SONAME_ST:
+		linkflags += (bld.env.SONAME_ST % (bld.env.cxxshlib_PATTERN % 'vgui')).split()
 
 	fn(
 		source = source,
@@ -54,8 +61,9 @@ def build(bld):
 		includes = includes,
 		defines = defines,
 		export_includes = '.',
-		rpath = '$ORIGIN',
+		rpath = bld.env.DEFAULT_RPATH,
 		use = 'yy_thunks',
 		install_path = install_path,
+		linkflags = linkflags,
 		subsystem = bld.env.MSVC_SUBSYSTEM
 	)
