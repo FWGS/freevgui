@@ -80,7 +80,7 @@ public:
 	virtual void setAsTopMost( bool ) override; // platform-dependent
 	virtual int getModeInfoCount() override; // platform-dependent
 	virtual void createPopup( Panel * ) override;
-	virtual bool hasFocus(); // platform-dependent
+	virtual bool hasFocus() override; // platform-dependent
 	virtual bool isWithin( int, int ) override; // platform-dependent
 	virtual void GetMousePos( int &x, int &y ) override; // platform-dependent
 
