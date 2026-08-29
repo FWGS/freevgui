@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdarg.h>
+#include <stdlib.h>
 
 #if defined( __GNUC__ )
 	#if defined( __i386__ )
@@ -70,7 +71,7 @@ protected:
 	int capacity;
 	T*  data;
 public:
-	Dar( int capacity ) : count( 0 ), capacity( capacity ), data( new T[capacity] ) {}
+	Dar( int initialCapacity ) : count( 0 ), capacity( 0 ), data( nullptr ) { ensureCapacity( initialCapacity ); }
 	Dar() : Dar( 4 ) {}
 
 	void setCount( int newCount )
@@ -83,16 +84,29 @@ public:
 		return count;
 	}
 
-	void ensureCapacity( int newCapacity )
+	void ensureCapacity( int wanted )
 	{
+		if( wanted <= capacity )
+			return;
+
+		int newCapacity = capacity > 0 ? capacity : 1;
+
+		while( newCapacity < wanted )
+			newCapacity *= 2;
+
 		T *newptr = new T[newCapacity];
 
-		if( data )
+		if( !newptr )
 		{
-			memcpy( newptr, data, sizeof( T ) * count );
-			delete[] data;
+			abort();
+			return;
 		}
 
+		memset( newptr, 0, sizeof( T ) * newCapacity );
+		for( int i = 0; i < count; i++ )
+			newptr[i] = data[i];
+
+		delete[] data;
 		data = newptr;
 		capacity = newCapacity;
 	}
