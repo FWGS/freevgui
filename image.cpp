@@ -378,90 +378,90 @@ bool BitmapTGA::loadTGA( InputStream *is, bool invertAlpha )
 	}
 	else
 	{
-		for( int y = tall - 1; y >= 0; y-- )
+		// Packets are not aligned to rows: one can span a row boundary, and a row
+		// takes as many packets as it takes. So the position is tracked explicitly
+		// per emitted pixel -- column across, row upwards -- rather than being
+		// implied by loop counters.
+		int row = tall - 1, column = 0;
+		unsigned char *ptr = &rgbaData[row * wide * 4];
+
+		while( row >= 0 )
 		{
-			unsigned char *ptr = &rgbaData[y * wide * 4];
+			unsigned char pkthdr, pktsize;
 
-			for( int x = 0; x < wide; x++ )
+			DIS_READ( pkthdr, readUChar );
+			pktsize = ( pkthdr & 0x7f ) + 1;
+
+			if( pkthdr & 0x80 )
 			{
-				unsigned char pkthdr, pktsize;
+				unsigned char pixel[4];
 
-				DIS_READ( pkthdr, readUChar );
-				pktsize = ( pkthdr & 0x7f ) + 1;
-
-				if( pkthdr & 0x80 )
+				switch( hdr.m_PixelDepth )
 				{
-					unsigned char pixel[4];
+				case 24:
+					DIS_READ( pixel[2], readUChar );
+					DIS_READ( pixel[1], readUChar );
+					DIS_READ( pixel[0], readUChar );
+					pixel[3] = invertAlpha ? 0 : 255;
+					break;
+				case 32:
+					DIS_READ( pixel[2], readUChar );
+					DIS_READ( pixel[1], readUChar );
+					DIS_READ( pixel[0], readUChar );
+					DIS_READ( pixel[3], readUChar );
+					if( invertAlpha )
+						pixel[3] = 255 - pixel[3];
+					break;
+				}
 
+				for( int j = 0; j < pktsize; j++ )
+				{
+					memcpy( ptr, pixel, sizeof( pixel ));
+					ptr += 4;
+
+					if( ++column == wide )
+					{
+						if( row == 0 )
+							goto quickexit;
+
+						column = 0;
+						ptr = &rgbaData[--row * wide * 4];
+					}
+				}
+			}
+			else
+			{
+				for( int j = 0; j < pktsize; j++ )
+				{
 					switch( hdr.m_PixelDepth )
 					{
 					case 24:
-						DIS_READ( pixel[2], readUChar );
-						DIS_READ( pixel[1], readUChar );
-						DIS_READ( pixel[0], readUChar );
-						pixel[3] = invertAlpha ? 0 : 255;
+						DIS_READ( ptr[2], readUChar );
+						DIS_READ( ptr[1], readUChar );
+						DIS_READ( ptr[0], readUChar );
+						ptr[3] = invertAlpha ? 0 : 255;
 						break;
 					case 32:
-						DIS_READ( pixel[2], readUChar );
-						DIS_READ( pixel[1], readUChar );
-						DIS_READ( pixel[0], readUChar );
-						DIS_READ( pixel[3], readUChar );
-						if( !invertAlpha )
+						DIS_READ( ptr[2], readUChar );
+						DIS_READ( ptr[1], readUChar );
+						DIS_READ( ptr[0], readUChar );
+						DIS_READ( ptr[3], readUChar );
+						if( invertAlpha )
 							ptr[3] = 255 - ptr[3];
 						break;
 					}
 
-					for( int j = 0; j < pktsize; j++ )
-					{
-						y++;
-						memcpy( ptr, pixel, sizeof( pixel ));
-						ptr += 4;
-						if( y == wide )
-						{
-							if( x == 0 )
-								goto quickexit;
+					ptr += 4;
 
-							x--;
-							ptr = &rgbaData[y * x * 4];
-							y = 0;
-						}
+					if( ++column == wide )
+					{
+						if( row == 0 )
+							goto quickexit;
+
+						column = 0;
+						ptr = &rgbaData[--row * wide * 4];
 					}
 				}
-				else
-				{
-					for( int j = 0; j < pktsize; j++ )
-					{
-						switch( hdr.m_PixelDepth )
-						{
-						case 24:
-							DIS_READ( ptr[2], readUChar );
-							DIS_READ( ptr[1], readUChar );
-							DIS_READ( ptr[0], readUChar );
-							ptr[3] = invertAlpha ? 0 : 255;
-							break;
-						case 32:
-							DIS_READ( ptr[2], readUChar );
-							DIS_READ( ptr[1], readUChar );
-							DIS_READ( ptr[0], readUChar );
-							DIS_READ( ptr[3], readUChar );
-							if( !invertAlpha )
-								ptr[3] = 255 - ptr[3];
-							break;
-						}
-
-						y++;
-						if( y == wide )
-						{
-							if( x == 0 )
-								goto quickexit;
-							x--;
-							ptr = &rgbaData[x * y * 4];
-							y = 0;
-						}
-					}
-				}
-
-				ptr += 4;
 			}
 		}
 quickexit:
