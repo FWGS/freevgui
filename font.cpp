@@ -96,7 +96,11 @@ void Font::init( const char *newName, void *pFileData, int fileDataLen, int tall
 
 		if( !impl )
 		{
-			impl = new StubFontPlat( name, tall, wide, rotation, weight, italic, underline, strikeout, symbol );
+			impl = FontPlat_CreateSystem( name, tall, wide, rotation, weight, italic, underline, strikeout, symbol );
+
+			if( !impl )
+				impl = new StubFontPlat( name, tall, wide, rotation, weight, italic, underline, strikeout, symbol );
+
 			staticFontPlatDar.addElement( impl );
 			id = staticFontId++;
 		}

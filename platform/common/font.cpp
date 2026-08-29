@@ -6,64 +6,68 @@
 
 using namespace vgui;
 
-FontPlat_Bitmap::FontPlat_Bitmap()
+// the sheet is a single row of cells, one per byte value
+static constexpr int FONT_SHEET_CELLS = 256;
+
+FontPlat_Bitmap::FontPlat_Bitmap() : name( nullptr ), bitmap( nullptr ), cellWide( 0 ), cellTall( 0 )
 {
-	m_pName = nullptr;
+	memset( charWidths, 0, sizeof( charWidths ));
 }
 
 FontPlat_Bitmap::~FontPlat_Bitmap()
 {
+	delete[] bitmap;
+	delete[] name;
 }
 
-bool LoadVFontDataFrom32BitTGA( FileImageStream *fp, VFontData *pData )
+bool FontPlat_Bitmap::loadFrom32BitTGA( FileImageStream *stream )
 {
 	FileImage fileImage;
 
-	if( !Load32BitTGA( fp, &fileImage ))
+	if( !Load32BitTGA( stream, &fileImage ))
 		return false;
 
-	pData->m_pBitmap = new unsigned char[fileImage.m_Width * fileImage.m_Height];
-	if( !pData->m_pBitmap )
+	cellWide = fileImage.m_Width / FONT_SHEET_CELLS;
+	cellTall = fileImage.m_Height;
+
+	bitmap = new unsigned char[fileImage.m_Width * fileImage.m_Height];
+
+	if( !bitmap )
 		return false;
 
-	memset( pData->m_pBitmap, 0, fileImage.m_Width * fileImage.m_Height );
+	memset( bitmap, 0, fileImage.m_Width * fileImage.m_Height );
 
-	pData->m_BitmapCharWidth = fileImage.m_Width / 256;
-	pData->m_BitmapCharHeight = fileImage.m_Height;
-
-	for( int i = 0; i < 256; i++ )
+	for( int ch = 0; ch < FONT_SHEET_CELLS; ch++ )
 	{
-		unsigned char *in = &fileImage.m_pData[i * pData->m_BitmapCharWidth * 4];
-		unsigned char *out = &pData->m_pBitmap[i * pData->m_BitmapCharWidth];
+		const unsigned char *in = &fileImage.m_pData[ch * cellWide * 4];
+		unsigned char *out = &bitmap[ch * cellWide];
 		int rightX = 0;
 
-		for( int y = 0; y < pData->m_BitmapCharHeight; y++ )
+		for( int y = 0; y < cellTall; y++ )
 		{
-			for( int x = 0; x < pData->m_BitmapCharWidth; x++ )
+			for( int x = 0; x < cellWide; x++ )
 			{
-				if( in[x * 4] ||
-				     in[x * 4 + 1] ||
-				     in[x * 4 + 2] ||
-				     in[x * 4 + 3] )
+				// any non-zero channel counts as ink, so the sheet can be drawn in any color and still measure the same
+				if( in[x * 4] || in[x * 4 + 1] || in[x * 4 + 2] || in[x * 4 + 3] )
 				{
 					out[x] = 1;
+
 					if( x > rightX )
 						rightX = x;
 				}
-				else
-				{
-					out[x] = 0;
-				}
+				else out[x] = 0;
 			}
 
-			in += 256 * pData->m_BitmapCharWidth * 4;
-			out += 256 * pData->m_BitmapCharWidth;
+			// next row of the sheet, which is a whole row of cells away
+			in += FONT_SHEET_CELLS * cellWide * 4;
+			out += FONT_SHEET_CELLS * cellWide;
 		}
 
-		if( i == 32 )
-			pData->m_CharWidths[i] = pData->m_BitmapCharWidth / 4;
+		// space gets a quarter cell width
+		if( ch == ' ' )
+			charWidths[ch] = cellWide / 4;
 		else
-			pData->m_CharWidths[i] = rightX;
+			charWidths[ch] = rightX;
 	}
 
 	return true;
@@ -71,71 +75,69 @@ bool LoadVFontDataFrom32BitTGA( FileImageStream *fp, VFontData *pData )
 
 FontPlat_Bitmap *FontPlat_Bitmap::Create( const char *name, FileImageStream *stream )
 {
-	FontPlat_Bitmap *bitmap = new FontPlat_Bitmap();
-	if( !bitmap )
+	FontPlat_Bitmap *font = new FontPlat_Bitmap();
+
+	if( !font )
 		return nullptr;
 
-	if( !LoadVFontDataFrom32BitTGA( stream, &bitmap->m_FontData ))
-		goto cleanup_and_fail;
+	if( !font->loadFrom32BitTGA( stream ))
+		goto err;
 
-	bitmap->m_pName = vgui_strdup( name );
-	if( !bitmap->m_pName )
-		goto cleanup_and_fail;
+	font->name = vgui_strdup( name );
 
-	return bitmap;
+	if( !font->name )
+		goto err;
 
-cleanup_and_fail:
-	delete bitmap;
+	return font;
+
+err:
+	delete font;
 	return nullptr;
 }
 
 bool FontPlat_Bitmap::equals( const char *, int, int, float, int, bool, bool, bool, bool )
 {
+	// sheets are matched by the file they came from, never by these parameters
 	return false;
 }
 
 void FontPlat_Bitmap::getCharRGBA( int ch, int rgbaX, int rgbaY, int rgbaWide, int rgbaTall, unsigned char *rgba )
 {
-	unsigned char *pSrcPos, *pOutPos;
+	ch = bound( 0, ch, FONT_SHEET_CELLS - 1 );
 
-	ch = bound( 0, ch, 256 );
-
-	for( int y = 0; y < m_FontData.m_BitmapCharHeight; y++ )
+	for( int y = 0; y < cellTall; y++ )
 	{
-		pSrcPos = &m_FontData.m_pBitmap[m_FontData.m_BitmapCharWidth * ( ch + y * 256 )];
-		for( int x = 0; x < m_FontData.m_BitmapCharWidth; x++ )
+		const unsigned char *src = &bitmap[cellWide * ( ch + y * FONT_SHEET_CELLS )];
+
+		for( int x = 0; x < cellWide; x++ )
 		{
 			int outX = rgbaX + x, outY = rgbaY + y;
-			if(( outX < rgbaWide ) && ( outY < rgbaTall ))
-			{
-				pOutPos = &rgba[( outY * rgbaWide + outX ) * 4];
-				if( pSrcPos[x] != 0 )
-					memset( pOutPos, 255, 4 );
-				else
-					memset( pOutPos, 0, 4 );
-			}
+
+			if( outX < rgbaWide && outY < rgbaTall )
+				memset( &rgba[( outY * rgbaWide + outX ) * 4], src[x] ? 255 : 0, 4 );
 		}
 	}
 }
 
 void FontPlat_Bitmap::getCharABCwide( int ch, int &a, int &b, int &c )
 {
-	ch = bound( 0, ch, 256 );
+	ch = bound( 0, ch, FONT_SHEET_CELLS - 1 );
 
 	a = c = 0;
-	b = m_FontData.m_CharWidths[ch] + 1;
+	b = charWidths[ch] + 1;
 }
 
 int FontPlat_Bitmap::getTall()
 {
-	return m_FontData.m_BitmapCharHeight;
+	return cellTall;
 }
 
 int FontPlat_Bitmap::getWide()
 {
-	return m_FontData.m_BitmapCharWidth;
+	return cellWide;
 }
 
-void FontPlat_Bitmap::drawSetTextFont( SurfacePlat *plat )
+void FontPlat_Bitmap::drawSetTextFont( SurfacePlat * )
 {
+	// stub
 }

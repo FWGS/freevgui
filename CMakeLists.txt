@@ -50,6 +50,11 @@ endif()
 target_include_directories(vgui PRIVATE .)
 target_compile_features(vgui PUBLIC cxx_std_11)
 
+# the Win32 font backend rasterises through GDI
+if(WIN32)
+	target_link_libraries(vgui PRIVATE gdi32)
+endif()
+
 if(FREEVGUI_XASH_SUPPORT)
 	target_include_directories(vgui PRIVATE ../engine)
 

@@ -3,7 +3,6 @@
 
 #ifndef PLATFORM_COMMON_FONT_H
 #define PLATFORM_COMMON_FONT_H
-#include "font.h"
 #include "fileimage.h"
 
 namespace vgui
@@ -22,37 +21,14 @@ public:
 	virtual void drawSetTextFont( SurfacePlat* ) = 0;
 };
 
-class VFontData
-{
-public:
-	VFontData()
-	{
-		m_BitmapCharWidth = m_BitmapCharHeight = 0;
-		m_pBitmap = NULL;
-	}
+// platform-specific font implementation
+BaseFontPlat *FontPlat_CreateSystem( const char *name, int tall, int wide, float rotation, int weight, bool italic, bool underline, bool strikeout, bool symbol );
 
-	~VFontData()
-	{
-		if( m_pBitmap )
-			delete[] m_pBitmap;
-	}
-
-	int m_CharWidths[256];
-	int m_BitmapCharWidth;
-	int m_BitmapCharHeight;
-	unsigned char *m_pBitmap;
-	int GetLineWidth();
-};
-
+// a font sheet: one TGA holding 256 fixed-size cells side by side, decoded down to one byte of coverage per pixel
 class FontPlat_Bitmap : public BaseFontPlat
 {
-private:
-	VFontData m_FontData;
-	char *m_pName;
-
-	FontPlat_Bitmap();
 public:
-	static FontPlat_Bitmap *Create( const char *, FileImageStream * );
+	static FontPlat_Bitmap *Create( const char *name, FileImageStream *stream );
 
 	virtual ~FontPlat_Bitmap() override;
 	virtual bool equals( const char *, int, int, float, int, bool, bool, bool, bool ) override;
@@ -61,7 +37,23 @@ public:
 	virtual int getTall() override;
 	virtual int getWide() override;
 	virtual void drawSetTextFont( SurfacePlat* ) override;
+
+private:
+	FontPlat_Bitmap();
+
+	bool loadFrom32BitTGA( FileImageStream *stream );
+
+	char *name;
+
+	// coverage, one byte per pixel: the cells stay side by side as they were in the sheet, so glyph `ch` pixel (x,y) is at bitmap[cellWide * ( ch + y * 256 ) + x].
+	unsigned char *bitmap;
+
+	// size of one cell; every glyph occupies a whole cell
+	int cellWide, cellTall;
+
+	// per-glyph ink extent, which is what the advance is derived from
+	int charWidths[256];
 };
 }
 
-#endif // ATFORM_COMMON_FONT_H
+#endif // PLATFORM_COMMON_FONT_H

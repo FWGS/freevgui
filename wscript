@@ -36,6 +36,10 @@ def build(bld):
 	])
 	includes = ['.']
 	defines = []
+	use = ['yy_thunks']
+
+	if platform == 'win32':
+		use += ['GDI32'] # the Win32 font backend rasterises through GDI
 
 	if bld.env.FREEVGUI_XASH_SUPPORT:
 		source += bld.path.ant_glob('platform/xash3d-fwgs/*.cpp')
@@ -62,7 +66,7 @@ def build(bld):
 		defines = defines,
 		export_includes = '.',
 		rpath = bld.env.DEFAULT_RPATH,
-		use = 'yy_thunks',
+		use = use,
 		install_path = install_path,
 		linkflags = linkflags,
 		subsystem = bld.env.MSVC_SUBSYSTEM
