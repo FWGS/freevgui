@@ -39,6 +39,22 @@ using namespace vgui;
 static void *( *staticMalloc )( size_t size ) = malloc;
 static void ( *staticFree )( void *block ) = free;
 
+// as a debugging aid, setting FREEVGUI_NO_CUSTOM_ALLOCATORS to anything other than "0" makes the
+// global operator new/delete overrides below go straight to the CRT, ignoring whatever was installed through vgui_setMalloc/vgui_setFree
+static bool useInstalledAllocators()
+{
+	static int cached; // 0 = not yet determined, 1 = installed hooks, 2 = plain CRT
+
+	if( !cached )
+	{
+		const char *env = getenv( "FREEVGUI_NO_CUSTOM_ALLOCATORS" );
+
+		cached = ( env && strcmp( env, "0" )) ? 2 : 1;
+	}
+
+	return cached == 1;
+}
+
 int vgui::vgui_printf( const char* fmt, ... )
 {
 	va_list va;
@@ -121,21 +137,25 @@ extern "C" const char *freevgui_version( void )
 
 void* operator new( size_t size )
 {
-	return staticMalloc( size );
+	return useInstalledAllocators() ? staticMalloc( size ) : malloc( size );
 }
 
 void* operator new[]( size_t size )
 {
-	return staticMalloc( size );
+	return useInstalledAllocators() ? staticMalloc( size ) : malloc( size );
 }
 
 void operator delete( void* p )
 {
-	staticFree( p );
+	if( useInstalledAllocators() )
+		staticFree( p );
+	else free( p );
 }
 
 void operator delete[]( void* p )
 {
-	staticFree( p );
+	if( useInstalledAllocators() )
+		staticFree( p );
+	else free( p );
 }
 
