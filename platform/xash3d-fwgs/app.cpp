@@ -38,9 +38,6 @@ static void XashShutdown( void )
 {
 	staticApp.stop();
 
-	if( g_rootPanel )
-		g_rootPanel->setSurfaceBaseTraverse( nullptr );
-
 	delete g_rootPanel;
 	g_rootPanel = nullptr;
 
