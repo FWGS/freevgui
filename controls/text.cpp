@@ -223,7 +223,7 @@ void TextEntry::paintBackground()
 	}
 
 	drawSetTextFont( f );
-	drawSetColor( Scheme::SC_BLACK );
+	drawSetTextColor( Scheme::SC_BLACK );
 	drawSetTextPos( 3, 0 );
 
 	for( int i = 0; i < line.getCount(); i++ )
