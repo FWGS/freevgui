@@ -407,6 +407,10 @@ void XashSurface::makeCurrent( const PaintState *ps )
 	translate[1] = ps->translate[1];
 
 	g_scissor.setRect( ps->clip[0], ps->clip[1], ps->clip[2], ps->clip[3] );
+
+	// set the offset so the game can draw relative to panel coordinates,
+	// goldsrc here install projection matrix
+	g_engine->SetPaintOffset( translate[0], translate[1] );
 }
 
 void XashSurface::pushMakeCurrent( Panel *panel, bool useInsets )
@@ -469,5 +473,6 @@ void XashSurface::popMakeCurrent( Panel *panel )
 
 		translate[0] = translate[1] = 0;
 		g_scissor.setRect( abs[0], abs[1], abs[2], abs[3] );
+		g_engine->SetPaintOffset( 0, 0 );
 	}
 }
