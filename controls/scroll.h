@@ -46,7 +46,7 @@ protected:
 	virtual void paintBackground() override;
 
 };
-CHECK_STRUCT_SIZE( Slider, 252, 328, 328 );
+CHECK_STRUCT_SIZE( Slider, 252, 328, 336 );
 
 class CLASSEXPORT ScrollBar : public Panel
 {

@@ -62,7 +62,7 @@ protected:
 	ButtonGroup*       buttonGroup;
 	ButtonController*  buttonController;
 };
-CHECK_STRUCT_SIZE( Button, 240, 344, 344 );
+CHECK_STRUCT_SIZE( Button, 240, 344, 352 );
 
 class CLASSEXPORT ToggleButton : public Button
 {

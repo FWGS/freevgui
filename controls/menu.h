@@ -26,7 +26,7 @@ public:
 protected:
 	Menu* subMenu;
 };
-CHECK_STRUCT_SIZE( MenuItem, 244, 352, 352 );
+CHECK_STRUCT_SIZE( MenuItem, 244, 352, 360 );
 
 class CLASSEXPORT MenuSeparator : public Label
 {
@@ -35,7 +35,7 @@ public:
 protected:
 	virtual void paintBackground() override;
 };
-CHECK_STRUCT_SIZE( MenuSeparator, 208, 288, 288 );
+CHECK_STRUCT_SIZE( MenuSeparator, 208, 288, 296 );
 
 class CLASSEXPORT PopupMenu : public Menu
 {

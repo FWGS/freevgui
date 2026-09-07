@@ -32,7 +32,7 @@ private:
 	Panel *selectedPanel;
 	ButtonGroup *buttonGroup;
 };
-CHECK_STRUCT_SIZE( TabPanel, 212, 304, 304 );
+CHECK_STRUCT_SIZE( TabPanel, 212, 304, 312 );
 }
 
 #endif // VGUI_TABPANEL_H
