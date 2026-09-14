@@ -6,7 +6,9 @@
 #include "signals.h"
 
 #define MAKE_COLUMN_EXTENTS( a, b ) (( b ) + (( a ) << 12))
-#define UNPACK_COLUMN_EXTENTS( data, a, b ) (( a ) = ( data ) >> 12 & 0xfff, ( b ) = ( data ) & 0xfff )
+#define COLUMN_LEFT( data ) (( data ) >> 12 & 0xfff )
+#define COLUMN_RIGHT( data ) (( data ) & 0xfff )
+#define UNPACK_COLUMN_EXTENTS( data, a, b ) (( a ) = COLUMN_LEFT( data ), ( b ) = COLUMN_RIGHT( data ))
 
 namespace vgui {
 class TablePanelSignalsHandler : public ChangeSignal, public InputSignalAdapter, public RepaintSignal
@@ -290,8 +292,7 @@ void TablePanel::paint()
 		maxX = 0;
 		for( int i = 0; i < columns.getCount(); i++ )
 		{
-			int unused;
-			UNPACK_COLUMN_EXTENTS( columns[i], unused, maxX );
+			maxX = COLUMN_RIGHT( columns[i] );
 
 			int x_left = maxX - grid_right_half, x_right = maxX + grid_left_half;
 

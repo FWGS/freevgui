@@ -259,7 +259,7 @@ void Label::computeAlignment( int &tx0, int &ty0, int &tx1, int &ty1, int &ix0, 
 	minX = 0;
 	minY = 0;
 
-	int offx, offy;
+	int offx = 0, offy = 0;
 	switch( contentAlignment )
 	{
 	case TOPLEFT:
