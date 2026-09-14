@@ -198,6 +198,8 @@ void BuildGroup::keyTyped( KeyCode code, Panel *p )
 	case KEY_DOWN:
 		dy = +snapY;
 		break;
+	default:
+		break;
 	}
 
 	if( dx != 0 || dy != 0 )

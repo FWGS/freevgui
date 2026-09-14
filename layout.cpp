@@ -60,6 +60,8 @@ void BorderLayout::performLayout( Panel *p )
 			if( child->getWide() > max[bli->alignment] )
 				max[bli->alignment] = child->getWide();
 			break;
+		case CENTER:
+			break;
 		}
 	}
 
