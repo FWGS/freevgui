@@ -343,7 +343,7 @@ void Label::init( int len, const char *str, bool textFitted )
 }
 
 IntLabel::IntLabel( int value, int x, int y, int wide, int tall ) :
-	Label( nullptr, x, y, wide, tall ), value( value )
+	Label( "", x, y, wide, tall ), value( value )
 {
 }
 
