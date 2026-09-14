@@ -145,14 +145,14 @@ void* operator new[]( size_t size )
 	return useInstalledAllocators() ? staticMalloc( size ) : malloc( size );
 }
 
-void operator delete( void* p )
+void operator delete( void* p ) noexcept
 {
 	if( useInstalledAllocators() )
 		staticFree( p );
 	else free( p );
 }
 
-void operator delete[]( void* p )
+void operator delete[]( void* p ) noexcept
 {
 	if( useInstalledAllocators() )
 		staticFree( p );
