@@ -56,6 +56,7 @@ Panel *BuildGroup::getCurrentPanel()
 void BuildGroup::copyPropertiesToClipboard()
 {
 	char text[32768];
+	size_t len = 0;
 
 	text[0] = '\0';
 	for( int i = 0; i < panels.getCount(); i++ )
@@ -63,11 +64,15 @@ void BuildGroup::copyPropertiesToClipboard()
 		char buf[512];
 		panels[i]->getPersistanceText( buf, sizeof( buf ));
 
-		strncat( text, panelNames[i], sizeof( text ));
-		strncat( text, buf, sizeof( text ));
+		len += snprintf( text + len, sizeof( text ) - len, "%s%s", panelNames[i], buf );
+		if( len >= sizeof( text ))
+		{
+			len = sizeof( text ) - 1;
+			break;
+		}
 	}
 
-	App::getInstance()->setClipboardText( text, strlen( text ));
+	App::getInstance()->setClipboardText( text, len );
 
 	vgui_printf( "Copied to clipboard\n" );
 }
