@@ -36,7 +36,7 @@ def build(bld):
 	])
 	includes = ['.']
 	defines = []
-	use = ['yy_thunks']
+	use = ['werror', 'yy_thunks']
 
 	if platform == 'win32':
 		use += ['GDI32'] # the Win32 font backend rasterises through GDI
