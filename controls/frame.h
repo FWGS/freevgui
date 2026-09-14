@@ -16,7 +16,7 @@ public:
 
 	virtual void setSize( int, int ) override;
 	virtual void setInternal( bool );
-	virtual void paintBackground();
+	virtual void paintBackground() override;
 	virtual bool isInternal();
 	virtual Panel* getClient();
 	virtual void setTitle( const char* );

@@ -39,17 +39,17 @@ protected:
 	virtual bool getSelectedPixelRange( int&, int& );
 	virtual int cursorToPixelSpace( int );
 	virtual void selectCheck();
-	virtual void cursorMoved( int, int, Panel* );
-	virtual void cursorEntered( Panel* );
-	virtual void cursorExited( Panel* );
-	virtual void mousePressed( MouseCode, Panel* );
-	virtual void mouseDoublePressed( MouseCode, Panel* );
-	virtual void mouseReleased( MouseCode, Panel* );
-	virtual void mouseWheeled( int, Panel* );
-	virtual void keyPressed( KeyCode, Panel* );
-	virtual void keyTyped( KeyCode, Panel* );
-	virtual void keyReleased( KeyCode, Panel* );
-	virtual void keyFocusTicked( Panel* );
+	virtual void cursorMoved( int, int, Panel* ) override;
+	virtual void cursorEntered( Panel* ) override;
+	virtual void cursorExited( Panel* ) override;
+	virtual void mousePressed( MouseCode, Panel* ) override;
+	virtual void mouseDoublePressed( MouseCode, Panel* ) override;
+	virtual void mouseReleased( MouseCode, Panel* ) override;
+	virtual void mouseWheeled( int, Panel* ) override;
+	virtual void keyPressed( KeyCode, Panel* ) override;
+	virtual void keyTyped( KeyCode, Panel* ) override;
+	virtual void keyReleased( KeyCode, Panel* ) override;
+	virtual void keyFocusTicked( Panel* ) override;
 
 	Dar<char> line;
 	int       cursorPos;
