@@ -500,7 +500,7 @@ int TextGrid::vprintf( const char *fmt, va_list va )
 {
 	char buf[2048];
 
-	int ret = vsprintf( buf, fmt, va );
+	int ret = vsnprintf( buf, sizeof( buf ), fmt, va );
 
 	for( int i = 0; i < sizeof( buf ); i++ )
 	{

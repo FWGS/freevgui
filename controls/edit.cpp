@@ -225,7 +225,7 @@ void EditPanel::doCursorPrintf( char *format, ... )
 	va_list va;
 
 	va_start( va, format );
-	vsprintf( buf, format, va );
+	vsnprintf( buf, sizeof( buf ), format, va );
 	va_end( va );
 
 	for( char *p = buf; *p; p++ )
