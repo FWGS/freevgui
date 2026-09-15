@@ -159,3 +159,13 @@ void operator delete[]( void* p ) noexcept
 	else free( p );
 }
 
+void operator delete( void* p, size_t ) noexcept
+{
+	operator delete( p );
+}
+
+void operator delete[]( void* p, size_t ) noexcept
+{
+	operator delete[]( p );
+}
+
