@@ -30,7 +30,7 @@
 
 #if defined( __LP64__ ) || defined( _LP64 )
 	#define CHECK_STRUCT_SIZE( type, sizeIlp32, sizeLp64, sizeLlp64 ) static_assert( sizeof( type ) == sizeLp64, "invalid size" )
-#elif XASH_64BIT || defined( _WIN64 )
+#elif defined( _WIN64 )
 	#define CHECK_STRUCT_SIZE( type, sizeIlp32, sizeLp64, sizeLlp64 ) static_assert( sizeof( type ) == sizeLlp64, "invalid size" )
 #else
 	#define CHECK_STRUCT_SIZE( type, sizeIlp32, sizeLp64, sizeLlp64 ) static_assert( sizeof( type ) == sizeIlp32, "invalid size" )
@@ -214,7 +214,7 @@ public:
 CHECK_STRUCT_SIZE( Dar<void*>, 12, 16, 16 );
 
 // kinda useless, as calls are inlined anyway but it exists as export in Windows build
-#if _MSC_VER
+#if defined( _MSC_VER )
 class ActionSignal;
 class Button;
 class ChangeSignal;
