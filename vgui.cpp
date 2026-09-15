@@ -93,12 +93,12 @@ int vgui::vgui_dprintf2( const char* fmt, ... )
 
 void vgui::vgui_strcpy( char *dst, int size, const char *src )
 {
-	if( !dst || !src || !size )
+	if( !dst || !src || size <= 0 )
 		return;
 
 	size_t len = strlen( src );
 
-	if( len >= size ) // check if truncate
+	if( len >= (size_t)size ) // check if truncate
 	{
 		memcpy( dst, src, size );
 		dst[size - 1] = 0;
