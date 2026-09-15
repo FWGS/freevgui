@@ -57,9 +57,9 @@ public:
 };
 
 TablePanel::TablePanel( int x, int y, int w, int h, int columnCount ) : Panel( x, y, w, h ),
-	selectedCell{ -1, -1 }, mouseOverCell{ 0, 0 }, editableCell{ -1, -1 }, virtualSize{ w, h },
-	columnSelectionEnabled( false ), rowSelectionEnabled( true ), cellSelectionEnabled( true ), cellEditingEnabled( true ),
-	editableCellPanel( nullptr ), fakeInputPanel( new Panel())
+	selectedCell{ -1, -1 }, mouseOverCell{ 0, 0 }, editableCell{ -1, -1 }, fakeInputPanel( new Panel()),
+	columnSelectionEnabled( false ), rowSelectionEnabled( true ), cellSelectionEnabled( true ),
+	editableCellPanel( nullptr ), virtualSize{ w, h }, cellEditingEnabled( true )
 {
 	setGridSize( 2, 2 );
 	setGridVisible( false, false );

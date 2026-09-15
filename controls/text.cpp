@@ -446,7 +446,7 @@ void TextEntry::keyFocusTicked( Panel* )
 }
 
 TextGrid::TextGrid( int grid_w, int grid_h, int x, int y, int w, int h ) : Panel( x, y, w, h ),
-	grid( nullptr ), gridSize{ 0, 0 }, cursorPos{ 0, 0 }
+	cursorPos{ 0, 0 }, grid( nullptr ), gridSize{ 0, 0 }
 {
 	setGridSize( grid_w, grid_h );
 	setBgColor( 255, 255, 255, 0 );

@@ -229,9 +229,11 @@ void Image::doPaint(Panel *p)
 }
 
 Bitmap::Bitmap() :
-	rgbaData( nullptr ),
 	id( 0 ),
-	uploaded( false ) {	}
+	uploaded( false ),
+	rgbaData( nullptr )
+{
+}
 
 void Bitmap::paint( Panel *p )
 {

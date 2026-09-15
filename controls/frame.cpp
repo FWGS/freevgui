@@ -136,7 +136,7 @@ static Panel *makeGrip( Frame *frame, int x, int y, int w, int h, Cursor::Defaul
 }
 
 Frame::Frame( int x, int y, int wide, int tall ) :
-	Panel( x, y, wide, tall ), title( nullptr ), internal( true ), moveable( true ), sizeable( true )
+	Panel( x, y, wide, tall ), title( nullptr ), internal( true ), sizeable( true ), moveable( true )
 {
 	setTitle( "Untitled" );
 	setMinimumSize( 64, 33 );
