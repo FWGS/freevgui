@@ -5,7 +5,7 @@
 
 using namespace vgui;
 
-vguiapi_t *vgui::g_engine = nullptr;
+const vgui_support_api_t *vgui::g_engine = nullptr;
 Panel *vgui::g_rootPanel = nullptr;
 XashSurface *vgui::g_surface = nullptr;
 
@@ -75,6 +75,35 @@ static void XashPaint( void )
 	g_scissor.disable();
 }
 
+static void XashFillInterface( vgui_support_interface_t *iface )
+{
+	iface->Startup = XashStartup;
+	iface->Shutdown = XashShutdown;
+	iface->GetPanel = XashGetPanel;
+	iface->Paint = XashPaint;
+	iface->Mouse = XashMouse;
+	iface->Key = XashKey;
+	iface->MouseMove = XashMouseMove;
+	iface->TextInput = XashTextInput;
+}
+
+extern "C" int EXPORT GetVGUISupportAPI( int version, vgui_support_interface_t *iface, const vgui_support_api_t *engfuncs )
+{
+	// everything we need is in the first version
+	if( version < 1 )
+		return 0;
+
+	if( version > VGUI_SUPPORT_API_VERSION )
+		version = VGUI_SUPPORT_API_VERSION;
+
+	// the structure is owned by the engine, keep the pointer, not a copy
+	g_engine = engfuncs;
+
+	XashFillInterface( iface );
+
+	return version;
+}
+
 #if defined( INTERNAL_VGUI_SUPPORT )
 // what the engine probes in the client library when we're linked into it statically
 #define VGUI_SUPPORT_INIT InitVGUISupportAPI
@@ -82,17 +111,45 @@ static void XashPaint( void )
 #define VGUI_SUPPORT_INIT InitAPI
 #endif
 
+// legacy API, for engines that don't have GetVGUISupportAPI yet
 extern "C" void EXPORT VGUI_SUPPORT_INIT( vguiapi_t *api )
 {
-	// the structure is owned by the engine, keep the pointer, not a copy
-	g_engine = api;
+	static vgui_support_api_t legacyEngine;
+	vgui_support_interface_t iface = {};
 
-	api->Startup = XashStartup;
-	api->Shutdown = XashShutdown;
-	api->GetPanel = XashGetPanel;
-	api->Paint = XashPaint;
-	api->Mouse = XashMouse;
-	api->Key = XashKey;
-	api->MouseMove = XashMouseMove;
-	api->TextInput = XashTextInput;
+	legacyEngine.DrawInit = api->DrawInit;
+	legacyEngine.DrawShutdown = api->DrawShutdown;
+	legacyEngine.SetupDrawingText = api->SetupDrawingText;
+	legacyEngine.SetupDrawingRect = api->SetupDrawingRect;
+	legacyEngine.SetupDrawingImage = api->SetupDrawingImage;
+	legacyEngine.BindTexture = api->BindTexture;
+	legacyEngine.EnableTexture = api->EnableTexture;
+	legacyEngine.UploadTexture = api->UploadTexture;
+	legacyEngine.DrawQuad = api->DrawQuad;
+	legacyEngine.GetTextureSizes = api->GetTextureSizes;
+	legacyEngine.GenerateTexture = api->GenerateTexture;
+	legacyEngine.EngineMalloc = api->EngineMalloc;
+	legacyEngine.CursorSelect = api->CursorSelect;
+	legacyEngine.GetColor = api->GetColor;
+	legacyEngine.IsInGame = api->IsInGame;
+	legacyEngine.EnableTextInput = api->EnableTextInput;
+	legacyEngine.GetCursorPos = api->GetCursorPos;
+	legacyEngine.ProcessUtfChar = api->ProcessUtfChar;
+	legacyEngine.GetClipboardText = api->GetClipboardText;
+	legacyEngine.SetClipboardText = api->SetClipboardText;
+	legacyEngine.GetKeyModifiers = api->GetKeyModifiers;
+	legacyEngine.SetPaintOffset = api->SetPaintOffset;
+
+	g_engine = &legacyEngine;
+
+	XashFillInterface( &iface );
+
+	api->Startup = iface.Startup;
+	api->Shutdown = iface.Shutdown;
+	api->GetPanel = iface.GetPanel;
+	api->Paint = iface.Paint;
+	api->Mouse = iface.Mouse;
+	api->Key = iface.Key;
+	api->MouseMove = iface.MouseMove;
+	api->TextInput = iface.TextInput;
 }
