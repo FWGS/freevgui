@@ -7,6 +7,9 @@
 #ifndef VGUI_STRING_H
 #define VGUI_STRING_H
 
+#if FREEVGUI_FIXES
+#include <atomic>
+#endif
 #include "vgui.h"
 
 namespace vgui
@@ -19,6 +22,13 @@ private:
 
 	int getCount( const char *str );
 public:
+#if FREEVGUI_FIXES
+	struct StringHeader
+	{
+		std::atomic<int> refcount;
+		int size;
+	};
+#endif
 	String();
 	String( const char *newText );
 	String( const String &src );
