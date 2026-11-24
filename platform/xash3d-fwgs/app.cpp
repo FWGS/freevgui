@@ -52,7 +52,7 @@ static void *XashGetPanel( void )
 
 static void XashPaint( void )
 {
-	if( !g_engine->IsInGame() || !g_rootPanel || !g_surface )
+	if( !g_rootPanel || !g_surface )
 		return;
 
 	Panel *panel = g_surface->getPanel();
@@ -66,7 +66,13 @@ static void XashPaint( void )
 
 	g_scissor.enable();
 
-	staticApp.externalTick();
+	// the engine paints VGUI only in a game, the panels are drawn like the HUD under the console, the chat input and
+	// the menu as in GoldSrc. While these have the keyboard, the engine handles the input and the cursor, so there
+	// is no tick that would take the mouse focus or select a cursor, only the layout is solved
+	if( g_engine->IsInGame() )
+		staticApp.externalTick();
+	else
+		panel->solveTraverse();
 
 	panel->setBounds( 0, 0, width, height );
 	panel->repaint();
